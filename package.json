@@ -1,0 +1,36 @@
+{
+  "name": "delivery-dashboard",
+  "version": "0.0.1",
+  "description": "Product Delivery's Web Client to Microservices.",
+  "scripts": {
+    "build": "npm run copy-assets && elm-make src/Main.elm --output=build/app.js",
+    "copy-assets": "rimraf build && mkdir build && cp -r public/* build",
+    "debug": "elm-live src/Main.elm --warn --dir=public/ --output=public/app.js --debug",
+    "deploy": "npm run build && npm run optimize && gh-pages --add --dist build/",
+    "optimize": "uglifyjs build/app.js -c -m -o build/app.js",
+    "postinstall": "elm package install",
+    "start": "elm-live src/Main.elm --warn --dir=public/ --output=public/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mozilla/delivery-dashboard.git"
+  },
+  "keywords": [
+    "firefox"
+  ],
+  "author": "\"Storage Team\" <storage-team@mozilla.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/mozilla/delivery-dashboard/issues"
+  },
+  "homepage": "https://github.com/mozilla/delivery-dashboard#readme",
+  "devDependencies": {
+    "copyfiles": "^1.2.0",
+    "elm": "^0.18.0",
+    "elm-live": "^2.7.4",
+    "gh-pages": "^0.12.0",
+    "rimraf": "^2.6.1",
+    "uglify-js": "^3.0.15"
+  }
+}
