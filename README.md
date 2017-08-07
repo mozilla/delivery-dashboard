@@ -34,7 +34,8 @@ readable. Use this command for deploying the dashboard to production.
 
     $ npm run deploy
 
-The app should be deployed to https://[your-github-username].github.io/buildhub/
+The app should be deployed to
+https://[your-github-username].github.io/delivery-dashboard/
 
 Note: The `deploy` command uses the `optimize` one internally.
 
