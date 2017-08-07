@@ -8,6 +8,7 @@
     "debug": "elm-live src/Main.elm --warn --dir=public/ --output=public/app.js --debug",
     "deploy": "npm run build && npm run optimize && gh-pages --add --dist build/",
     "optimize": "uglifyjs build/app.js -c -m -o build/app.js",
+    "postinstall": "elm package install",
     "start": "elm-live src/Main.elm --warn --dir=public/ --output=public/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
