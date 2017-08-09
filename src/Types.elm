@@ -1,5 +1,7 @@
 module Types exposing (..)
 
+import Http
+
 
 type alias Version =
     String
@@ -33,3 +35,4 @@ type Msg
     = Select Version
     | ManualVersion String
     | DismissVersion
+    | ReleaseStatusFetched (Result Http.Error ReleaseStatus)

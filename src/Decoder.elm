@@ -16,20 +16,23 @@ releaseStatusDecoder =
 
 
 statusDecoder : Decoder Status
-statusDecoder status =
+statusDecoder =
     string
         |> andThen
             (\value ->
                 case value of
                     "missing" ->
-                        Missing
+                        succeed Missing
 
                     "incomplete" ->
-                        Incomplete
+                        succeed Incomplete
 
                     "exists" ->
-                        Exists
+                        succeed Exists
 
                     "error" ->
-                        Error "An error occured"
+                        succeed <| Error "An error occured"
+
+                    somethingElse ->
+                        fail <| "Unknown status: " ++ somethingElse
             )
