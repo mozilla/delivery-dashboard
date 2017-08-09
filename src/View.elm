@@ -42,7 +42,7 @@ headerView model =
             [ class "container-fluid" ]
             [ div
                 [ class "navbar-header" ]
-                [ a [ class "navbar-brand", href "#" ] [ text "Delivery Dashboard" ] ]
+                [ a [ class "navbar-brand", href "." ] [ text "Delivery Dashboard" ] ]
             ]
         ]
 
