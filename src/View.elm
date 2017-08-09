@@ -18,30 +18,16 @@ mainView : Model -> Html Msg
 mainView model =
     div [ class "row" ]
         [ div [ class "col-sm-9" ]
-            [ case model.current_release of
+            [ searchForm model.manual_version
+            , case model.current_release of
                 Nothing ->
                     div []
-                        [ text "Please select a version or enter your version number below."
-                        , Html.form [ onSubmit <| Select model.manual_version ]
-                            [ input
-                                [ onInput ManualVersion
-                                , value model.manual_version
-                                ]
-                                []
-                            , button
-                                [ class "btn btn-default" ]
-                                [ text "Select" ]
-                            ]
+                        [ text "Learn more about a specific version. "
+                        , strong [] [ text "Select or enter your version number." ]
                         ]
 
                 Just version ->
-                    div []
-                        [ h1 [] [ text <| "Selected: " ++ version ]
-                        , button [ type_ "button", class "close", onClick DismissVersion ]
-                            [ span [ class "glyphicon glyphicon-remove" ] []
-                            ]
-                        , spinner
-                        ]
+                    dashboardView version model.release_status
             ]
         , div [ class "col-sm-3" ]
             [ releasesMenu model.releases ]
@@ -79,3 +65,45 @@ releasesMenu releases =
 spinner : Html Msg
 spinner =
     div [ class "loader" ] []
+
+
+clearableTextInput : Msg -> List (Attribute Msg) -> String -> Html Msg
+clearableTextInput onClearMsg attrs txt =
+    div [ class "btn-group clearable-text" ]
+        [ input attrs []
+        , if String.length txt > 0 then
+            span
+                [ class "text-clear-btn"
+                , onClick onClearMsg
+                ]
+                [ i [ class "glyphicon glyphicon-remove" ] [] ]
+          else
+            text ""
+        ]
+
+
+searchForm : String -> Html Msg
+searchForm txt =
+    Html.form [ class "search-form well", onSubmit <| Select txt ]
+        [ clearableTextInput
+            DismissVersion
+            [ type_ "search"
+            , class "form-control"
+            , placeholder "Firefox version, eg. \"57.0\""
+            , value txt
+            , onInput ManualVersion
+            ]
+            txt
+        ]
+
+
+dashboardView : Version -> Maybe ReleaseStatus -> Html Msg
+dashboardView version release_status =
+    div []
+        [ case release_status of
+            Nothing ->
+                spinner
+
+            Just release_status ->
+                div [] [ text <| toString release_status ]
+        ]

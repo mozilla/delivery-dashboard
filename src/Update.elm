@@ -7,14 +7,18 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Select version ->
-            { model | current_release = Just version } ! []
+            { model
+                | current_release = Just version
+                , manual_version = version
+            }
+                ! []
 
         ManualVersion version ->
             { model | manual_version = version } ! []
 
         DismissVersion ->
             { model
-                | manual_version = Maybe.withDefault "" model.current_release
+                | manual_version = ""
                 , current_release = Nothing
             }
                 ! []
