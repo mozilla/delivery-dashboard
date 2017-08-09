@@ -10,6 +10,7 @@ update msg model =
             { model
                 | current_release = Just version
                 , manual_version = version
+                , release_status = Just <| ReleaseStatus Exists Exists Exists Exists Exists
             }
                 ! []
 

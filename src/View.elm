@@ -105,5 +105,62 @@ dashboardView version release_status =
                 spinner
 
             Just release_status ->
-                div [] [ text <| toString release_status ]
+                table [ class "table table-stripped table-hover" ]
+                    [ thead []
+                        [ tr []
+                            [ td []
+                                [ h2 [] [ text "Release" ]
+                                , displayStatus <| getReleaseStatus release_status
+                                ]
+                            , td []
+                                [ h2 [] [ text "Archives" ]
+                                , displayStatus release_status.archives
+                                ]
+                            , td []
+                                [ h2 [] [ text "Product details" ]
+                                , displayStatus release_status.productDetails
+                                ]
+                            ]
+                        , tr []
+                            [ td []
+                                [ h2 [] [ text "Release Notes" ]
+                                , displayStatus release_status.releaseNotes
+                                ]
+                            , td []
+                                [ h2 [] [ text "Security Advisories" ]
+                                , displayStatus release_status.securityAdvisories
+                                ]
+                            , td []
+                                [ h2 [] [ text "Download links" ]
+                                , displayStatus release_status.downloadLinks
+                                ]
+                            ]
+                        ]
+                    ]
         ]
+
+
+displayStatus : Status -> Html Msg
+displayStatus status =
+    case status of
+        Exists ->
+            span [ class "label label-success" ] [ text "Exists" ]
+
+        Incomplete ->
+            span [ class "label label-info" ] [ text "Incomplete" ]
+
+        Missing ->
+            span [ class "label label-danger" ] [ text "Missing" ]
+
+        Error error ->
+            span [ class "label label-warning" ] [ text ("Error: " ++ error) ]
+
+
+getReleaseStatus : ReleaseStatus -> Status
+getReleaseStatus release_status =
+    if release_status == ReleaseStatus Exists Exists Exists Exists Exists then
+        Exists
+    else if release_status == ReleaseStatus Missing Missing Missing Missing Missing then
+        Missing
+    else
+        Incomplete
