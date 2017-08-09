@@ -6,5 +6,15 @@ import Types exposing (..)
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Noop ->
-            model ! []
+        Select version ->
+            { model | current_release = Just version } ! []
+
+        ManualVersion version ->
+            { model | manual_version = version } ! []
+
+        DismissVersion ->
+            { model
+                | manual_version = Maybe.withDefault "" model.current_release
+                , current_release = Nothing
+            }
+                ! []
