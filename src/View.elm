@@ -114,29 +114,29 @@ dashboardView version model =
                 [ tr []
                     [ td []
                         [ h2 [] [ text "Release" ]
-                        , displayStatus <| releaseStatus model
+                        , displayStatus "#" <| releaseStatus model
                         ]
                     , td []
                         [ h2 [] [ text "Archives" ]
-                        , displayStatus model.archive
+                        , displayStatus ("https://archive.mozilla.org/pub/firefox/releases/" ++ version ++ "/") model.archive
                         ]
                     , td []
                         [ h2 [] [ text "Product details" ]
-                        , displayStatus model.product_details
+                        , displayStatus "https://product-details.mozilla.org/1.0/firefox.json" model.product_details
                         ]
                     ]
                 , tr []
                     [ td []
                         [ h2 [] [ text "Release Notes" ]
-                        , displayStatus model.release_notes
+                        , displayStatus ("https://www.mozilla.org/en-US/firefox/" ++ version ++ "/releasenotes/") model.release_notes
                         ]
                     , td []
                         [ h2 [] [ text "Security Advisories" ]
-                        , displayStatus model.security_advisories
+                        , displayStatus "https://www.mozilla.org/en-US/security/known-vulnerabilities/firefox/" model.security_advisories
                         ]
                     , td []
                         [ h2 [] [ text "Download links" ]
-                        , displayStatus model.download_links
+                        , displayStatus "https://www.mozilla.org/en-US/firefox/all/" model.download_links
                         ]
                     ]
                 ]
@@ -144,8 +144,8 @@ dashboardView version model =
         ]
 
 
-displayStatus : Maybe ReleaseStatus -> Html Msg
-displayStatus release_status =
+displayStatus : Link -> Maybe ReleaseStatus -> Html Msg
+displayStatus link release_status =
     case release_status of
         Nothing ->
             spinner
@@ -156,6 +156,7 @@ displayStatus release_status =
                     a
                         [ class "label label-success"
                         , title <| Maybe.withDefault "" release_status.message
+                        , href link
                         ]
                         [ text "Exists" ]
 
@@ -163,6 +164,7 @@ displayStatus release_status =
                     a
                         [ class "label label-info"
                         , title <| Maybe.withDefault "" release_status.message
+                        , href link
                         ]
                         [ text "Incomplete" ]
 
@@ -170,6 +172,7 @@ displayStatus release_status =
                     a
                         [ class "label label-danger"
                         , title <| Maybe.withDefault "" release_status.message
+                        , href link
                         ]
                         [ text "Missing" ]
 
@@ -177,6 +180,7 @@ displayStatus release_status =
                     a
                         [ class "label label-warning"
                         , title <| Maybe.withDefault "" release_status.message
+                        , href link
                         ]
                         [ text ("Error: " ++ error) ]
 

@@ -3,6 +3,10 @@ module Types exposing (..)
 import Http
 
 
+type alias Link =
+    String
+
+
 type alias Version =
     String
 
