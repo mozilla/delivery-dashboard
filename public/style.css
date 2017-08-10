@@ -40,6 +40,8 @@ td {
   white-space: nowrap;
   text-overflow: ellipsis;
   max-width: 65px;
+  text-align: center;
+  padding-bottom: 50px !important;
 }
 
 .table-hover>tbody>tr.build-details:hover {
