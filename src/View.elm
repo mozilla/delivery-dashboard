@@ -113,6 +113,10 @@ dashboardView version model =
             [ thead []
                 [ tr []
                     [ td []
+                        [ h2 [] [ text "Release" ]
+                        , displayStatus <| releaseStatus model
+                        ]
+                    , td []
                         [ h2 [] [ text "Archives" ]
                         , displayStatus model.archive
                         ]
@@ -175,3 +179,33 @@ displayStatus release_status =
                         , title <| Maybe.withDefault "" release_status.message
                         ]
                         [ text ("Error: " ++ error) ]
+
+
+releaseStatus : Model -> Maybe ReleaseStatus
+releaseStatus model =
+    let
+        extractStatus release_status =
+            case release_status of
+                Nothing ->
+                    Nothing
+
+                Just release_status ->
+                    Just release_status.status
+
+        tasks =
+            ( extractStatus model.archive
+            , extractStatus model.release_notes
+            , extractStatus model.security_advisories
+            , extractStatus model.download_links
+            , extractStatus model.product_details
+            )
+    in
+        case tasks of
+            ( Nothing, Nothing, Nothing, Nothing, Nothing ) ->
+                Nothing
+
+            ( Just Exists, Just Exists, Just Exists, Just Exists, Just Exists ) ->
+                Just { status = Exists, message = Just "All checks validates, the release is complete." }
+
+            _ ->
+                Just { status = Incomplete, message = Just "One of the release checks did not validate" }
