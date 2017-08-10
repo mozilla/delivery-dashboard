@@ -15,7 +15,7 @@ class App extends Component {
         </Navbar>
         <Row>
           <Col sm={9}>
-            {/* <SearchForm/> */}
+            <SearchForm/>
             {/* <CurrentRelease/> */}
           </Col>
           <Col sm={3}>
@@ -25,6 +25,20 @@ class App extends Component {
           </Col>
         </Row>
       </Grid>
+    );
+  }
+}
+
+class SearchForm extends Component {
+  render() {
+    return (
+      <form className="search-form well">
+        <input
+          type="search"
+          className="form-control"
+          placeholder={"Firefox version, eg. \"57.0\""}
+        />
+      </form>
     );
   }
 }
