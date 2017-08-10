@@ -27,10 +27,10 @@ mainView model =
                         ]
 
                 Just version ->
-                    dashboardView version model.release_status
+                    dashboardView version model
             ]
         , div [ class "col-sm-3" ]
-            [ releasesMenu model.releases ]
+            [ releasesMenu model.ongoing_versions ]
         ]
 
 
@@ -47,17 +47,26 @@ headerView model =
         ]
 
 
-releasesMenu : List Version -> Html Msg
-releasesMenu releases =
+releasesMenu : Maybe OngoingVersions -> Html Msg
+releasesMenu ongoing_versions =
     div [ class "panel panel-default" ]
         [ div [ class "panel-heading" ] [ strong [] [ text "Firefox Releases" ] ]
         , div []
-            [ let
-                releaseItem version =
-                    li [] [ a [ onClick <| Select version ] [ text version ] ]
-              in
-                ul [] <|
-                    List.map releaseItem releases
+            [ case ongoing_versions of
+                Nothing ->
+                    spinner
+
+                Just ongoing_versions ->
+                    let
+                        releaseItem title version =
+                            li [] [ a [ onClick <| Select version ] [ text <| title ++ ": " ++ version ] ]
+                    in
+                        ul []
+                            [ releaseItem "Nightly" ongoing_versions.nightly
+                            , releaseItem "Beta" ongoing_versions.beta
+                            , releaseItem "Release" ongoing_versions.release
+                            , releaseItem "ESR" ongoing_versions.esr
+                            ]
             ]
         ]
 
@@ -97,70 +106,72 @@ searchForm txt =
         ]
 
 
-dashboardView : Version -> Maybe ReleaseStatus -> Html Msg
-dashboardView version release_status =
+dashboardView : Version -> Model -> Html Msg
+dashboardView version model =
     div []
-        [ case release_status of
-            Nothing ->
-                spinner
-
-            Just release_status ->
-                table [ class "table table-stripped table-hover" ]
-                    [ thead []
-                        [ tr []
-                            [ td []
-                                [ h2 [] [ text "Release" ]
-                                , displayStatus <| getReleaseStatus release_status
-                                ]
-                            , td []
-                                [ h2 [] [ text "Archives" ]
-                                , displayStatus release_status.archives
-                                ]
-                            , td []
-                                [ h2 [] [ text "Product details" ]
-                                , displayStatus release_status.productDetails
-                                ]
-                            ]
-                        , tr []
-                            [ td []
-                                [ h2 [] [ text "Release Notes" ]
-                                , displayStatus release_status.releaseNotes
-                                ]
-                            , td []
-                                [ h2 [] [ text "Security Advisories" ]
-                                , displayStatus release_status.securityAdvisories
-                                ]
-                            , td []
-                                [ h2 [] [ text "Download links" ]
-                                , displayStatus release_status.downloadLinks
-                                ]
-                            ]
+        [ table [ class "table table-stripped table-hover" ]
+            [ thead []
+                [ tr []
+                    [ td []
+                        [ h2 [] [ text "Archives" ]
+                        , displayStatus model.archive
+                        ]
+                    , td []
+                        [ h2 [] [ text "Product details" ]
+                        , displayStatus model.product_details
                         ]
                     ]
+                , tr []
+                    [ td []
+                        [ h2 [] [ text "Release Notes" ]
+                        , displayStatus model.release_notes
+                        ]
+                    , td []
+                        [ h2 [] [ text "Security Advisories" ]
+                        , displayStatus model.security_advisories
+                        ]
+                    , td []
+                        [ h2 [] [ text "Download links" ]
+                        , displayStatus model.download_links
+                        ]
+                    ]
+                ]
+            ]
         ]
 
 
-displayStatus : Status -> Html Msg
-displayStatus status =
-    case status of
-        Exists ->
-            span [ class "label label-success" ] [ text "Exists" ]
+displayStatus : Maybe ReleaseStatus -> Html Msg
+displayStatus release_status =
+    case release_status of
+        Nothing ->
+            spinner
 
-        Incomplete ->
-            span [ class "label label-info" ] [ text "Incomplete" ]
+        Just release_status ->
+            case release_status.status of
+                Exists ->
+                    a
+                        [ class "label label-success"
+                        , title <| Maybe.withDefault "" release_status.message
+                        ]
+                        [ text "Exists" ]
 
-        Missing ->
-            span [ class "label label-danger" ] [ text "Missing" ]
+                Incomplete ->
+                    a
+                        [ class "label label-info"
+                        , title <| Maybe.withDefault "" release_status.message
+                        ]
+                        [ text "Incomplete" ]
 
-        Error error ->
-            span [ class "label label-warning" ] [ text ("Error: " ++ error) ]
+                Missing ->
+                    a
+                        [ class "label label-danger"
+                        , title <| Maybe.withDefault "" release_status.message
+                        ]
+                        [ text "Missing" ]
 
-
-getReleaseStatus : ReleaseStatus -> Status
-getReleaseStatus release_status =
-    if release_status == ReleaseStatus Exists Exists Exists Exists Exists then
-        Exists
-    else if release_status == ReleaseStatus Missing Missing Missing Missing Missing then
-        Missing
-    else
-        Incomplete
+                Error error ->
+                    a
+                        [ class "label label-warning"
+                        , title <| Maybe.withDefault "" release_status.message
+                        ]
+                        [ text ("Error: " ++ error) ]

@@ -8,11 +8,8 @@ import Types exposing (..)
 releaseStatusDecoder : Decoder ReleaseStatus
 releaseStatusDecoder =
     decode ReleaseStatus
-        |> required "archive" statusDecoder
-        |> required "release-notes" statusDecoder
-        |> required "security-advisories" statusDecoder
-        |> required "download-links" statusDecoder
-        |> required "product-details" statusDecoder
+        |> required "status" statusDecoder
+        |> optional "message" (map Just string) Nothing
 
 
 statusDecoder : Decoder Status
@@ -36,3 +33,12 @@ statusDecoder =
                     somethingElse ->
                         fail <| "Unknown status: " ++ somethingElse
             )
+
+
+ongoingVersionsDecoder : Decoder OngoingVersions
+ongoingVersionsDecoder =
+    decode OngoingVersions
+        |> required "esr" string
+        |> required "release" string
+        |> required "beta" string
+        |> required "nightly" string

@@ -14,20 +14,37 @@ type Status
     | Error String
 
 
+type Checks
+    = Archive
+    | ReleaseNotes
+    | SecurityAdvisories
+    | DownloadLinks
+    | ProductDetails
+
+
 type alias ReleaseStatus =
-    { archives : Status
-    , releaseNotes : Status
-    , securityAdvisories : Status
-    , downloadLinks : Status
-    , productDetails : Status
+    { status : Status
+    , message : Maybe String
+    }
+
+
+type alias OngoingVersions =
+    { esr : String
+    , release : String
+    , beta : String
+    , nightly : String
     }
 
 
 type alias Model =
-    { releases : List Version
+    { ongoing_versions : Maybe OngoingVersions
     , current_release : Maybe Version
     , manual_version : String
-    , release_status : Maybe ReleaseStatus
+    , archive : Maybe ReleaseStatus
+    , release_notes : Maybe ReleaseStatus
+    , security_advisories : Maybe ReleaseStatus
+    , download_links : Maybe ReleaseStatus
+    , product_details : Maybe ReleaseStatus
     }
 
 
@@ -35,4 +52,5 @@ type Msg
     = Select Version
     | ManualVersion String
     | DismissVersion
-    | ReleaseStatusFetched (Result Http.Error ReleaseStatus)
+    | ReleaseStatusFetched Checks (Result Http.Error ReleaseStatus)
+    | OngoingVersionFetched (Result Http.Error OngoingVersions)
