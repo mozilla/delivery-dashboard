@@ -35,9 +35,9 @@ statusDecoder =
             )
 
 
-ongoingVersionsDecoder : Decoder OngoingVersions
-ongoingVersionsDecoder =
-    decode OngoingVersions
+latestChannelVersionsDecoder : Decoder LatestChannelVersions
+latestChannelVersionsDecoder =
+    decode LatestChannelVersions
         |> required "esr" string
         |> required "release" string
         |> required "beta" string

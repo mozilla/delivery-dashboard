@@ -2,7 +2,7 @@ module Update exposing (update)
 
 import Http
 import HttpBuilder exposing (..)
-import Decoder exposing (releaseStatusDecoder, ongoingVersionsDecoder)
+import Decoder exposing (releaseStatusDecoder, latestChannelVersionsDecoder)
 import Time
 import Types exposing (..)
 
@@ -37,22 +37,22 @@ update msg model =
             }
                 ! []
 
-        ReleaseStatusFetched checks (Ok release_status) ->
-            case checks of
+        ReleaseStatusFetched check (Ok status) ->
+            case check of
                 Archive ->
-                    { model | archive = Just release_status } ! []
+                    { model | archive = Just status } ! []
 
                 ReleaseNotes ->
-                    { model | release_notes = Just release_status } ! []
+                    { model | release_notes = Just status } ! []
 
                 SecurityAdvisories ->
-                    { model | security_advisories = Just release_status } ! []
+                    { model | security_advisories = Just status } ! []
 
                 DownloadLinks ->
-                    { model | download_links = Just release_status } ! []
+                    { model | download_links = Just status } ! []
 
                 ProductDetails ->
-                    { model | product_details = Just release_status } ! []
+                    { model | product_details = Just status } ! []
 
         ReleaseStatusFetched checks (Err error) ->
             let
@@ -61,10 +61,10 @@ update msg model =
             in
                 model ! []
 
-        OngoingVersionFetched (Ok ongoing_versions) ->
-            { model | ongoing_versions = Just ongoing_versions } ! []
+        LatestChannelVersionsFetched (Ok latest_channel_versions) ->
+            { model | latest_channel_versions = Just latest_channel_versions } ! []
 
-        OngoingVersionFetched (Err error) ->
+        LatestChannelVersionsFetched (Err error) ->
             let
                 _ =
                     Debug.log "Error" error

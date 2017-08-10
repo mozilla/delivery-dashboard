@@ -9,7 +9,7 @@ import Time
 
 init : ( Model, Cmd Msg )
 init =
-    { ongoing_versions = Nothing
+    { latest_channel_versions = Nothing
     , current_release = Nothing
     , archive = Nothing
     , release_notes = Nothing
@@ -18,12 +18,12 @@ init =
     , product_details = Nothing
     , manual_version = ""
     }
-        ! [ getOngoingVersions ]
+        ! [ getLatestChannelVersions ]
 
 
-getOngoingVersions : Cmd Msg
-getOngoingVersions =
+getLatestChannelVersions : Cmd Msg
+getLatestChannelVersions =
     HttpBuilder.get ("https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions")
         |> withTimeout (10 * Time.second)
-        |> withExpect (Http.expectJson ongoingVersionsDecoder)
-        |> send OngoingVersionFetched
+        |> withExpect (Http.expectJson latestChannelVersionsDecoder)
+        |> send LatestChannelVersionsFetched

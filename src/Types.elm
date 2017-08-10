@@ -32,7 +32,7 @@ type alias ReleaseStatus =
     }
 
 
-type alias OngoingVersions =
+type alias LatestChannelVersions =
     { esr : String
     , release : String
     , beta : String
@@ -41,7 +41,7 @@ type alias OngoingVersions =
 
 
 type alias Model =
-    { ongoing_versions : Maybe OngoingVersions
+    { latest_channel_versions : Maybe LatestChannelVersions
     , current_release : Maybe Version
     , manual_version : String
     , archive : Maybe ReleaseStatus
@@ -57,4 +57,4 @@ type Msg
     | ManualVersion String
     | DismissVersion
     | ReleaseStatusFetched Checks (Result Http.Error ReleaseStatus)
-    | OngoingVersionFetched (Result Http.Error OngoingVersions)
+    | LatestChannelVersionsFetched (Result Http.Error LatestChannelVersions)

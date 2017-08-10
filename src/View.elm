@@ -30,7 +30,7 @@ mainView model =
                     dashboardView version model
             ]
         , div [ class "col-sm-3" ]
-            [ releasesMenu model.ongoing_versions ]
+            [ releasesMenu model.latest_channel_versions ]
         ]
 
 
@@ -47,25 +47,25 @@ headerView model =
         ]
 
 
-releasesMenu : Maybe OngoingVersions -> Html Msg
-releasesMenu ongoing_versions =
+releasesMenu : Maybe LatestChannelVersions -> Html Msg
+releasesMenu latest_channel_versions =
     div [ class "panel panel-default" ]
         [ div [ class "panel-heading" ] [ strong [] [ text "Firefox Releases" ] ]
         , div []
-            [ case ongoing_versions of
+            [ case latest_channel_versions of
                 Nothing ->
                     spinner
 
-                Just ongoing_versions ->
+                Just latest_channel_versions ->
                     let
                         releaseItem title version =
                             li [] [ a [ onClick <| Select version ] [ text <| title ++ ": " ++ version ] ]
                     in
                         ul []
-                            [ releaseItem "Nightly" ongoing_versions.nightly
-                            , releaseItem "Beta" ongoing_versions.beta
-                            , releaseItem "Release" ongoing_versions.release
-                            , releaseItem "ESR" ongoing_versions.esr
+                            [ releaseItem "Nightly" latest_channel_versions.nightly
+                            , releaseItem "Beta" latest_channel_versions.beta
+                            , releaseItem "Release" latest_channel_versions.release
+                            , releaseItem "ESR" latest_channel_versions.esr
                             ]
             ]
         ]
