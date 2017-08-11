@@ -1,5 +1,14 @@
 import React, { Component } from 'react';
-import { Col, Grid, Navbar, Panel, Row } from 'react-bootstrap';
+import {
+  Button,
+  ButtonGroup,
+  Col,
+  Glyphicon,
+  Grid,
+  Navbar,
+  Panel,
+  Row
+} from 'react-bootstrap';
 import './App.css';
 
 class App extends Component {
@@ -33,12 +42,23 @@ class SearchForm extends Component {
   render() {
     return (
       <form className="search-form well">
+        <ClearableTextInput/>
+      </form>
+    );
+  }
+}
+
+class ClearableTextInput extends Component {
+  render() {
+    return (
+      <ButtonGroup className="clearable-text">
         <input
           type="search"
           className="form-control"
           placeholder={"Firefox version, eg. \"57.0\""}
         />
-      </form>
+        <span className="text-clear-btn"><i className="glyphicon glyphicon-remove"/></span>
+      </ButtonGroup>
     );
   }
 }
