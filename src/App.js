@@ -20,7 +20,7 @@ class App extends Component {
     this.setState({value: e.target.value})
   }
 
-  handleDimissSearchBoxVersion = () => {
+  handleDismissSearchBoxVersion = () => {
     this.setState({value: ""})
   }
 
@@ -42,7 +42,7 @@ class App extends Component {
           <Col sm={9}>
             <SearchForm
               handleSearchBoxChange={this.handleSearchBoxChange}
-              handleDimissSearchBoxVersion={this.handleDimissSearchBoxVersion}
+              handleDismissSearchBoxVersion={this.handleDismissSearchBoxVersion}
               value={this.state.value}
             />
             {/* <CurrentRelease/> */}
@@ -71,7 +71,7 @@ class SearchForm extends Component {
       <form className="search-form well">
         <ClearableTextInput
           onChange={this.props.handleSearchBoxChange}
-          onClick={this.props.handleDimissSearchBoxVersion}
+          onClick={this.props.handleDismissSearchBoxVersion}
           value={this.props.value}/>
       </form>
     )
@@ -103,8 +103,7 @@ function ReleasesMenu(props) {
         <li key={title}>
           <Button
             bsStyle="link"
-            onClick={() => props.handleSelectVersion(title)}
-          >
+            onClick={() => props.handleSelectVersion(title)}>
             {title}
           </Button>
         </li>
