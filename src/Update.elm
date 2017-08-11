@@ -11,19 +11,25 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Select version ->
-            { model
-                | current_release = Just version
-                , manual_version = version
-                , archive = Nothing
-                , release_notes = Nothing
-                , security_advisories = Nothing
-                , download_links = Nothing
-                , product_details = Nothing
-            }
-                ! refreshStatus version
+            if version == "" then
+                update DismissVersion model
+            else
+                { model
+                    | current_release = Just version
+                    , manual_version = version
+                    , archive = Nothing
+                    , release_notes = Nothing
+                    , security_advisories = Nothing
+                    , download_links = Nothing
+                    , product_details = Nothing
+                }
+                    ! refreshStatus version
 
         ManualVersion version ->
-            { model | manual_version = version } ! []
+            if version == "" then
+                update DismissVersion model
+            else
+                { model | manual_version = version } ! []
 
         DismissVersion ->
             { model
