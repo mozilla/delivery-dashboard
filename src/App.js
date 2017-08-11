@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import {
-  Button,
   ButtonGroup,
   Col,
-  Glyphicon,
   Grid,
   Navbar,
   Panel,
@@ -39,28 +37,47 @@ class App extends Component {
 }
 
 class SearchForm extends Component {
+  constructor() {
+    super()
+    this.state = {value: ""}
+  }
+
+  handleChange = (e) => {
+    this.setState({value: e.target.value})
+  }
+
+  handleClick = () => {
+    this.setState({value: ""})
+  }
+
   render() {
     return (
       <form className="search-form well">
-        <ClearableTextInput/>
+        <ClearableTextInput
+          onChange={this.handleChange}
+          onClick={this.handleClick}
+          value={this.state.value}/>
       </form>
     );
   }
 }
 
-class ClearableTextInput extends Component {
-  render() {
-    return (
-      <ButtonGroup className="clearable-text">
-        <input
-          type="search"
-          className="form-control"
-          placeholder={"Firefox version, eg. \"57.0\""}
-        />
-        <span className="text-clear-btn"><i className="glyphicon glyphicon-remove"/></span>
-      </ButtonGroup>
-    );
-  }
+function ClearableTextInput(props) {
+  return (
+    <ButtonGroup className="clearable-text">
+      <input
+        className="form-control"
+        onChange={props.onChange}
+        placeholder={"Firefox version, eg. \"57.0\""}
+        type="search"
+        value={props.value}/>
+      <span
+        className="text-clear-btn"
+        onClick={props.onClick}>
+        <i className="glyphicon glyphicon-remove"/>
+      </span>
+    </ButtonGroup>
+  )
 }
 
 export default App;
