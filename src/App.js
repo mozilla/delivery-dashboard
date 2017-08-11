@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  Button,
   ButtonGroup,
   Col,
   Grid,
@@ -27,7 +28,12 @@ class App extends Component {
           </Col>
           <Col sm={3}>
             <Panel header={<strong>Firefox Releases</strong>}>
-              {/* <ReleasesMenu/> */}
+              <ReleasesMenu versions={[
+                "Nightly: 57.0a1",
+                "Beta: 56.0b1",
+                "Release: 55.0",
+                "ESR: 52.3.0esr",
+              ]}/>
             </Panel>
           </Col>
         </Row>
@@ -58,7 +64,7 @@ class SearchForm extends Component {
           onClick={this.handleClick}
           value={this.state.value}/>
       </form>
-    );
+    )
   }
 }
 
@@ -77,6 +83,20 @@ function ClearableTextInput(props) {
         <i className="glyphicon glyphicon-remove"/>
       </span>
     </ButtonGroup>
+  )
+}
+
+function ReleasesMenu(props) {
+  return (
+    <ul>
+      {props.versions.map(title =>
+        <li key={title}>
+          <Button bsStyle="link">
+            {title}
+          </Button>
+        </li>
+      )}
+    </ul>
   )
 }
 
