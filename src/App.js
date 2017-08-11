@@ -11,6 +11,23 @@ import {
 import './App.css';
 
 class App extends Component {
+  constructor() {
+    super()
+    this.state = {value: ""}
+  }
+
+  handleSearchBoxChange = (e) => {
+    this.setState({value: e.target.value})
+  }
+
+  handleDimissSearchBoxVersion = () => {
+    this.setState({value: ""})
+  }
+
+  handleSelectVersion = (version) => {
+    this.setState({value: version})
+  }
+
   render() {
     return (
       <Grid fluid>
@@ -23,17 +40,23 @@ class App extends Component {
         </Navbar>
         <Row>
           <Col sm={9}>
-            <SearchForm/>
+            <SearchForm
+              handleSearchBoxChange={this.handleSearchBoxChange}
+              handleDimissSearchBoxVersion={this.handleDimissSearchBoxVersion}
+              value={this.state.value}
+            />
             {/* <CurrentRelease/> */}
           </Col>
           <Col sm={3}>
             <Panel header={<strong>Firefox Releases</strong>}>
               <ReleasesMenu versions={[
-                "Nightly: 57.0a1",
-                "Beta: 56.0b1",
-                "Release: 55.0",
-                "ESR: 52.3.0esr",
-              ]}/>
+                  "Nightly: 57.0a1",
+                  "Beta: 56.0b1",
+                  "Release: 55.0",
+                  "ESR: 52.3.0esr",
+                ]}
+                handleSelectVersion={this.handleSelectVersion}
+              />
             </Panel>
           </Col>
         </Row>
@@ -43,26 +66,13 @@ class App extends Component {
 }
 
 class SearchForm extends Component {
-  constructor() {
-    super()
-    this.state = {value: ""}
-  }
-
-  handleChange = (e) => {
-    this.setState({value: e.target.value})
-  }
-
-  handleClick = () => {
-    this.setState({value: ""})
-  }
-
   render() {
     return (
       <form className="search-form well">
         <ClearableTextInput
-          onChange={this.handleChange}
-          onClick={this.handleClick}
-          value={this.state.value}/>
+          onChange={this.props.handleSearchBoxChange}
+          onClick={this.props.handleDimissSearchBoxVersion}
+          value={this.props.value}/>
       </form>
     )
   }
@@ -91,7 +101,10 @@ function ReleasesMenu(props) {
     <ul>
       {props.versions.map(title =>
         <li key={title}>
-          <Button bsStyle="link">
+          <Button
+            bsStyle="link"
+            onClick={() => props.handleSelectVersion(title)}
+          >
             {title}
           </Button>
         </li>
