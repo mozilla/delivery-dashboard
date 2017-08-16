@@ -18,6 +18,12 @@ class App extends Component {
       versionInput: "",
       latestChannelVersions: null,
     }
+    fetch("https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions")
+    .then(resp => resp.json())
+    .then(data => {
+      this.setState({latestChannelVersions: data})
+    })
+    .catch(err => console.error("Failed getting the latest channel versions", err))
   }
 
   handleSearchBoxChange = (e) => {
@@ -41,16 +47,16 @@ class App extends Component {
     let releasesMenu = <Spinner/>
     if (this.state.latestChannelVersions !== null) {
       const releaseItem = (title, version) => {
-        <li key={title}>
+        return (
+          <li key={title}>
           <Button
-            bsStyle="link"
-            onClick={() => this.handleSelectVersion(version)}>
-            {title + ": " + version}
-          </Button>
-        </li>
+              bsStyle="link"
+              onClick={() => this.handleSelectVersion(version)}>
+              {title + ": " + version}
+            </Button>
+          </li>)
       }
-      releasesMenu = <ul
-        handleSelectVersion={this.handleSelectVersion}>
+      releasesMenu = <ul>
           {releaseItem("Nightly", this.state.latestChannelVersions.nightly)}
           {releaseItem("Beta", this.state.latestChannelVersions.beta)}
           {releaseItem("Release", this.state.latestChannelVersions.release)}
