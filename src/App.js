@@ -13,19 +13,24 @@ import './App.css';
 class App extends Component {
   constructor() {
     super()
-    this.state = {value: ""}
+    this.state = {value: "", versionInput: ""}
   }
 
   handleSearchBoxChange = (e) => {
-    this.setState({value: e.target.value})
+    this.setState({versionInput: e.target.value})
   }
 
   handleDismissSearchBoxVersion = () => {
-    this.setState({value: ""})
+    this.setState({value: "", versionInput: ""})
   }
 
   handleSelectVersion = (version) => {
-    this.setState({value: version})
+    this.setState({value: version, versionInput: version})
+  }
+
+  handleSubmit = (e) => {
+    e.preventDefault()
+    this.handleSelectVersion(this.state.versionInput)
   }
 
   render() {
@@ -43,7 +48,8 @@ class App extends Component {
             <SearchForm
               handleSearchBoxChange={this.handleSearchBoxChange}
               handleDismissSearchBoxVersion={this.handleDismissSearchBoxVersion}
-              value={this.state.value}
+              onSubmit={this.handleSubmit}
+              value={this.state.versionInput}
             />
             {/* <CurrentRelease/> */}
           </Col>
@@ -68,7 +74,9 @@ class App extends Component {
 class SearchForm extends Component {
   render() {
     return (
-      <form className="search-form well">
+      <form
+        className="search-form well"
+        onSubmit={this.props.onSubmit}>
         <ClearableTextInput
           onChange={this.props.handleSearchBoxChange}
           onClick={this.props.handleDismissSearchBoxVersion}
