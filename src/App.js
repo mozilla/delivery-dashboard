@@ -13,7 +13,11 @@ import './App.css';
 class App extends Component {
   constructor() {
     super()
-    this.state = {value: "", versionInput: ""}
+    this.state = {
+      value: "",
+      versionInput: "",
+      latestChannelVersions: null,
+    }
   }
 
   handleSearchBoxChange = (e) => {
@@ -34,6 +38,25 @@ class App extends Component {
   }
 
   render() {
+    let releasesMenu = <Spinner/>
+    if (this.state.latestChannelVersions !== null) {
+      const releaseItem = (title, version) => {
+        <li key={title}>
+          <Button
+            bsStyle="link"
+            onClick={() => this.handleSelectVersion(version)}>
+            {title + ": " + version}
+          </Button>
+        </li>
+      }
+      releasesMenu = <ul
+        handleSelectVersion={this.handleSelectVersion}>
+          {releaseItem("Nightly", this.state.latestChannelVersions.nightly)}
+          {releaseItem("Beta", this.state.latestChannelVersions.beta)}
+          {releaseItem("Release", this.state.latestChannelVersions.release)}
+          {releaseItem("ESR", this.state.latestChannelVersions.esr)}
+        </ul>
+    }
     return (
       <Grid fluid>
         <Navbar collapseOnSelect fluid>
@@ -55,14 +78,7 @@ class App extends Component {
           </Col>
           <Col sm={3}>
             <Panel header={<strong>Firefox Releases</strong>}>
-              <ReleasesMenu versions={[
-                  "Nightly: 57.0a1",
-                  "Beta: 56.0b1",
-                  "Release: 55.0",
-                  "ESR: 52.3.0esr",
-                ]}
-                handleSelectVersion={this.handleSelectVersion}
-              />
+              {releasesMenu}
             </Panel>
           </Col>
         </Row>
@@ -104,20 +120,9 @@ function ClearableTextInput(props) {
   )
 }
 
-function ReleasesMenu(props) {
+function Spinner(props) {
   return (
-    <ul>
-      {props.versions.map(title =>
-        <li key={title}>
-          <Button
-            bsStyle="link"
-            onClick={() => props.handleSelectVersion(title)}>
-            {title}
-          </Button>
-        </li>
-      )}
-    </ul>
+    <div className="loader"/>
   )
 }
-
 export default App;
