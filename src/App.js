@@ -44,25 +44,6 @@ class App extends Component {
   }
 
   render() {
-    let releasesMenu = <Spinner/>
-    if (this.state.latestChannelVersions !== null) {
-      const releaseItem = (title, version) => {
-        return (
-          <li key={title}>
-          <Button
-              bsStyle="link"
-              onClick={() => this.handleSelectVersion(version)}>
-              {title + ": " + version}
-            </Button>
-          </li>)
-      }
-      releasesMenu = <ul>
-          {releaseItem("Nightly", this.state.latestChannelVersions.nightly)}
-          {releaseItem("Beta", this.state.latestChannelVersions.beta)}
-          {releaseItem("Release", this.state.latestChannelVersions.release)}
-          {releaseItem("ESR", this.state.latestChannelVersions.esr)}
-        </ul>
-    }
     return (
       <Grid fluid>
         <Navbar collapseOnSelect fluid>
@@ -84,7 +65,9 @@ class App extends Component {
           </Col>
           <Col sm={3}>
             <Panel header={<strong>Firefox Releases</strong>}>
-              {releasesMenu}
+              <ReleasesMenu
+                onSelectVersion={this.handleSelectVersion}
+                versions={this.state.latestChannelVersions}/>
             </Panel>
           </Col>
         </Row>
@@ -131,4 +114,28 @@ function Spinner(props) {
     <div className="loader"/>
   )
 }
+
+function ReleasesMenu(props) {
+  let releasesMenu = <Spinner/>
+  if (props.versions !== null) {
+    const releaseItem = (title, version) => {
+      return (
+        <li key={title}>
+        <Button
+            bsStyle="link"
+            onClick={() => props.onSelectVersion(version)}>
+            {title + ": " + version}
+          </Button>
+        </li>)
+    }
+    releasesMenu = <ul>
+        {releaseItem("Nightly", props.versions.nightly)}
+        {releaseItem("Beta", props.versions.beta)}
+        {releaseItem("Release", props.versions.release)}
+        {releaseItem("ESR", props.versions.esr)}
+      </ul>
+  }
+  return releasesMenu
+}
+
 export default App;
