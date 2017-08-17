@@ -212,7 +212,6 @@ function Dashboard({
         </tbody>
       </table>
     </div>
-
   )
 }
 
@@ -222,8 +221,18 @@ function DisplayStatus({url, data}) {
       <Spinner/>
     )
   } else {
+    const {status, message} = data
+    const statusToLabelClass = {
+      Error: "label-warning",
+      Exists: "label-success",
+      Incomplete: "label-info",
+      Missing: "label-danger",
+    }
+    const labelText = (status === "Error") ? ("Error: " + message) : status
     return (
-      <p>Fail</p>
+      <a className={"label " + statusToLabelClass[status]} title={message} href={url}>
+        {labelText}
+      </a>
     )
   }
 }
