@@ -160,6 +160,7 @@ function CurrentRelease({version, statuses}) {
         release_notes={statuses.release_notes}
         security_advisories={statuses.security_advisories}
         download_links={statuses.download_links}
+        version={version}
         />)
   }
 }
@@ -169,7 +170,8 @@ function Dashboard({
   product_details,
   release_notes,
   security_advisories,
-  download_links}) {
+  download_links,
+  version}) {
   return (
     <div>
       <table className="table">
@@ -177,34 +179,34 @@ function Dashboard({
           <tr>
             <td>
               <h2>Release</h2>
-              <Spinner/>
+              <DisplayStatus url={"#"} data={null/*releaseStatus(archive, product_details, release_notes, security_advisories)*/}/>
             </td>
 
             <td>
               <h2>Archives</h2>
-              <Spinner/>
+              <DisplayStatus url={"https://archive.mozilla.org/pub/firefox/releases/" + version + "/"} data={archive}/>
             </td>
 
             <td>
               <h2>Product Details</h2>
-              <Spinner/>
+              <DisplayStatus url={"https://product-details.mozilla.org/1.0/firefox.json"} data={product_details}/>
             </td>
           </tr>
 
           <tr>
             <td>
               <h2>Release Notes</h2>
-              <Spinner/>
+              <DisplayStatus url={"https://www.mozilla.org/en-US/firefox/" + version + "/releasenotes/"} data={release_notes}/>
             </td>
 
             <td>
               <h2>Security Advisories</h2>
-              <Spinner/>
+              <DisplayStatus url={"https://www.mozilla.org/en-US/security/known-vulnerabilities/firefox/"} data={security_advisories}/>
             </td>
 
             <td>
               <h2>Download links</h2>
-              <Spinner/>
+              <DisplayStatus url={"https://www.mozilla.org/en-US/firefox/all/"} data={download_links}/>
             </td>
           </tr>
         </tbody>
@@ -212,6 +214,18 @@ function Dashboard({
     </div>
 
   )
+}
+
+function DisplayStatus({url, data}) {
+  if (data === null) {
+    return (
+      <Spinner/>
+    )
+  } else {
+    return (
+      <p>Fail</p>
+    )
+  }
 }
 
 export default App;
