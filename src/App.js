@@ -14,7 +14,7 @@ class App extends Component {
   constructor() {
     super()
     this.state = {
-      value: "",
+      version: "",
       versionInput: "",
       latestChannelVersions: null,
     }
@@ -31,11 +31,11 @@ class App extends Component {
   }
 
   handleDismissSearchBoxVersion = () => {
-    this.setState({value: "", versionInput: ""})
+    this.setState({version: "", versionInput: ""})
   }
 
   handleSelectVersion = (version) => {
-    this.setState({value: version, versionInput: version})
+    this.setState({version: version, versionInput: version})
   }
 
   handleSubmit = (e) => {
