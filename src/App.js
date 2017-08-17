@@ -43,11 +43,33 @@ class App extends Component {
 
   handleSelectVersion = (version) => {
     this.setState({version: version, versionInput: version})
+    this.refreshStatus(version)
   }
 
   handleSubmit = (e) => {
     e.preventDefault()
     this.handleSelectVersion(this.state.versionInput)
+  }
+
+  refreshStatus = (version) => {
+    const stateToUrl = {
+      archive: "archive",
+      release_notes: "bedrock/release-notes",
+      security_advisories: "bedrock/security-advisories",
+      download_links: "bedrock/download-links",
+      product_details: "product-details"
+    }
+    const updateState = (stateKey, data) => {
+      this.setState(prevState => {prevState.statuses[stateKey] = data})
+    }
+
+    for (var stateKey in stateToUrl) {
+      var bindedUpdateState = updateState.bind(this, stateKey)
+      fetch("https://pollbot.dev.mozaws.net/v1/firefox/" + version + "/" + stateToUrl[stateKey])
+      .then(resp => resp.json())
+      .then(bindedUpdateState)
+      .catch(err => console.error("Failed getting the latest channel versions", err))
+    }
   }
 
   render() {
@@ -179,7 +201,7 @@ function Dashboard({
           <tr>
             <td>
               <h2>Release</h2>
-              <DisplayStatus url={"#"} data={null/*releaseStatus(archive, product_details, release_notes, security_advisories)*/}/>
+              <DisplayStatus url={"#"} data={releaseStatus(archive, product_details, release_notes, security_advisories, download_links)}/>
             </td>
 
             <td>
@@ -223,18 +245,45 @@ function DisplayStatus({url, data}) {
   } else {
     const {status, message} = data
     const statusToLabelClass = {
-      Error: "label-warning",
-      Exists: "label-success",
-      Incomplete: "label-info",
-      Missing: "label-danger",
+      error: "label-warning",
+      exists: "label-success",
+      incomplete: "label-info",
+      missing: "label-danger",
     }
-    const labelText = (status === "Error") ? ("Error: " + message) : status
+    const labelText = (status === "error") ? ("Error: " + message) : status
     return (
       <a className={"label " + statusToLabelClass[status]} title={message} href={url}>
         {labelText}
       </a>
     )
   }
+}
+
+function releaseStatus(archive, product_details, release_notes, security_advisories, download_links) {
+  if (
+    archive === null &&
+    product_details === null &&
+    release_notes === null &&
+    security_advisories === null &&
+    download_links === null) {
+    return null
+  }
+
+  if (
+    (archive !== null && archive.status === "exists") &&
+    (product_details !== null && product_details.status === "exists") &&
+    (release_notes !== null && release_notes.status === "exists") &&
+    (security_advisories !== null && security_advisories.status === "exists") &&
+    (download_links !== null && download_links.status === "exists")) {
+    return {
+      status: "exists",
+      message: "All checks validates, the release is complete."
+    }
+  }
+
+  return {
+    status: "incomplete",
+    message: "One or more of the release checks did not validate."}
 }
 
 export default App;
