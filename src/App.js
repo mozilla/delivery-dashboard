@@ -17,6 +17,13 @@ class App extends Component {
       version: "",
       versionInput: "",
       latestChannelVersions: null,
+      statuses: {
+        archive: null,
+        release_notes: null,
+        security_advisories: null,
+        download_links: null,
+        product_details: null,
+      }
     }
     fetch("https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions")
     .then(resp => resp.json())
@@ -61,7 +68,7 @@ class App extends Component {
               onSubmit={this.handleSubmit}
               value={this.state.versionInput}
             />
-            {/* <CurrentRelease/> */}
+            <CurrentRelease version={this.state.version} statuses={this.state.statuses}/>
           </Col>
           <Col sm={3}>
             <Panel header={<strong>Firefox Releases</strong>}>
@@ -136,6 +143,75 @@ function ReleasesMenu(props) {
       </ul>
   }
   return releasesMenu
+}
+
+function CurrentRelease({version, statuses}) {
+  if (version === "") {
+    return (
+      <p>Learn more about a specific version.
+        <strong> Select or enter your version number.</strong>
+      </p>
+    )
+  } else {
+    return (
+      <Dashboard
+        archive={statuses.archive}
+        product_details={statuses.product_details}
+        release_notes={statuses.release_notes}
+        security_advisories={statuses.security_advisories}
+        download_links={statuses.download_links}
+        />)
+  }
+}
+
+function Dashboard({
+  archive,
+  product_details,
+  release_notes,
+  security_advisories,
+  download_links}) {
+  return (
+    <div>
+      <table className="table">
+        <tbody>
+          <tr>
+            <td>
+              <h2>Release</h2>
+              <Spinner/>
+            </td>
+
+            <td>
+              <h2>Archives</h2>
+              <Spinner/>
+            </td>
+
+            <td>
+              <h2>Product Details</h2>
+              <Spinner/>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <h2>Release Notes</h2>
+              <Spinner/>
+            </td>
+
+            <td>
+              <h2>Security Advisories</h2>
+              <Spinner/>
+            </td>
+
+            <td>
+              <h2>Download links</h2>
+              <Spinner/>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  )
 }
 
 export default App;
