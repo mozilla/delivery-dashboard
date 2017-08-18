@@ -29,7 +29,7 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Records list table */
+/* Releases status list table */
 td {
   overflow: hidden;
   white-space: nowrap;
@@ -37,10 +37,6 @@ td {
   max-width: 65px;
   text-align: center;
   padding-bottom: 50px !important;
-}
-
-.table-hover>tbody>tr.build-details:hover {
-  background: none;
 }
 
 /* Search form */
