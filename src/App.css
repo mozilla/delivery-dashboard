@@ -63,3 +63,8 @@ td {
   cursor: pointer;
   color: #ccc;
 }
+
+/* Firefox releases menu */
+.firefox-releases-menu button {
+  padding: 0;
+}

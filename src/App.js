@@ -100,7 +100,7 @@ class App extends Component {
             />
             <CurrentRelease version={this.state.version} statuses={this.state.statuses}/>
           </Col>
-          <Col sm={3}>
+          <Col sm={3} className="firefox-releases-menu">
             <Panel header={<strong>Firefox Releases</strong>}>
               <ReleasesMenu
                 onSelectVersion={this.handleSelectVersion}
