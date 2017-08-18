@@ -10,6 +10,17 @@ import {
 } from 'react-bootstrap';
 import './App.css';
 
+
+const initStatuses = () => {
+  return {
+    archive: null,
+    release_notes: null,
+    security_advisories: null,
+    download_links: null,
+    product_details: null,
+  }
+}
+
 class App extends Component {
   constructor() {
     super()
@@ -17,13 +28,7 @@ class App extends Component {
       version: "",
       versionInput: "",
       latestChannelVersions: null,
-      statuses: {
-        archive: null,
-        release_notes: null,
-        security_advisories: null,
-        download_links: null,
-        product_details: null,
-      }
+      statuses: initStatuses()
     }
     fetch("https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions")
     .then(resp => resp.json())
@@ -42,7 +47,10 @@ class App extends Component {
   }
 
   handleSelectVersion = (version) => {
-    this.setState({version: version, versionInput: version})
+    this.setState({
+      version: version,
+      versionInput: version,
+      statuses: initStatuses()})
     this.refreshStatus(version)
   }
 
