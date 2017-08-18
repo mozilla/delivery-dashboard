@@ -8,7 +8,7 @@ displaying information from those in a centralized place.
 
 ## Setting up the development environment
 
-    $ npm i  # Will run "elm package install" automatically
+    $ npm i
 
 ## Starting the dev server
 
