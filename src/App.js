@@ -11,6 +11,19 @@ import {
 import './App.css'
 
 
+function requestNotificationPermission() {
+  if (Notification.permission !== "denied" &&
+      Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+}
+
+function notifyChanges(changed) {
+  if (Notification.permission === "granted") {
+    new Notification(`${document.title}: Status changed.`);
+  }
+}
+
 function fetchStatus(version) {
   const stateToUrl = {
     archive: 'archive',
@@ -71,6 +84,8 @@ class App extends Component {
       );
     // Setup auto-refresh.
     this.refreshIntervalId = setInterval(this.refreshStatus.bind(this), 5000);
+    // Setup notifications.
+    requestNotificationPermission();
   }
 
   componentWillUnmount(){
@@ -106,6 +121,14 @@ class App extends Component {
     }
     fetchStatus(version)
       .then(statuses => {
+        // Detect if some status changed, and notify!
+        const changed = Object.keys(statuses).map(() => {
+           /* this.state[key] != ...*/
+        });
+        if (changed.length > 0) {
+          notifyChanges(changed);
+        }
+        // Save current state.
         this.setState({statuses});
       })
       .catch(err =>
