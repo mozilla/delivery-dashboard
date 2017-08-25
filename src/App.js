@@ -57,6 +57,8 @@ class App extends Component {
       latestChannelVersions: null,
       statuses: initStatuses()
     }
+
+    this.refreshIntervalId = null;
   }
 
   componentDidMount() {
@@ -67,6 +69,12 @@ class App extends Component {
       .catch(err =>
         console.error('Failed getting the latest channel versions', err)
       );
+    // Setup auto-refresh.
+    this.refreshIntervalId = setInterval(this.refreshStatus.bind(this), 5000);
+  }
+
+  componentWillUnmount(){
+    clearInterval(this.refreshIntervalId);
   }
 
   handleSearchBoxChange = e => {
@@ -92,6 +100,10 @@ class App extends Component {
   }
 
   refreshStatus = version => {
+    version = version || this.state.version;
+    if (!version) {
+      return;
+    }
     fetchStatus(version)
       .then(statuses => {
         this.setState({statuses});
