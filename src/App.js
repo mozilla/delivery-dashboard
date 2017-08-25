@@ -10,6 +10,34 @@ import {
 } from 'react-bootstrap'
 import './App.css'
 
+
+function fetchStatus(version) {
+  const stateToUrl = {
+    archive: 'archive',
+    release_notes: 'bedrock/release-notes',
+    security_advisories: 'bedrock/security-advisories',
+    download_links: 'bedrock/download-links',
+    product_details: 'product-details'
+  }
+  return Promise.all(Object.keys(stateToUrl).map(key => {
+      const endpoint = stateToUrl[key];
+      return fetch(`https://pollbot.dev.mozaws.net/v1/firefox/${version}/${endpoint}`)
+        .then(resp => resp.json())
+        .then(details => ({key, details}))
+    }))
+    .then(results => results.reduce((acc, {key, details}) => {
+      acc[key] = details;
+      return acc;
+    }, {}));
+}
+
+
+function fetchOngoingVersions() {
+  return fetch('https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions')
+    .then(resp => resp.json())
+}
+
+
 const initStatuses = () => {
   return {
     archive: null,
@@ -29,14 +57,16 @@ class App extends Component {
       latestChannelVersions: null,
       statuses: initStatuses()
     }
-    fetch('https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions')
-      .then(resp => resp.json())
+  }
+
+  componentDidMount() {
+    fetchOngoingVersions()
       .then(data => {
         this.setState({ latestChannelVersions: data })
       })
       .catch(err =>
         console.error('Failed getting the latest channel versions', err)
-      )
+      );
   }
 
   handleSearchBoxChange = e => {
@@ -62,33 +92,13 @@ class App extends Component {
   }
 
   refreshStatus = version => {
-    const stateToUrl = {
-      archive: 'archive',
-      release_notes: 'bedrock/release-notes',
-      security_advisories: 'bedrock/security-advisories',
-      download_links: 'bedrock/download-links',
-      product_details: 'product-details'
-    }
-    const updateState = (stateKey, data) => {
-      this.setState(prevState => {
-        prevState.statuses[stateKey] = data
+    fetchStatus(version)
+      .then(statuses => {
+        this.setState({statuses});
       })
-    }
-
-    for (var stateKey in stateToUrl) {
-      var bindedUpdateState = updateState.bind(this, stateKey)
-      fetch(
-        'https://pollbot.dev.mozaws.net/v1/firefox/' +
-          version +
-          '/' +
-          stateToUrl[stateKey]
-      )
-        .then(resp => resp.json())
-        .then(bindedUpdateState)
-        .catch(err =>
-          console.error('Failed getting the latest channel versions', err)
-        )
-    }
+      .catch(err =>
+        console.error('Failed getting the latest channel versions', err)
+      );
   }
 
   render() {
