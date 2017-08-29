@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "bootstrap": "3",
+    "eslint-plugin-react": "^7.3.0",
     "gh-pages": "^1.0.0",
     "react": "^15.6.1",
     "react-bootstrap": "^0.31.2",
@@ -17,8 +18,8 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy": "npm run build && gh-pages --add --dist build/",
-    "lint": "eslint src/*.js",
-    "lint-fix": "eslint --fix src/*.js"
+    "lint": "eslint *.js src",
+    "lint-fix": "yarn lint -- --fix"
   },
   "devDependencies": {
     "eslint": "^4.4.1",
@@ -27,7 +28,6 @@
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-prettier": "^2.2.0",
     "eslint-plugin-promise": "^3.5.0",
-    "prettier": "^1.5.3",
-    "prettier-eslint": "^6.4.2"
+    "prettier": "^1.5.3"
   }
 }
