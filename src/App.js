@@ -20,7 +20,8 @@ function requestNotificationPermission() {
 
 function notifyChanges(changed) {
   if (Notification.permission === "granted") {
-    new Notification(`${document.title}: Status changed.`);
+    const names = changed.map((s) => s.replace("_", " ")).join(", ");
+    new Notification(`${document.title}: Status of ${names} changed.`);
   }
 }
 
@@ -83,7 +84,7 @@ class App extends Component {
         console.error('Failed getting the latest channel versions', err)
       );
     // Setup auto-refresh.
-    this.refreshIntervalId = setInterval(this.refreshStatus.bind(this), 5000);
+    this.refreshIntervalId = setInterval(this.refreshStatus, 5000);
     // Setup notifications.
     requestNotificationPermission();
   }
@@ -122,8 +123,9 @@ class App extends Component {
     fetchStatus(version)
       .then(statuses => {
         // Detect if some status changed, and notify!
-        const changed = Object.keys(statuses).map(() => {
-           /* this.state[key] != ...*/
+        const changed = Object.keys(statuses).filter((key) => {
+          const previous = this.state.statuses[key];
+          return previous !== null && previous.status !== statuses[key].status;
         });
         if (changed.length > 0) {
           notifyChanges(changed);
