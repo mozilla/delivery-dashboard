@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {
   Button,
@@ -193,6 +194,12 @@ class SearchForm extends Component {
     );
   }
 }
+SearchForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  handleSearchBoxChange: PropTypes.func.isRequired,
+  handleDismissSearchBoxVersion: PropTypes.func.isRequired,
+  value: PropTypes.string.isRequired,
+};
 
 function ClearableTextInput(props) {
   return (
@@ -210,8 +217,13 @@ function ClearableTextInput(props) {
     </ButtonGroup>
   );
 }
+ClearableTextInput.propTypes = {
+  onChange: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired,
+  value: PropTypes.string.isRequired,
+};
 
-function Spinner(props) {
+function Spinner() {
   return <div className="loader" />;
 }
 
@@ -238,6 +250,15 @@ function ReleasesMenu(props) {
   }
   return releasesMenu;
 }
+ReleasesMenu.propTypes = {
+  versions: PropTypes.shape({
+    nightly: PropTypes.string,
+    beta: PropTypes.string,
+    release: PropTypes.string,
+    esr: PropTypes.string,
+  }),
+  onSelectVersion: PropTypes.func.isRequired,
+};
 
 function CurrentRelease({version, statuses}) {
   if (version === '') {
@@ -260,6 +281,18 @@ function CurrentRelease({version, statuses}) {
     );
   }
 }
+const StatusPropType = PropTypes.shape({
+  status: PropTypes.string.isRequired,
+  message: PropTypes.string,
+});
+CurrentRelease.propTypes = {
+  version: PropTypes.string.isRequired,
+  statuses: PropTypes.shape({
+    product_details: StatusPropType,
+    security_advisories: StatusPropType,
+    download_links: StatusPropType,
+  }),
+};
 
 function Dashboard({
   archive,
@@ -362,7 +395,8 @@ function DisplayStatus({url, data}) {
       <a
         className={'label ' + statusToLabelClass[status]}
         title={message}
-        href={url}>
+        href={url}
+      >
         {labelText}
       </a>
     );

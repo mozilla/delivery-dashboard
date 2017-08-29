@@ -3,22 +3,22 @@ module.exports = {
     browser: true,
     es6: true,
     node: true,
-    jest: true
+    jest: true,
   },
   parser: 'babel-eslint',
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
     'prettier',
-    'prettier/react'
+    'prettier/react',
   ],
   parserOptions: {
     ecmaVersion: '2017',
     ecmaFeatures: {
       experimentalObjectRestSpread: true,
-      jsx: true
+      jsx: true,
     },
-    sourceType: 'module'
+    sourceType: 'module',
   },
   plugins: ['react', 'import', 'prettier'],
   rules: {
@@ -29,11 +29,11 @@ module.exports = {
         trailingComma: 'all',
         bracketSpacing: false,
         jsxBracketSameLine: true,
-        parser: 'flow'
-      }
+        parser: 'flow',
+      },
     ],
 
     // overriding recommended rules
-    'no-console': ['error', { allow: ['log', 'warn', 'error'] }]
-  }
-}
+    'no-console': ['error', {allow: ['log', 'warn', 'error']}],
+  },
+};
