@@ -10,6 +10,48 @@ import {
 } from 'react-bootstrap'
 import './App.css'
 
+
+function requestNotificationPermission() {
+  if (Notification.permission !== "denied" &&
+      Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+}
+
+function notifyChanges(changed) {
+  if (Notification.permission === "granted") {
+    const names = changed.map((s) => s.replace("_", " ")).join(", ");
+    new Notification(`${document.title}: Status of ${names} changed.`);
+  }
+}
+
+function fetchStatus(version) {
+  const stateToUrl = {
+    archive: 'archive',
+    release_notes: 'bedrock/release-notes',
+    security_advisories: 'bedrock/security-advisories',
+    download_links: 'bedrock/download-links',
+    product_details: 'product-details'
+  }
+  return Promise.all(Object.keys(stateToUrl).map(key => {
+      const endpoint = stateToUrl[key];
+      return fetch(`https://pollbot.dev.mozaws.net/v1/firefox/${version}/${endpoint}`)
+        .then(resp => resp.json())
+        .then(details => ({key, details}))
+    }))
+    .then(results => results.reduce((acc, {key, details}) => {
+      acc[key] = details;
+      return acc;
+    }, {}));
+}
+
+
+function fetchOngoingVersions() {
+  return fetch('https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions')
+    .then(resp => resp.json())
+}
+
+
 const initStatuses = () => {
   return {
     archive: null,
@@ -29,14 +71,26 @@ class App extends Component {
       latestChannelVersions: null,
       statuses: initStatuses()
     }
-    fetch('https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions')
-      .then(resp => resp.json())
+
+    this.refreshIntervalId = null;
+  }
+
+  componentDidMount() {
+    fetchOngoingVersions()
       .then(data => {
         this.setState({ latestChannelVersions: data })
       })
       .catch(err =>
         console.error('Failed getting the latest channel versions', err)
-      )
+      );
+    // Setup auto-refresh.
+    this.refreshIntervalId = setInterval(this.refreshStatus, 5000);
+    // Setup notifications.
+    requestNotificationPermission();
+  }
+
+  componentWillUnmount(){
+    clearInterval(this.refreshIntervalId);
   }
 
   handleSearchBoxChange = e => {
@@ -62,33 +116,26 @@ class App extends Component {
   }
 
   refreshStatus = version => {
-    const stateToUrl = {
-      archive: 'archive',
-      release_notes: 'bedrock/release-notes',
-      security_advisories: 'bedrock/security-advisories',
-      download_links: 'bedrock/download-links',
-      product_details: 'product-details'
+    version = version || this.state.version;
+    if (!version) {
+      return;
     }
-    const updateState = (stateKey, data) => {
-      this.setState(prevState => {
-        prevState.statuses[stateKey] = data
+    fetchStatus(version)
+      .then(statuses => {
+        // Detect if some status changed, and notify!
+        const changed = Object.keys(statuses).filter((key) => {
+          const previous = this.state.statuses[key];
+          return previous !== null && previous.status !== statuses[key].status;
+        });
+        if (changed.length > 0) {
+          notifyChanges(changed);
+        }
+        // Save current state.
+        this.setState({statuses});
       })
-    }
-
-    for (var stateKey in stateToUrl) {
-      var bindedUpdateState = updateState.bind(this, stateKey)
-      fetch(
-        'https://pollbot.dev.mozaws.net/v1/firefox/' +
-          version +
-          '/' +
-          stateToUrl[stateKey]
-      )
-        .then(resp => resp.json())
-        .then(bindedUpdateState)
-        .catch(err =>
-          console.error('Failed getting the latest channel versions', err)
-        )
-    }
+      .catch(err =>
+        console.error('Failed getting the latest channel versions', err)
+      );
   }
 
   render() {
