@@ -230,33 +230,46 @@ function Spinner() {
 function ReleasesMenu(props) {
   let releasesMenu = <Spinner />;
   if (props.versions !== null) {
-    const releaseItem = (title, version) => {
-      return (
-        <li key={title}>
-          <Button bsStyle="link" onClick={() => props.onSelectVersion(version)}>
-            {title + ': ' + version}
-          </Button>
-        </li>
-      );
-    };
     releasesMenu = (
       <ul>
-        {releaseItem('Nightly', props.versions.nightly)}
-        {releaseItem('Beta', props.versions.beta)}
-        {releaseItem('Release', props.versions.release)}
-        {releaseItem('ESR', props.versions.esr)}
+        <ReleaseItem
+          title="Nightly"
+          version={props.versions.nightly}
+          onSelectVersion={props.onSelectVersion}
+        />
+        <ReleaseItem
+          title="Beta"
+          version={props.versions.beta}
+          onSelectVersion={props.onSelectVersion}
+        />
+        <ReleaseItem
+          title="Release"
+          version={props.versions.release}
+          onSelectVersion={props.onSelectVersion}
+        />
+        <ReleaseItem
+          title="ESR"
+          version={props.versions.esr}
+          onSelectVersion={props.onSelectVersion}
+        />
       </ul>
     );
   }
   return releasesMenu;
 }
-ReleasesMenu.propTypes = {
-  versions: PropTypes.shape({
-    nightly: PropTypes.string,
-    beta: PropTypes.string,
-    release: PropTypes.string,
-    esr: PropTypes.string,
-  }),
+
+function ReleaseItem({title, version, onSelectVersion}) {
+  return (
+    <li key={title}>
+      <Button bsStyle="link" onClick={() => onSelectVersion(version)}>
+        {title + ': ' + version}
+      </Button>
+    </li>
+  );
+}
+ReleaseItem.propTypes = {
+  title: PropTypes.string,
+  version: PropTypes.string,
   onSelectVersion: PropTypes.func.isRequired,
 };
 
@@ -288,7 +301,9 @@ const StatusPropType = PropTypes.shape({
 CurrentRelease.propTypes = {
   version: PropTypes.string.isRequired,
   statuses: PropTypes.shape({
+    archive: StatusPropType,
     product_details: StatusPropType,
+    release_notes: StatusPropType,
     security_advisories: StatusPropType,
     download_links: StatusPropType,
   }),
@@ -378,6 +393,14 @@ function Dashboard({
     </div>
   );
 }
+Dashboard.propTypes = {
+  version: PropTypes.string.isRequired,
+  archive: StatusPropType,
+  product_details: StatusPropType,
+  release_notes: StatusPropType,
+  security_advisories: StatusPropType,
+  download_links: StatusPropType,
+};
 
 function DisplayStatus({url, data}) {
   if (data === null) {
@@ -402,6 +425,10 @@ function DisplayStatus({url, data}) {
     );
   }
 }
+DisplayStatus.propTypes = {
+  url: PropTypes.string.isRequired,
+  data: StatusPropType,
+};
 
 function releaseStatus(
   archive,
