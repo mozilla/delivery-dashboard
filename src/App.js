@@ -1,4 +1,5 @@
-import React, { Component } from 'react'
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 import {
   Button,
   ButtonGroup,
@@ -6,21 +7,22 @@ import {
   Grid,
   Navbar,
   Panel,
-  Row
-} from 'react-bootstrap'
-import './App.css'
-
+  Row,
+} from 'react-bootstrap';
+import './App.css';
 
 function requestNotificationPermission() {
-  if (Notification.permission !== "denied" &&
-      Notification.permission !== "granted") {
+  if (
+    Notification.permission !== 'denied' &&
+    Notification.permission !== 'granted'
+  ) {
     Notification.requestPermission();
   }
 }
 
 function notifyChanges(changed) {
-  if (Notification.permission === "granted") {
-    const names = changed.map((s) => s.replace("_", " ")).join(", ");
+  if (Notification.permission === 'granted') {
+    const names = changed.map(s => s.replace('_', ' ')).join(', ');
     new Notification(`${document.title}: Status of ${names} changed.`);
   }
 }
@@ -31,26 +33,30 @@ function fetchStatus(version) {
     release_notes: 'bedrock/release-notes',
     security_advisories: 'bedrock/security-advisories',
     download_links: 'bedrock/download-links',
-    product_details: 'product-details'
-  }
-  return Promise.all(Object.keys(stateToUrl).map(key => {
+    product_details: 'product-details',
+  };
+  return Promise.all(
+    Object.keys(stateToUrl).map(key => {
       const endpoint = stateToUrl[key];
-      return fetch(`https://pollbot.dev.mozaws.net/v1/firefox/${version}/${endpoint}`)
+      return fetch(
+        `https://pollbot.dev.mozaws.net/v1/firefox/${version}/${endpoint}`,
+      )
         .then(resp => resp.json())
-        .then(details => ({key, details}))
-    }))
-    .then(results => results.reduce((acc, {key, details}) => {
+        .then(details => ({key, details}));
+    }),
+  ).then(results =>
+    results.reduce((acc, {key, details}) => {
       acc[key] = details;
       return acc;
-    }, {}));
+    }, {}),
+  );
 }
-
 
 function fetchOngoingVersions() {
-  return fetch('https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions')
-    .then(resp => resp.json())
+  return fetch(
+    'https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions',
+  ).then(resp => resp.json());
 }
-
 
 const initStatuses = () => {
   return {
@@ -58,19 +64,19 @@ const initStatuses = () => {
     release_notes: null,
     security_advisories: null,
     download_links: null,
-    product_details: null
-  }
-}
+    product_details: null,
+  };
+};
 
 class App extends Component {
   constructor() {
-    super()
+    super();
     this.state = {
       version: '',
       versionInput: '',
       latestChannelVersions: null,
-      statuses: initStatuses()
-    }
+      statuses: initStatuses(),
+    };
 
     this.refreshIntervalId = null;
   }
@@ -78,10 +84,10 @@ class App extends Component {
   componentDidMount() {
     fetchOngoingVersions()
       .then(data => {
-        this.setState({ latestChannelVersions: data })
+        this.setState({latestChannelVersions: data});
       })
       .catch(err =>
-        console.error('Failed getting the latest channel versions', err)
+        console.error('Failed getting the latest channel versions', err),
       );
     // Setup auto-refresh.
     this.refreshIntervalId = setInterval(this.refreshStatus, 5000);
@@ -89,31 +95,31 @@ class App extends Component {
     requestNotificationPermission();
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     clearInterval(this.refreshIntervalId);
   }
 
   handleSearchBoxChange = e => {
-    this.setState({ versionInput: e.target.value })
-  }
+    this.setState({versionInput: e.target.value});
+  };
 
   handleDismissSearchBoxVersion = () => {
-    this.setState({ version: '', versionInput: '' })
-  }
+    this.setState({version: '', versionInput: ''});
+  };
 
   handleSelectVersion = version => {
     this.setState({
       version: version,
       versionInput: version,
-      statuses: initStatuses()
-    })
-    this.refreshStatus(version)
-  }
+      statuses: initStatuses(),
+    });
+    this.refreshStatus(version);
+  };
 
   handleSubmit = e => {
-    e.preventDefault()
-    this.handleSelectVersion(this.state.versionInput)
-  }
+    e.preventDefault();
+    this.handleSelectVersion(this.state.versionInput);
+  };
 
   refreshStatus = version => {
     version = version || this.state.version;
@@ -123,7 +129,7 @@ class App extends Component {
     fetchStatus(version)
       .then(statuses => {
         // Detect if some status changed, and notify!
-        const changed = Object.keys(statuses).filter((key) => {
+        const changed = Object.keys(statuses).filter(key => {
           const previous = this.state.statuses[key];
           return previous !== null && previous.status !== statuses[key].status;
         });
@@ -134,9 +140,9 @@ class App extends Component {
         this.setState({statuses});
       })
       .catch(err =>
-        console.error('Failed getting the latest channel versions', err)
+        console.error('Failed getting the latest channel versions', err),
       );
-  }
+  };
 
   render() {
     return (
@@ -171,7 +177,7 @@ class App extends Component {
           </Col>
         </Row>
       </Grid>
-    )
+    );
   }
 }
 
@@ -185,9 +191,15 @@ class SearchForm extends Component {
           value={this.props.value}
         />
       </form>
-    )
+    );
   }
 }
+SearchForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  handleSearchBoxChange: PropTypes.func.isRequired,
+  handleDismissSearchBoxVersion: PropTypes.func.isRequired,
+  value: PropTypes.string.isRequired,
+};
 
 function ClearableTextInput(props) {
   return (
@@ -203,45 +215,72 @@ function ClearableTextInput(props) {
         <i className="glyphicon glyphicon-remove" />
       </span>
     </ButtonGroup>
-  )
+  );
 }
+ClearableTextInput.propTypes = {
+  onChange: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired,
+  value: PropTypes.string.isRequired,
+};
 
-function Spinner(props) {
-  return <div className="loader" />
+function Spinner() {
+  return <div className="loader" />;
 }
 
 function ReleasesMenu(props) {
-  let releasesMenu = <Spinner />
+  let releasesMenu = <Spinner />;
   if (props.versions !== null) {
-    const releaseItem = (title, version) => {
-      return (
-        <li key={title}>
-          <Button bsStyle="link" onClick={() => props.onSelectVersion(version)}>
-            {title + ': ' + version}
-          </Button>
-        </li>
-      )
-    }
     releasesMenu = (
       <ul>
-        {releaseItem('Nightly', props.versions.nightly)}
-        {releaseItem('Beta', props.versions.beta)}
-        {releaseItem('Release', props.versions.release)}
-        {releaseItem('ESR', props.versions.esr)}
+        <ReleaseItem
+          title="Nightly"
+          version={props.versions.nightly}
+          onSelectVersion={props.onSelectVersion}
+        />
+        <ReleaseItem
+          title="Beta"
+          version={props.versions.beta}
+          onSelectVersion={props.onSelectVersion}
+        />
+        <ReleaseItem
+          title="Release"
+          version={props.versions.release}
+          onSelectVersion={props.onSelectVersion}
+        />
+        <ReleaseItem
+          title="ESR"
+          version={props.versions.esr}
+          onSelectVersion={props.onSelectVersion}
+        />
       </ul>
-    )
+    );
   }
-  return releasesMenu
+  return releasesMenu;
 }
 
-function CurrentRelease({ version, statuses }) {
+function ReleaseItem({title, version, onSelectVersion}) {
+  return (
+    <li key={title}>
+      <Button bsStyle="link" onClick={() => onSelectVersion(version)}>
+        {title + ': ' + version}
+      </Button>
+    </li>
+  );
+}
+ReleaseItem.propTypes = {
+  title: PropTypes.string,
+  version: PropTypes.string,
+  onSelectVersion: PropTypes.func.isRequired,
+};
+
+function CurrentRelease({version, statuses}) {
   if (version === '') {
     return (
       <p>
         Learn more about a specific version.
         <strong> Select or enter your version number.</strong>
       </p>
-    )
+    );
   } else {
     return (
       <Dashboard
@@ -252,9 +291,23 @@ function CurrentRelease({ version, statuses }) {
         download_links={statuses.download_links}
         version={version}
       />
-    )
+    );
   }
 }
+const StatusPropType = PropTypes.shape({
+  status: PropTypes.string.isRequired,
+  message: PropTypes.string,
+});
+CurrentRelease.propTypes = {
+  version: PropTypes.string.isRequired,
+  statuses: PropTypes.shape({
+    archive: StatusPropType,
+    product_details: StatusPropType,
+    release_notes: StatusPropType,
+    security_advisories: StatusPropType,
+    download_links: StatusPropType,
+  }),
+};
 
 function Dashboard({
   archive,
@@ -262,7 +315,7 @@ function Dashboard({
   release_notes,
   security_advisories,
   download_links,
-  version
+  version,
 }) {
   return (
     <div>
@@ -278,7 +331,7 @@ function Dashboard({
                   product_details,
                   release_notes,
                   security_advisories,
-                  download_links
+                  download_links,
                 )}
               />
             </td>
@@ -338,21 +391,29 @@ function Dashboard({
         </tbody>
       </table>
     </div>
-  )
+  );
 }
+Dashboard.propTypes = {
+  version: PropTypes.string.isRequired,
+  archive: StatusPropType,
+  product_details: StatusPropType,
+  release_notes: StatusPropType,
+  security_advisories: StatusPropType,
+  download_links: StatusPropType,
+};
 
-function DisplayStatus({ url, data }) {
+function DisplayStatus({url, data}) {
   if (data === null) {
-    return <Spinner />
+    return <Spinner />;
   } else {
-    const { status, message } = data
+    const {status, message} = data;
     const statusToLabelClass = {
       error: 'label-warning',
       exists: 'label-success',
       incomplete: 'label-info',
-      missing: 'label-danger'
-    }
-    const labelText = status === 'error' ? 'Error: ' + message : status
+      missing: 'label-danger',
+    };
+    const labelText = status === 'error' ? 'Error: ' + message : status;
     return (
       <a
         className={'label ' + statusToLabelClass[status]}
@@ -361,16 +422,20 @@ function DisplayStatus({ url, data }) {
       >
         {labelText}
       </a>
-    )
+    );
   }
 }
+DisplayStatus.propTypes = {
+  url: PropTypes.string.isRequired,
+  data: StatusPropType,
+};
 
 function releaseStatus(
   archive,
   product_details,
   release_notes,
   security_advisories,
-  download_links
+  download_links,
 ) {
   if (
     archive === null &&
@@ -379,7 +444,7 @@ function releaseStatus(
     security_advisories === null &&
     download_links === null
   ) {
-    return null
+    return null;
   }
 
   if (
@@ -392,14 +457,14 @@ function releaseStatus(
   ) {
     return {
       status: 'exists',
-      message: 'All checks validates, the release is complete.'
-    }
+      message: 'All checks validates, the release is complete.',
+    };
   }
 
   return {
     status: 'incomplete',
-    message: 'One or more of the release checks did not validate.'
-  }
+    message: 'One or more of the release checks did not validate.',
+  };
 }
 
-export default App
+export default App;
