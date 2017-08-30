@@ -74,6 +74,8 @@ const parseUrl = url => {
   };
 };
 
+const localUrlFromVersion = version => `#pollbot/firefox/${version}`;
+
 class App extends Component {
   constructor() {
     super();
@@ -136,7 +138,7 @@ class App extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    window.location.hash = `#pollbot/firefox/${this.state.versionInput}`;
+    window.location.hash = localUrlFromVersion(this.state.versionInput);
     this.handleSelectVersion(this.state.versionInput);
   };
 
@@ -261,7 +263,7 @@ function ReleasesMenu(props) {
 function ReleaseItem({title, version}) {
   return (
     <li key={title}>
-      <a href={`#pollbot/firefox/${version}`}>
+      <a href={localUrlFromVersion(version)}>
         {title + ': ' + version}
       </a>
     </li>
