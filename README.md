@@ -8,6 +8,12 @@ displaying information from those in a centralized place.
 
 ## Setting up the development environment
 
+You would need to install `yarn`. You can use:
+
+    $ npm install -g yarn
+    
+You can then use `yarn` to install the project dependencies:
+
     $ yarn install
 
 ## Starting the dev server
