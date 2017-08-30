@@ -1,14 +1,6 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {
-  Button,
-  ButtonGroup,
-  Col,
-  Grid,
-  Navbar,
-  Panel,
-  Row,
-} from 'react-bootstrap';
+import {ButtonGroup, Col, Grid, Navbar, Panel, Row} from 'react-bootstrap';
 import './App.css';
 
 function requestNotificationPermission() {
@@ -194,10 +186,7 @@ class App extends Component {
           </Col>
           <Col sm={3} className="firefox-releases-menu">
             <Panel header={<strong>Firefox Releases</strong>}>
-              <ReleasesMenu
-                onSelectVersion={this.handleSelectVersion}
-                versions={this.state.latestChannelVersions}
-              />
+              <ReleasesMenu versions={this.state.latestChannelVersions} />
             </Panel>
           </Col>
         </Row>
@@ -257,45 +246,28 @@ function ReleasesMenu(props) {
   if (props.versions !== null) {
     releasesMenu = (
       <ul>
-        <ReleaseItem
-          title="Nightly"
-          version={props.versions.nightly}
-          onSelectVersion={props.onSelectVersion}
-        />
-        <ReleaseItem
-          title="Beta"
-          version={props.versions.beta}
-          onSelectVersion={props.onSelectVersion}
-        />
-        <ReleaseItem
-          title="Release"
-          version={props.versions.release}
-          onSelectVersion={props.onSelectVersion}
-        />
-        <ReleaseItem
-          title="ESR"
-          version={props.versions.esr}
-          onSelectVersion={props.onSelectVersion}
-        />
+        <ReleaseItem title="Nightly" version={props.versions.nightly} />
+        <ReleaseItem title="Beta" version={props.versions.beta} />
+        <ReleaseItem title="Release" version={props.versions.release} />
+        <ReleaseItem title="ESR" version={props.versions.esr} />
       </ul>
     );
   }
   return releasesMenu;
 }
 
-function ReleaseItem({title, version, onSelectVersion}) {
+function ReleaseItem({title, version}) {
   return (
     <li key={title}>
-      <Button bsStyle="link" onClick={() => onSelectVersion(version)}>
+      <a href={`#pollbot/firefox/${version}`}>
         {title + ': ' + version}
-      </Button>
+      </a>
     </li>
   );
 }
 ReleaseItem.propTypes = {
   title: PropTypes.string,
   version: PropTypes.string,
-  onSelectVersion: PropTypes.func.isRequired,
 };
 
 function CurrentRelease({version, statuses}) {
