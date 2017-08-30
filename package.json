@@ -9,7 +9,9 @@
     "react": "^15.6.1",
     "react-bootstrap": "^0.31.2",
     "react-dom": "^15.6.1",
-    "react-scripts": "1.0.11"
+    "react-redux": "^5.0.6",
+    "react-scripts": "1.0.11",
+    "redux": "^3.7.2"
   },
   "homepage": "https://mozilla.github.io/delivery-dashboard/",
   "scripts": {
