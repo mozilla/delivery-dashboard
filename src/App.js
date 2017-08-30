@@ -68,6 +68,20 @@ const initStatuses = () => {
   };
 };
 
+const parseUrl = url => {
+  const re = /^#(\w+)\/(\w+)\/([^/]+)\/?/; // Eg: #pollbot/firefox/50.0
+  const parsed = url.match(re);
+  if (parsed === null) {
+    return {};
+  }
+  const [_, service, product, version] = parsed;
+  return {
+    service: service,
+    product: product,
+    version: version,
+  };
+};
+
 class App extends Component {
   constructor() {
     super();
@@ -93,11 +107,22 @@ class App extends Component {
     this.refreshIntervalId = setInterval(this.refreshStatus, 5000);
     // Setup notifications.
     requestNotificationPermission();
+    // Listen to url hash changes.
+    window.onhashchange = this.versionFromHash;
+    // Check if we have a version in the url.
+    this.versionFromHash();
   }
 
   componentWillUnmount() {
     clearInterval(this.refreshIntervalId);
   }
+
+  versionFromHash = () => {
+    const parsedUrl = parseUrl(window.location.hash);
+    if ('version' in parsedUrl) {
+      this.handleSelectVersion(parsedUrl.version);
+    }
+  };
 
   handleSearchBoxChange = e => {
     this.setState({versionInput: e.target.value});

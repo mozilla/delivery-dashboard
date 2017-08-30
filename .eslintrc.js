@@ -35,5 +35,9 @@ module.exports = {
 
     // overriding recommended rules
     'no-console': ['error', {allow: ['log', 'warn', 'error']}],
+    'no-unused-vars': [
+      'error',
+      {argsIgnorePattern: '^_', varsIgnorePattern: '^_'},
+    ],
   },
 };
