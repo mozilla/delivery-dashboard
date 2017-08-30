@@ -122,6 +122,7 @@ class App extends Component {
 
   handleDismissSearchBoxVersion = () => {
     this.setState({version: '', versionInput: ''});
+    window.location.hash = '';
   };
 
   handleSelectVersion = version => {
@@ -135,6 +136,7 @@ class App extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
+    window.location.hash = `#pollbot/firefox/${this.state.versionInput}`;
     this.handleSelectVersion(this.state.versionInput);
   };
 
