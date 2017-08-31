@@ -110,6 +110,20 @@ export function requestStatus(version) {
   };
 }
 
+// Fetching the ongoing versions.
+export function requestOngoingVersions() {
+  return function(dispatch) {
+    fetch('https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions')
+      .then(resp => resp.json())
+      .then(data => {
+        dispatch(updateLatestChannelVersions(data));
+      })
+      .catch(err =>
+        console.error('Failed getting the latest channel versions', err),
+      );
+  };
+}
+
 // Update the url from the version stored in the state.
 // We do that in a thunk action to have access to the state via "getState".
 export const localUrlFromVersion = version => `#pollbot/firefox/${version}`;

@@ -7,10 +7,10 @@ import {
   setVersion,
   updateVersionInput,
   submitVersion,
-  updateLatestChannelVersions,
   requestStatus,
   updateUrl,
   localUrlFromVersion,
+  requestOngoingVersions,
 } from './actions.js';
 
 function requestNotificationPermission() {
@@ -20,12 +20,6 @@ function requestNotificationPermission() {
   ) {
     Notification.requestPermission();
   }
-}
-
-function fetchOngoingVersions() {
-  return fetch(
-    'https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions',
-  ).then(resp => resp.json());
 }
 
 const parseUrl = url => {
@@ -49,13 +43,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    fetchOngoingVersions()
-      .then(data => {
-        this.setState({latestChannelVersions: data});
-      })
-      .catch(err =>
-        console.error('Failed getting the latest channel versions', err),
-      );
+    this.props.dispatch(requestOngoingVersions());
     // Setup auto-refresh.
     this.refreshIntervalId = setInterval(this.refreshStatus, 5000);
     // Setup notifications.
@@ -105,6 +93,9 @@ class App extends Component {
   }
 }
 App = connect()(App);
+App.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+};
 
 const VersionInput = connect(
   // mapStateToProps
