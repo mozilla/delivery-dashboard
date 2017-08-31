@@ -1,6 +1,7 @@
 import {
   SET_VERSION,
-  REFRESH_STATUSES,
+  UPDATE_STATUSES,
+  SUBMIT_VERSION,
   UPDATE_LATEST_CHANNEL_VERSIONS,
   UPDATE_VERSION_INPUT,
 } from './actions';
@@ -25,16 +26,22 @@ export function deliveryDashboard(state = initialState, action) {
     case SET_VERSION:
       return Object.assign({}, state, {
         version: action.version,
+        versionInput: action.version,
+        statuses: initialStatuses,
       });
     case UPDATE_VERSION_INPUT:
       return Object.assign({}, state, {
         versionInput: action.version,
       });
+    case SUBMIT_VERSION:
+      return Object.assign({}, state, {
+        version: state.versionInput,
+      });
     case UPDATE_LATEST_CHANNEL_VERSIONS:
       return Object.assign({}, state, {
         latestChannelVersions: action.versions,
       });
-    case REFRESH_STATUSES:
+    case UPDATE_STATUSES:
       return Object.assign({}, state, {
         statuses: action.statuses,
       });
