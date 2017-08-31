@@ -180,9 +180,7 @@ const SideBar = connect(
     };
   },
   // mapDispatchToProps
-  dispatch => {
-    return {};
-  },
+  null,
 )(ReleasesMenu);
 
 function ReleasesMenu({versions}) {
@@ -224,9 +222,7 @@ const CurrentRelease = connect(
     };
   },
   // mapDispatchToProps
-  dispatch => {
-    return {};
-  },
+  null,
 )(Dashboard);
 
 function Dashboard({statuses, version}) {

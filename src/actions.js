@@ -127,7 +127,7 @@ export function requestOngoingVersions() {
 // Update the url from the version stored in the state.
 // We do that in a thunk action to have access to the state via "getState".
 export const localUrlFromVersion = version => `#pollbot/firefox/${version}`;
-export function updateUrl(version) {
+export function updateUrl() {
   return function(dispatch, getState) {
     window.location.hash = localUrlFromVersion(getState().version);
   };
