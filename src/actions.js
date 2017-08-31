@@ -86,21 +86,21 @@ export function requestStatus(version) {
     }
   };
 
-  return function(dispatch) {
+  return function(dispatch, getState) {
+    version = version || getState().version;
     if (!version) {
       return;
     }
     fetchStatus(version)
       .then(statuses => {
-        // TODO (new action, new reducer, new state: shouldNotify)
-        // // Detect if some status changed, and notify!
-        // const changed = Object.keys(statuses).filter(key => {
-        //   const previous = this.state.statuses[key];
-        //   return previous !== null && previous.status !== statuses[key].status;
-        // });
-        // if (changed.length > 0) {
-        //   notifyChanges(changed);
-        // }
+        // Detect if some status changed, and notify!
+        const changed = Object.keys(statuses).filter(key => {
+          const previous = getState().statuses[key];
+          return previous !== null && previous.status !== statuses[key].status;
+        });
+        if (changed.length > 0) {
+          notifyChanges(changed);
+        }
         // Save current state.
         dispatch(updateStatus(statuses));
       })

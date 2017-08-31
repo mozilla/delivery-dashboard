@@ -45,7 +45,10 @@ class App extends Component {
   componentDidMount() {
     this.props.dispatch(requestOngoingVersions());
     // Setup auto-refresh.
-    this.refreshIntervalId = setInterval(this.refreshStatus, 5000);
+    this.refreshIntervalId = setInterval(
+      () => this.props.dispatch(requestStatus()),
+      5000,
+    );
     // Setup notifications.
     requestNotificationPermission();
     // Listen to url hash changes.
