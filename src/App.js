@@ -36,7 +36,7 @@ const parseUrl = url => {
   };
 };
 
-class App extends Component {
+class ConnectedApp extends Component {
   constructor(props) {
     super(props);
     this.refreshIntervalId = null;
@@ -95,8 +95,8 @@ class App extends Component {
     );
   }
 }
-App = connect()(App);
-App.propTypes = {
+const App = connect()(ConnectedApp);
+ConnectedApp.propTypes = {
   dispatch: PropTypes.func.isRequired,
 };
 
