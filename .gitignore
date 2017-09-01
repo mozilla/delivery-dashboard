@@ -11,6 +11,7 @@
 
 # flow
 /flow-coverage
+/flow-typed
 
 # misc
 .DS_Store
