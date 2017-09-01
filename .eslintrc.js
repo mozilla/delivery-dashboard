@@ -9,7 +9,9 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
+    'plugin:flowtype/recommended',
     'prettier',
+    'prettier/flowtype',
     'prettier/react',
   ],
   parserOptions: {
@@ -20,7 +22,7 @@ module.exports = {
     },
     sourceType: 'module',
   },
-  plugins: ['react', 'import', 'prettier'],
+  plugins: ['react', 'import', 'prettier', 'flowtype'],
   rules: {
     'prettier/prettier': [
       'error',

@@ -25,11 +25,13 @@
     "lint": "eslint *.js src",
     "lint-fix": "yarn lint -- --fix",
     "flow": "flow",
-    "flow-coverage": "flow-coverage-report -i 'src/**/*.js' -t html -t text"
+    "flow-coverage": "flow-coverage-report -i 'src/**/*.js' -t html -t text",
+    "check": "yarn lint && yarn flow"
   },
   "devDependencies": {
     "eslint": "^4.4.1",
     "eslint-config-prettier": "^2.3.0",
+    "eslint-plugin-flowtype": "^2.35.0",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-prettier": "^2.2.0",
