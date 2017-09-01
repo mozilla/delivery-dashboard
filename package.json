@@ -23,7 +23,9 @@
     "eject": "react-scripts eject",
     "deploy": "npm run build && gh-pages --add --dist build/",
     "lint": "eslint *.js src",
-    "lint-fix": "yarn lint -- --fix"
+    "lint-fix": "yarn lint -- --fix",
+    "flow": "flow",
+    "flow-coverage": "flow-coverage-report -i 'src/**/*.js' -t html -t text"
   },
   "devDependencies": {
     "eslint": "^4.4.1",
@@ -32,6 +34,9 @@
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-prettier": "^2.2.0",
     "eslint-plugin-promise": "^3.5.0",
+    "flow-bin": "^0.53.1",
+    "flow-coverage-report": "^0.3.0",
+    "flow-typed": "^2.1.5",
     "prettier": "^1.5.3"
   }
 }
