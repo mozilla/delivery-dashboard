@@ -1,6 +1,5 @@
 // @flow
 import * as React from 'react';
-import type {Dispatch} from 'redux';
 import {ButtonGroup, Col, Grid, Navbar, Panel, Row} from 'react-bootstrap';
 import './App.css';
 import {connect} from 'react-redux';
@@ -13,6 +12,8 @@ import {
   localUrlFromVersion,
   requestOngoingVersions,
 } from './actions.js';
+import type {Dispatch} from 'redux';
+import type {OngoingVersions, Status, Statuses} from './types.js';
 
 function requestNotificationPermission(): void {
   if (
@@ -40,11 +41,10 @@ const parseUrl = (
   };
 };
 
-class ConnectedApp extends React.Component<{dispatch: Dispatch}> {
+class ConnectedApp extends React.Component<{dispatch: Dispatch}, void> {
   refreshIntervalId: ?number;
-  props: {dispatch: Dispatch};
 
-  constructor(props: {dispatch: Dispatch}): void {
+  constructor(props): void {
     super(props);
     this.refreshIntervalId = null;
   }
@@ -198,16 +198,7 @@ const SideBar = connect(
   null,
 )(ReleasesMenu);
 
-function ReleasesMenu({
-  versions,
-}: {
-  versions: ?{
-    nightly: string,
-    beta: string,
-    release: string,
-    esr: string,
-  },
-}) {
+function ReleasesMenu({versions}: {versions: OngoingVersions}) {
   let releasesMenu = <Spinner />;
   if (versions) {
     const {nightly, beta, release, esr} = versions;
@@ -245,19 +236,9 @@ const CurrentRelease = connect(
   null,
 )(Dashboard);
 
-type StatusPropType = {
-  status: string,
-  message?: string,
-};
 type DashboardPropType = {
   version: string,
-  statuses: {
-    archive: ?StatusPropType,
-    product_details: ?StatusPropType,
-    release_notes: ?StatusPropType,
-    security_advisories: ?StatusPropType,
-    download_links: ?StatusPropType,
-  },
+  statuses: Statuses,
 };
 
 function Dashboard({statuses, version}: DashboardPropType) {
@@ -354,7 +335,7 @@ function Dashboard({statuses, version}: DashboardPropType) {
   }
 }
 
-function DisplayStatus({url, data}: {url: string, data: ?StatusPropType}) {
+function DisplayStatus({url, data}: {url: string, data: ?Status}) {
   if (!data) {
     return <Spinner />;
   } else {
@@ -380,12 +361,12 @@ function DisplayStatus({url, data}: {url: string, data: ?StatusPropType}) {
 }
 
 function releaseStatus(
-  archive: ?StatusPropType,
-  product_details: ?StatusPropType,
-  release_notes: ?StatusPropType,
-  security_advisories: ?StatusPropType,
-  download_links: ?StatusPropType,
-): ?StatusPropType {
+  archive: ?Status,
+  product_details: ?Status,
+  release_notes: ?Status,
+  security_advisories: ?Status,
+  download_links: ?Status,
+): ?Status {
   if (
     !archive &&
     !product_details &&

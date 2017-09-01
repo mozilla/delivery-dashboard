@@ -1,3 +1,8 @@
+// @flow
+
+import type {OngoingVersions, Statuses} from './types.js';
+import type {Dispatch} from 'redux';
+
 /*
  * action types
  */
@@ -8,52 +13,62 @@ export const SUBMIT_VERSION = 'SUBMIT_VERSION';
 export const UPDATE_LATEST_CHANNEL_VERSIONS = 'UPDATE_LATEST_CHANNEL_VERSIONS';
 export const UPDATE_STATUSES = 'UPDATE_STATUSES';
 
-/*
- * other constants
- */
-
-export const Channels = {
-  NIGHTLY: 'Nightly',
-  BETA: 'Beta',
-  RELEASE: 'Release',
-  ESR: 'ESR',
+type SetVersion = {
+  type: 'SET_VERSION',
+  version: string,
 };
-
-export const Statuses = {
-  ERROR: 'error',
-  EXISTS: 'exists',
-  INCOMPLETE: 'incomplete',
-  MISSING: 'missing',
+type UpdateVersionInput = {
+  type: 'UPDATE_VERSION_INPUT',
+  version: string,
 };
+type SubmitVersion = {
+  type: 'SUBMIT_VERSION',
+};
+type UpdateLatestChannelVersions = {
+  type: 'UPDATE_LATEST_CHANNEL_VERSIONS',
+  versions: OngoingVersions,
+};
+type UpdateStatuses = {
+  type: 'UPDATE_STATUSES',
+  statuses: Statuses,
+};
+export type Action =
+  | SetVersion
+  | UpdateVersionInput
+  | SubmitVersion
+  | UpdateLatestChannelVersions
+  | UpdateStatuses;
 
 /*
  * action creators
  */
 
-export function setVersion(version) {
+export function setVersion(version: string): SetVersion {
   return {type: SET_VERSION, version};
 }
 
-export function updateVersionInput(version) {
+export function updateVersionInput(version: string): UpdateVersionInput {
   return {type: UPDATE_VERSION_INPUT, version};
 }
 
-export function submitVersion() {
+export function submitVersion(): SubmitVersion {
   return {type: SUBMIT_VERSION};
 }
 
-export function updateLatestChannelVersions(versions) {
+export function updateLatestChannelVersions(
+  versions: OngoingVersions,
+): UpdateLatestChannelVersions {
   return {type: UPDATE_LATEST_CHANNEL_VERSIONS, versions};
 }
 
-export function updateStatus(statuses) {
+export function updateStatuses(statuses: Statuses): UpdateStatuses {
   return {type: UPDATE_STATUSES, statuses};
 }
 
 // ASYNC (THUNK) ACTIONS.
 
 // Fetching the statuses.
-function fetchStatus(version) {
+function fetchStatus(version: string): Promise<*> {
   const stateToUrl = {
     archive: 'archive',
     release_notes: 'bedrock/release-notes',
@@ -78,15 +93,16 @@ function fetchStatus(version) {
   );
 }
 
-export function requestStatus(version) {
+export function requestStatus(version: ?string) {
   const notifyChanges = changed => {
+    // $FlowFixMe
     if (Notification.permission === 'granted') {
       const names = changed.map(s => s.replace('_', ' ')).join(', ');
       new Notification(`${document.title}: Status of ${names} changed.`);
     }
   };
 
-  return function(dispatch, getState) {
+  return function(dispatch: Dispatch, getState: () => any) {
     version = version || getState().version;
     if (!version) {
       return;
@@ -102,7 +118,14 @@ export function requestStatus(version) {
           notifyChanges(changed);
         }
         // Save current state.
-        dispatch(updateStatus(statuses));
+        const normalizedStatuses = {
+          archive: statuses.archive || null,
+          product_details: statuses.product_details || null,
+          release_notes: statuses.release_notes || null,
+          security_advisories: statuses.security_advisories || null,
+          download_links: statuses.download_links || null,
+        };
+        dispatch(updateStatuses(normalizedStatuses));
       })
       .catch(err =>
         console.error('Failed getting the latest channel versions', err),
@@ -112,7 +135,7 @@ export function requestStatus(version) {
 
 // Fetching the ongoing versions.
 export function requestOngoingVersions() {
-  return function(dispatch) {
+  return function(dispatch: Dispatch) {
     fetch('https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions')
       .then(resp => resp.json())
       .then(data => {
@@ -126,9 +149,10 @@ export function requestOngoingVersions() {
 
 // Update the url from the version stored in the state.
 // We do that in a thunk action to have access to the state via "getState".
-export const localUrlFromVersion = version => `#pollbot/firefox/${version}`;
+export const localUrlFromVersion = (version: string) =>
+  `#pollbot/firefox/${version}`;
 export function updateUrl() {
-  return function(dispatch, getState) {
+  return function(dispatch: Dispatch, getState: () => any) {
     window.location.hash = localUrlFromVersion(getState().version);
   };
 }
