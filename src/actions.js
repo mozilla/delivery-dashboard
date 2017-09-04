@@ -1,56 +1,37 @@
 // @flow
 
-import type {OngoingVersions, GetState, Statuses} from './types.js';
-import type {Dispatch} from 'redux';
-
-/*
- * action types
- */
-export const SET_VERSION = 'SET_VERSION';
-export const UPDATE_VERSION_INPUT = 'UPDATE_VERSION_INPUT';
-export const SUBMIT_VERSION = 'SUBMIT_VERSION';
-export const UPDATE_LATEST_CHANNEL_VERSIONS = 'UPDATE_LATEST_CHANNEL_VERSIONS';
-export const UPDATE_STATUSES = 'UPDATE_STATUSES';
-
-type SetVersion = {
-  type: 'SET_VERSION',
-  version: string,
-};
-type UpdateVersionInput = {
-  type: 'UPDATE_VERSION_INPUT',
-  version: string,
-};
-type SubmitVersion = {
-  type: 'SUBMIT_VERSION',
-};
-type UpdateLatestChannelVersions = {
-  type: 'UPDATE_LATEST_CHANNEL_VERSIONS',
-  versions: OngoingVersions,
-};
-type UpdateStatuses = {
-  type: 'UPDATE_STATUSES',
-  statuses: Statuses,
-};
-export type Action =
-  | SetVersion
-  | UpdateVersionInput
-  | SubmitVersion
-  | UpdateLatestChannelVersions
-  | UpdateStatuses;
+import {
+  SET_VERSION,
+  UPDATE_VERSION_INPUT,
+  SUBMIT_VERSION,
+  UPDATE_LATEST_CHANNEL_VERSIONS,
+  UPDATE_STATUSES,
+} from './types.js';
+import type {
+  Dispatch,
+  GetState,
+  OngoingVersions,
+  SetVersion,
+  Statuses,
+  SubmitVersion,
+  UpdateLatestChannelVersions,
+  UpdateStatuses,
+  UpdateVersionInput,
+} from './types.js';
 
 /*
  * action creators
  */
 
-export function setVersion(version: string): Action {
+export function setVersion(version: string): SetVersion {
   return {type: SET_VERSION, version};
 }
 
-export function updateVersionInput(version: string): Action {
+export function updateVersionInput(version: string): UpdateVersionInput {
   return {type: UPDATE_VERSION_INPUT, version};
 }
 
-export function submitVersion(): Action {
+export function submitVersion(): SubmitVersion {
   return {type: SUBMIT_VERSION};
 }
 
@@ -60,7 +41,7 @@ export function updateLatestChannelVersions(
   return {type: UPDATE_LATEST_CHANNEL_VERSIONS, versions};
 }
 
-export function updateStatuses(statuses: Statuses): Action {
+export function updateStatuses(statuses: Statuses): UpdateStatuses {
   return {type: UPDATE_STATUSES, statuses};
 }
 

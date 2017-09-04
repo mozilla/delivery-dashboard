@@ -12,8 +12,7 @@ import {
   localUrlFromVersion,
   requestOngoingVersions,
 } from './actions.js';
-import type {Dispatch} from 'redux';
-import type {OngoingVersions, Status, Statuses} from './types.js';
+import type {Dispatch, OngoingVersions, Status, Statuses} from './types.js';
 
 function requestNotificationPermission(): void {
   if (

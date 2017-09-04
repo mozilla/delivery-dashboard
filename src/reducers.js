@@ -6,9 +6,8 @@ import {
   SUBMIT_VERSION,
   UPDATE_LATEST_CHANNEL_VERSIONS,
   UPDATE_VERSION_INPUT,
-} from './actions';
-import type {Action} from './actions.js';
-import type {State, Statuses} from './types.js';
+} from './types.js';
+import type {Action, State, Statuses} from './types.js';
 
 const initialStatuses: Statuses = {
   archive: null,

@@ -1,3 +1,4 @@
+// @flow
 import './index.css';
 import App from './App';
 import React from 'react';
@@ -8,10 +9,11 @@ import {createStore, applyMiddleware} from 'redux';
 import {deliveryDashboard} from './reducers';
 import thunkMiddleware from 'redux-thunk';
 import {createLogger} from 'redux-logger';
+import type {Store} from './types.js';
 
 const loggerMiddleware = createLogger();
 
-let store = createStore(
+let store: Store = createStore(
   deliveryDashboard,
   applyMiddleware(
     thunkMiddleware, // lets us dispatch() functions
