@@ -1,3 +1,5 @@
+// @flow
+
 import {
   SET_VERSION,
   UPDATE_STATUSES,
@@ -5,8 +7,10 @@ import {
   UPDATE_LATEST_CHANNEL_VERSIONS,
   UPDATE_VERSION_INPUT,
 } from './actions';
+import type {Action} from './actions.js';
+import type {State, Statuses} from './types.js';
 
-const initialStatuses = {
+const initialStatuses: Statuses = {
   archive: null,
   release_notes: null,
   security_advisories: null,
@@ -14,14 +18,17 @@ const initialStatuses = {
   product_details: null,
 };
 
-const initialState = {
+const initialState: State = {
   version: '',
   versionInput: '',
   latestChannelVersions: null,
   statuses: initialStatuses,
 };
 
-export function deliveryDashboard(state = initialState, action) {
+export function deliveryDashboard(
+  state: State = initialState,
+  action: Action,
+): State {
   switch (action.type) {
     case SET_VERSION:
       return Object.assign({}, state, {

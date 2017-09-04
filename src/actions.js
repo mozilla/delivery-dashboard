@@ -1,12 +1,11 @@
 // @flow
 
-import type {OngoingVersions, Statuses} from './types.js';
+import type {OngoingVersions, GetState, Statuses} from './types.js';
 import type {Dispatch} from 'redux';
 
 /*
  * action types
  */
-
 export const SET_VERSION = 'SET_VERSION';
 export const UPDATE_VERSION_INPUT = 'UPDATE_VERSION_INPUT';
 export const SUBMIT_VERSION = 'SUBMIT_VERSION';
@@ -43,15 +42,15 @@ export type Action =
  * action creators
  */
 
-export function setVersion(version: string): SetVersion {
+export function setVersion(version: string): Action {
   return {type: SET_VERSION, version};
 }
 
-export function updateVersionInput(version: string): UpdateVersionInput {
+export function updateVersionInput(version: string): Action {
   return {type: UPDATE_VERSION_INPUT, version};
 }
 
-export function submitVersion(): SubmitVersion {
+export function submitVersion(): Action {
   return {type: SUBMIT_VERSION};
 }
 
@@ -61,7 +60,7 @@ export function updateLatestChannelVersions(
   return {type: UPDATE_LATEST_CHANNEL_VERSIONS, versions};
 }
 
-export function updateStatuses(statuses: Statuses): UpdateStatuses {
+export function updateStatuses(statuses: Statuses): Action {
   return {type: UPDATE_STATUSES, statuses};
 }
 
@@ -102,7 +101,7 @@ export function requestStatus(version: ?string) {
     }
   };
 
-  return function(dispatch: Dispatch, getState: () => any) {
+  return function(dispatch: Dispatch, getState: GetState) {
     version = version || getState().version;
     if (!version) {
       return;
@@ -118,7 +117,7 @@ export function requestStatus(version: ?string) {
           notifyChanges(changed);
         }
         // Save current state.
-        const normalizedStatuses = {
+        const normalizedStatuses: Statuses = {
           archive: statuses.archive || null,
           product_details: statuses.product_details || null,
           release_notes: statuses.release_notes || null,
@@ -152,7 +151,7 @@ export function requestOngoingVersions() {
 export const localUrlFromVersion = (version: string) =>
   `#pollbot/firefox/${version}`;
 export function updateUrl() {
-  return function(dispatch: Dispatch, getState: () => any) {
+  return function(dispatch: Dispatch, getState: GetState) {
     window.location.hash = localUrlFromVersion(getState().version);
   };
 }

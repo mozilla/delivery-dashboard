@@ -19,3 +19,12 @@ export type Statuses = {
   security_advisories: ?Status,
   download_links: ?Status,
 };
+
+export type State = {
+  version: string,
+  versionInput: string,
+  latestChannelVersions: ?OngoingVersions,
+  statuses: Statuses,
+};
+
+export type GetState = () => State;
