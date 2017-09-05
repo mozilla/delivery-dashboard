@@ -12,7 +12,13 @@ import {
   localUrlFromVersion,
   requestOngoingVersions,
 } from './actions.js';
-import type {Dispatch, OngoingVersions, Status, Statuses} from './types.js';
+import type {
+  Dispatch,
+  OngoingVersions,
+  State,
+  Status,
+  Statuses,
+} from './types.js';
 
 function requestNotificationPermission(): void {
   if (
@@ -43,7 +49,7 @@ const parseUrl = (
 class ConnectedApp extends React.Component<{dispatch: Dispatch}, void> {
   refreshIntervalId: ?number;
 
-  constructor(props): void {
+  constructor(props: {dispatch: Dispatch}): void {
     super(props);
     this.refreshIntervalId = null;
   }
@@ -107,28 +113,24 @@ const App = connect()(ConnectedApp);
 
 const VersionInput = connect(
   // mapStateToProps
-  state => {
-    return {
-      value: state.versionInput,
-    };
-  },
+  (state: State) => ({
+    value: state.versionInput,
+  }),
   // mapDispatchToProps
-  dispatch => {
-    return {
-      onSubmit: (e: SyntheticEvent<HTMLInputElement>): void => {
-        e.preventDefault();
-        dispatch(submitVersion());
-        dispatch(updateUrl());
-      },
-      handleSearchBoxChange: (e: SyntheticEvent<HTMLInputElement>): void => {
-        dispatch(updateVersionInput(e.currentTarget.value));
-      },
-      handleDismissSearchBoxVersion: (): void => {
-        window.location.hash = '';
-        dispatch(setVersion(''));
-      },
-    };
-  },
+  (dispatch: Dispatch) => ({
+    onSubmit: (e: SyntheticEvent<HTMLInputElement>): void => {
+      e.preventDefault();
+      dispatch(submitVersion());
+      dispatch(updateUrl());
+    },
+    handleSearchBoxChange: (e: SyntheticEvent<HTMLInputElement>): void => {
+      dispatch(updateVersionInput(e.currentTarget.value));
+    },
+    handleDismissSearchBoxVersion: (): void => {
+      window.location.hash = '';
+      dispatch(setVersion(''));
+    },
+  }),
 )(SearchForm);
 
 type SearchFormProps = {
@@ -188,11 +190,9 @@ function Spinner() {
 
 const SideBar = connect(
   // mapStateToProps
-  state => {
-    return {
-      versions: state.latestChannelVersions,
-    };
-  },
+  (state: State) => ({
+    versions: state.latestChannelVersions,
+  }),
   // mapDispatchToProps
   null,
 )(ReleasesMenu);
@@ -225,12 +225,10 @@ function ReleaseItem({title, version}: {title: string, version: string}) {
 
 const CurrentRelease = connect(
   // mapStateToProps
-  state => {
-    return {
-      statuses: state.statuses,
-      version: state.version,
-    };
-  },
+  (state: State) => ({
+    statuses: state.statuses,
+    version: state.version,
+  }),
   // mapDispatchToProps
   null,
 )(Dashboard);

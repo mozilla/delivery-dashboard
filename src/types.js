@@ -1,5 +1,10 @@
 // @flow
-import type {Store as ReduxStore, Dispatch as ReduxDispatch} from 'redux';
+import type {
+  Store as ReduxStore,
+  ThunkAction as ReduxThunkAction,
+  Dispatch as ReduxDispatch,
+  GetState as ReduxGetState,
+} from 'redux';
 
 /*
  * state types
@@ -68,9 +73,9 @@ export type Action =
   | UpdateStatuses;
 
 /*
- * types
+ * Redux types
  */
-export type GetState = () => State;
+export type GetState = ReduxGetState<State>;
+export type ThunkAction<Result> = ReduxThunkAction<State, Action, Result>;
 export type Store = ReduxStore<State, Action>;
-export type Dispatch = ReduxDispatch<Action> & Thunk<Action>;
-export type Thunk<A> = ((Dispatch, GetState) => Promise<void> | void) => A;
+export type Dispatch = ReduxDispatch<State, Action>;

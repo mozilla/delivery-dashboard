@@ -14,6 +14,7 @@ import type {
   SetVersion,
   Statuses,
   SubmitVersion,
+  ThunkAction,
   UpdateLatestChannelVersions,
   UpdateStatuses,
   UpdateVersionInput,
@@ -73,7 +74,7 @@ function fetchStatus(version: string): Promise<*> {
   );
 }
 
-export function requestStatus(version: ?string) {
+export function requestStatus(version: ?string): ThunkAction<void> {
   const notifyChanges = changed => {
     // $FlowFixMe
     if (Notification.permission === 'granted') {
@@ -131,7 +132,7 @@ export function requestOngoingVersions() {
 // We do that in a thunk action to have access to the state via "getState".
 export const localUrlFromVersion = (version: string) =>
   `#pollbot/firefox/${version}`;
-export function updateUrl() {
+export function updateUrl(): ThunkAction<void> {
   return function(dispatch: Dispatch, getState: GetState) {
     window.location.hash = localUrlFromVersion(getState().version);
   };
