@@ -16,7 +16,7 @@ import type {
   Dispatch,
   OngoingVersions,
   State,
-  Status,
+  CheckResult,
   Statuses,
 } from './types.js';
 
@@ -331,7 +331,7 @@ function Dashboard({statuses, version}: DashboardPropType) {
   }
 }
 
-function DisplayStatus({url, data}: {url: string, data: ?Status}) {
+function DisplayStatus({url, data}: {url: string, data: ?CheckResult}) {
   if (!data) {
     return <Spinner />;
   } else {
@@ -357,12 +357,12 @@ function DisplayStatus({url, data}: {url: string, data: ?Status}) {
 }
 
 function releaseStatus(
-  archive: ?Status,
-  product_details: ?Status,
-  release_notes: ?Status,
-  security_advisories: ?Status,
-  download_links: ?Status,
-): ?Status {
+  archive: ?CheckResult,
+  product_details: ?CheckResult,
+  release_notes: ?CheckResult,
+  security_advisories: ?CheckResult,
+  download_links: ?CheckResult,
+): ?CheckResult {
   if (
     !archive &&
     !product_details &&

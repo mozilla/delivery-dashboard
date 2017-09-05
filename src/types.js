@@ -16,17 +16,19 @@ export type OngoingVersions = ?{
   esr: string,
 };
 
-export type Status = {
-  status: string,
+export type Status = 'missing' | 'exists' | 'incomplete' | 'error';
+
+export type CheckResult = {
+  status: Status,
   message?: string,
 };
 
 export type Statuses = {
-  archive: ?Status,
-  product_details: ?Status,
-  release_notes: ?Status,
-  security_advisories: ?Status,
-  download_links: ?Status,
+  archive: ?CheckResult,
+  product_details: ?CheckResult,
+  release_notes: ?CheckResult,
+  security_advisories: ?CheckResult,
+  download_links: ?CheckResult,
 };
 
 export type State = {
