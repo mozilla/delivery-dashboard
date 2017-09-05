@@ -259,20 +259,6 @@ function Dashboard({statuses, version}: DashboardPropType) {
           <tbody>
             <tr>
               <td>
-                <h2>Release</h2>
-                <DisplayStatus
-                  url={'#'}
-                  data={releaseStatus(
-                    archive,
-                    product_details,
-                    release_notes,
-                    security_advisories,
-                    download_links,
-                  )}
-                />
-              </td>
-
-              <td>
                 <h2>Archives</h2>
                 <DisplayStatus
                   url={
@@ -354,43 +340,6 @@ function DisplayStatus({url, data}: {url: string, data: ?CheckResult}) {
       </a>
     );
   }
-}
-
-function releaseStatus(
-  archive: ?CheckResult,
-  product_details: ?CheckResult,
-  release_notes: ?CheckResult,
-  security_advisories: ?CheckResult,
-  download_links: ?CheckResult,
-): ?CheckResult {
-  if (
-    !archive &&
-    !product_details &&
-    !release_notes &&
-    !security_advisories &&
-    !download_links
-  ) {
-    return null;
-  }
-
-  if (
-    archive &&
-    archive.status === 'exists' &&
-    (product_details && product_details.status === 'exists') &&
-    (release_notes && release_notes.status === 'exists') &&
-    (security_advisories && security_advisories.status === 'exists') &&
-    (download_links && download_links.status === 'exists')
-  ) {
-    return {
-      status: 'exists',
-      message: 'All checks validates, the release is complete.',
-    };
-  }
-
-  return {
-    status: 'incomplete',
-    message: 'One or more of the release checks did not validate.',
-  };
 }
 
 export default App;
