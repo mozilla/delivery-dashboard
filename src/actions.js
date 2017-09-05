@@ -7,10 +7,8 @@ import {
   UPDATE_LATEST_CHANNEL_VERSIONS,
   UPDATE_STATUSES,
 } from './types.js';
-import {getOngoingVersions} from './PollbotAPI.js';
+import {getOngoingVersions, getStatuses} from './PollbotAPI.js';
 import type {
-  Check,
-  CheckResult,
   Dispatch,
   GetState,
   OngoingVersions,
@@ -52,33 +50,6 @@ export function updateStatuses(statuses: Statuses): UpdateStatuses {
 // ASYNC (THUNK) ACTIONS.
 
 // Fetching the statuses.
-function fetchStatus(version: string): Promise<*> {
-  const stateToUrl = {
-    archive: 'archive',
-    release_notes: 'bedrock/release-notes',
-    security_advisories: 'bedrock/security-advisories',
-    download_links: 'bedrock/download-links',
-    product_details: 'product-details',
-  };
-  return Promise.all(
-    Object.keys(stateToUrl).map((key: Check) => {
-      const endpoint = stateToUrl[key];
-      return fetch(
-        `https://pollbot.dev.mozaws.net/v1/firefox/${version}/${endpoint}`,
-      )
-        .then(resp => resp.json())
-        .then((details: CheckResult) => ({key, details}));
-    }),
-  ).then((results): {
-    [key: string]: CheckResult,
-  } =>
-    results.reduce((acc, {key, details}) => {
-      acc[key] = details;
-      return acc;
-    }, {}),
-  );
-}
-
 export function requestStatus(version: ?string): ThunkAction<void> {
   const notifyChanges = changed => {
     if (Notification.permission === 'granted') {
@@ -92,7 +63,7 @@ export function requestStatus(version: ?string): ThunkAction<void> {
     if (!version) {
       return;
     }
-    fetchStatus(version)
+    getStatuses(version)
       .then(statuses => {
         // Detect if some status changed, and notify!
         const changed = Object.keys(statuses).filter(key => {
