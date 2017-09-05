@@ -8,6 +8,8 @@ import {
   UPDATE_STATUSES,
 } from './types.js';
 import type {
+  Check,
+  CheckResult,
   Dispatch,
   GetState,
   OngoingVersions,
@@ -58,15 +60,17 @@ function fetchStatus(version: string): Promise<*> {
     product_details: 'product-details',
   };
   return Promise.all(
-    Object.keys(stateToUrl).map(key => {
+    Object.keys(stateToUrl).map((key: Check) => {
       const endpoint = stateToUrl[key];
       return fetch(
         `https://pollbot.dev.mozaws.net/v1/firefox/${version}/${endpoint}`,
       )
         .then(resp => resp.json())
-        .then(details => ({key, details}));
+        .then((details: CheckResult) => ({key, details}));
     }),
-  ).then(results =>
+  ).then((results): {
+    [key: string]: CheckResult,
+  } =>
     results.reduce((acc, {key, details}) => {
       acc[key] = details;
       return acc;
@@ -107,7 +111,7 @@ export function requestStatus(version: ?string): ThunkAction<void> {
         };
         dispatch(updateStatuses(normalizedStatuses));
       })
-      .catch(err =>
+      .catch((err: string) =>
         console.error('Failed getting the latest channel versions', err),
       );
   };
@@ -118,10 +122,10 @@ export function requestOngoingVersions() {
   return function(dispatch: Dispatch) {
     fetch('https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions')
       .then(resp => resp.json())
-      .then(data => {
+      .then((data: OngoingVersions) => {
         dispatch(updateLatestChannelVersions(data));
       })
-      .catch(err =>
+      .catch((err: string) =>
         console.error('Failed getting the latest channel versions', err),
       );
   };

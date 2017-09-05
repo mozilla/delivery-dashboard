@@ -16,17 +16,26 @@ export type OngoingVersions = ?{
   esr: string,
 };
 
-export type Status = {
-  status: string,
+export type Channel = 'nightly' | 'beta' | 'release' | 'esr';
+export type Status = 'missing' | 'exists' | 'incomplete' | 'error';
+export type Check =
+  | 'archive'
+  | 'product_details'
+  | 'release_notes'
+  | 'security_advisories'
+  | 'download_links';
+
+export type CheckResult = {
+  status: Status,
   message?: string,
 };
 
 export type Statuses = {
-  archive: ?Status,
-  product_details: ?Status,
-  release_notes: ?Status,
-  security_advisories: ?Status,
-  download_links: ?Status,
+  archive: ?CheckResult,
+  product_details: ?CheckResult,
+  release_notes: ?CheckResult,
+  security_advisories: ?CheckResult,
+  download_links: ?CheckResult,
 };
 
 export type State = {
