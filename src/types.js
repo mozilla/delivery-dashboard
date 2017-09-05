@@ -16,7 +16,14 @@ export type OngoingVersions = ?{
   esr: string,
 };
 
+export type Channel = 'nightly' | 'beta' | 'release' | 'esr';
 export type Status = 'missing' | 'exists' | 'incomplete' | 'error';
+export type Check =
+  | 'archive'
+  | 'product_details'
+  | 'release_notes'
+  | 'security_advisories'
+  | 'download_links';
 
 export type CheckResult = {
   status: Status,
