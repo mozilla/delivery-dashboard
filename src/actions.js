@@ -7,6 +7,7 @@ import {
   UPDATE_LATEST_CHANNEL_VERSIONS,
   UPDATE_STATUSES,
 } from './types.js';
+import {getOngoingVersions} from './PollbotAPI.js';
 import type {
   Check,
   CheckResult,
@@ -120,9 +121,8 @@ export function requestStatus(version: ?string): ThunkAction<void> {
 // Fetching the ongoing versions.
 export function requestOngoingVersions() {
   return function(dispatch: Dispatch) {
-    fetch('https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions')
-      .then(resp => resp.json())
-      .then((data: OngoingVersions) => {
+    getOngoingVersions()
+      .then(data => {
         dispatch(updateLatestChannelVersions(data));
       })
       .catch((err: string) =>
