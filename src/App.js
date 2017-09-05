@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+// @flow
+import * as React from 'react';
 import {ButtonGroup, Col, Grid, Navbar, Panel, Row} from 'react-bootstrap';
 import './App.css';
 import {connect} from 'react-redux';
@@ -12,8 +12,15 @@ import {
   localUrlFromVersion,
   requestOngoingVersions,
 } from './actions.js';
+import type {
+  Dispatch,
+  OngoingVersions,
+  State,
+  Status,
+  Statuses,
+} from './types.js';
 
-function requestNotificationPermission() {
+function requestNotificationPermission(): void {
   if (
     Notification.permission !== 'denied' &&
     Notification.permission !== 'granted'
@@ -22,11 +29,13 @@ function requestNotificationPermission() {
   }
 }
 
-const parseUrl = url => {
+const parseUrl = (
+  url: string,
+): ?{service: string, product: string, version: string} => {
   const re = /^#(\w+)\/(\w+)\/([^/]+)\/?/; // Eg: #pollbot/firefox/50.0
-  const parsed = url.match(re);
-  if (parsed === null) {
-    return {};
+  const parsed: ?(string[]) = url.match(re);
+  if (!parsed) {
+    return null;
   }
   const [_, service, product, version] = parsed;
   return {
@@ -36,13 +45,15 @@ const parseUrl = url => {
   };
 };
 
-class ConnectedApp extends Component {
-  constructor(props) {
+class ConnectedApp extends React.Component<{dispatch: Dispatch}, void> {
+  refreshIntervalId: ?number;
+
+  constructor(props: {dispatch: Dispatch}): void {
     super(props);
     this.refreshIntervalId = null;
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     this.props.dispatch(requestOngoingVersions());
     // Setup auto-refresh.
     this.refreshIntervalId = setInterval(
@@ -57,13 +68,15 @@ class ConnectedApp extends Component {
     this.versionFromHash();
   }
 
-  componentWillUnmount() {
-    clearInterval(this.refreshIntervalId);
+  componentWillUnmount(): void {
+    if (this.refreshIntervalId) {
+      clearInterval(this.refreshIntervalId);
+    }
   }
 
-  versionFromHash = () => {
+  versionFromHash = (): void => {
     const parsedUrl = parseUrl(window.location.hash);
-    if ('version' in parsedUrl) {
+    if (parsedUrl) {
       const version = parsedUrl.version;
       this.props.dispatch(setVersion(version));
       this.props.dispatch(requestStatus(version));
@@ -96,42 +109,42 @@ class ConnectedApp extends Component {
   }
 }
 const App = connect()(ConnectedApp);
-ConnectedApp.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-};
 
 const VersionInput = connect(
   // mapStateToProps
-  state => {
-    return {
-      value: state.versionInput,
-    };
-  },
+  (state: State) => ({
+    value: state.versionInput,
+  }),
   // mapDispatchToProps
-  dispatch => {
-    return {
-      onSubmit: e => {
-        e.preventDefault();
-        dispatch(submitVersion());
-        dispatch(updateUrl());
-      },
-      handleSearchBoxChange: e => {
-        dispatch(updateVersionInput(e.target.value));
-      },
-      handleDismissSearchBoxVersion: () => {
-        window.location.hash = '';
-        dispatch(setVersion(''));
-      },
-    };
-  },
+  (dispatch: Dispatch) => ({
+    onSubmit: (e: SyntheticEvent<HTMLInputElement>): void => {
+      e.preventDefault();
+      dispatch(submitVersion());
+      dispatch(updateUrl());
+    },
+    handleSearchBoxChange: (e: SyntheticEvent<HTMLInputElement>): void => {
+      dispatch(updateVersionInput(e.currentTarget.value));
+    },
+    handleDismissSearchBoxVersion: (): void => {
+      window.location.hash = '';
+      dispatch(setVersion(''));
+    },
+  }),
 )(SearchForm);
+
+type SearchFormProps = {
+  onSubmit: (e: SyntheticEvent<HTMLInputElement>) => void,
+  handleSearchBoxChange: (e: SyntheticEvent<HTMLInputElement>) => void,
+  handleDismissSearchBoxVersion: () => void,
+  value: string,
+};
 
 function SearchForm({
   onSubmit,
   handleSearchBoxChange,
   handleDismissSearchBoxVersion,
   value,
-}) {
+}: SearchFormProps) {
   return (
     <form className="search-form well" onSubmit={onSubmit}>
       <ClearableTextInput
@@ -142,34 +155,33 @@ function SearchForm({
     </form>
   );
 }
-SearchForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-  handleSearchBoxChange: PropTypes.func.isRequired,
-  handleDismissSearchBoxVersion: PropTypes.func.isRequired,
-  value: PropTypes.string.isRequired,
+
+type ClearableTextInputProps = {
+  onChange: (e: SyntheticEvent<HTMLInputElement>) => void,
+  onClick: () => void,
+  value: string,
 };
 
-function ClearableTextInput(props) {
+function ClearableTextInput({
+  onChange,
+  onClick,
+  value,
+}: ClearableTextInputProps) {
   return (
     <ButtonGroup className="clearable-text">
       <input
         className="form-control"
-        onChange={props.onChange}
+        onChange={onChange}
         placeholder={'Firefox version, eg. "57.0"'}
         type="search"
-        value={props.value}
+        value={value}
       />
-      <span className="text-clear-btn" onClick={props.onClick}>
+      <span className="text-clear-btn" onClick={onClick}>
         <i className="glyphicon glyphicon-remove" />
       </span>
     </ButtonGroup>
   );
 }
-ClearableTextInput.propTypes = {
-  onChange: PropTypes.func.isRequired,
-  onClick: PropTypes.func.isRequired,
-  value: PropTypes.string.isRequired,
-};
 
 function Spinner() {
   return <div className="loader" />;
@@ -177,18 +189,16 @@ function Spinner() {
 
 const SideBar = connect(
   // mapStateToProps
-  state => {
-    return {
-      versions: state.latestChannelVersions,
-    };
-  },
+  (state: State) => ({
+    versions: state.latestChannelVersions,
+  }),
   // mapDispatchToProps
   null,
 )(ReleasesMenu);
 
-function ReleasesMenu({versions}) {
+function ReleasesMenu({versions}: {versions: OngoingVersions}) {
   let releasesMenu = <Spinner />;
-  if (versions !== null) {
+  if (versions) {
     const {nightly, beta, release, esr} = versions;
     releasesMenu = (
       <ul>
@@ -202,7 +212,7 @@ function ReleasesMenu({versions}) {
   return releasesMenu;
 }
 
-function ReleaseItem({title, version}) {
+function ReleaseItem({title, version}: {title: string, version: string}) {
   return (
     <li key={title}>
       <a href={localUrlFromVersion(version)}>
@@ -211,24 +221,23 @@ function ReleaseItem({title, version}) {
     </li>
   );
 }
-ReleaseItem.propTypes = {
-  title: PropTypes.string,
-  version: PropTypes.string,
-};
 
 const CurrentRelease = connect(
   // mapStateToProps
-  state => {
-    return {
-      statuses: state.statuses,
-      version: state.version,
-    };
-  },
+  (state: State) => ({
+    statuses: state.statuses,
+    version: state.version,
+  }),
   // mapDispatchToProps
   null,
 )(Dashboard);
 
-function Dashboard({statuses, version}) {
+type DashboardPropType = {
+  version: string,
+  statuses: Statuses,
+};
+
+function Dashboard({statuses, version}: DashboardPropType) {
   if (version === '') {
     return (
       <p>
@@ -321,23 +330,9 @@ function Dashboard({statuses, version}) {
     );
   }
 }
-const StatusPropType = PropTypes.shape({
-  status: PropTypes.string.isRequired,
-  message: PropTypes.string,
-});
-Dashboard.propTypes = {
-  version: PropTypes.string.isRequired,
-  statuses: PropTypes.shape({
-    archive: StatusPropType,
-    product_details: StatusPropType,
-    release_notes: StatusPropType,
-    security_advisories: StatusPropType,
-    download_links: StatusPropType,
-  }),
-};
 
-function DisplayStatus({url, data}) {
-  if (data === null) {
+function DisplayStatus({url, data}: {url: string, data: ?Status}) {
+  if (!data) {
     return <Spinner />;
   } else {
     const {status, message} = data;
@@ -347,7 +342,8 @@ function DisplayStatus({url, data}) {
       incomplete: 'label-info',
       missing: 'label-danger',
     };
-    const labelText = status === 'error' ? 'Error: ' + message : status;
+    const msg = message || '';
+    const labelText = status === 'error' ? 'Error: ' + msg : status;
     return (
       <a
         className={'label ' + statusToLabelClass[status]}
@@ -359,35 +355,31 @@ function DisplayStatus({url, data}) {
     );
   }
 }
-DisplayStatus.propTypes = {
-  url: PropTypes.string.isRequired,
-  data: StatusPropType,
-};
 
 function releaseStatus(
-  archive,
-  product_details,
-  release_notes,
-  security_advisories,
-  download_links,
-) {
+  archive: ?Status,
+  product_details: ?Status,
+  release_notes: ?Status,
+  security_advisories: ?Status,
+  download_links: ?Status,
+): ?Status {
   if (
-    archive === null &&
-    product_details === null &&
-    release_notes === null &&
-    security_advisories === null &&
-    download_links === null
+    !archive &&
+    !product_details &&
+    !release_notes &&
+    !security_advisories &&
+    !download_links
   ) {
     return null;
   }
 
   if (
-    archive !== null &&
+    archive &&
     archive.status === 'exists' &&
-    (product_details !== null && product_details.status === 'exists') &&
-    (release_notes !== null && release_notes.status === 'exists') &&
-    (security_advisories !== null && security_advisories.status === 'exists') &&
-    (download_links !== null && download_links.status === 'exists')
+    (product_details && product_details.status === 'exists') &&
+    (release_notes && release_notes.status === 'exists') &&
+    (security_advisories && security_advisories.status === 'exists') &&
+    (download_links && download_links.status === 'exists')
   ) {
     return {
       status: 'exists',
