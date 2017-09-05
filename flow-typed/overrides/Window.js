@@ -1,6 +1,6 @@
 // @flow
 
-// This file will be automagically be used by Flow to type "window".
+// This file will be automagically used by Flow to type "window".
 type Location = {
   href: string,
   protocol: string,

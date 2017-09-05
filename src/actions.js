@@ -76,7 +76,6 @@ function fetchStatus(version: string): Promise<*> {
 
 export function requestStatus(version: ?string): ThunkAction<void> {
   const notifyChanges = changed => {
-    // $FlowFixMe
     if (Notification.permission === 'granted') {
       const names = changed.map(s => s.replace('_', ' ')).join(', ');
       new Notification(`${document.title}: Status of ${names} changed.`);

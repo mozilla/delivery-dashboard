@@ -22,7 +22,6 @@ import type {
 
 function requestNotificationPermission(): void {
   if (
-    // $FlowFixMe
     Notification.permission !== 'denied' &&
     Notification.permission !== 'granted'
   ) {
