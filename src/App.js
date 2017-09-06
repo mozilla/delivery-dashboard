@@ -14,11 +14,12 @@ import {
 } from './actions.js';
 import type {
   CheckResult,
+  CheckResults,
   Dispatch,
   OngoingVersions,
   ReleaseInfo,
   State,
-  Statuses,
+  Status,
 } from './types.js';
 
 function requestNotificationPermission(): void {
@@ -226,8 +227,8 @@ function ReleaseItem({title, version}: {title: string, version: string}) {
 const CurrentRelease = connect(
   // mapStateToProps
   (state: State) => ({
+    checkResults: state.checkResults,
     releaseInfo: state.releaseInfo,
-    statuses: state.statuses,
     version: state.version,
   }),
   // mapDispatchToProps
@@ -235,12 +236,12 @@ const CurrentRelease = connect(
 )(Dashboard);
 
 type DashboardPropType = {
+  checkResults: CheckResults,
   releaseInfo: ?ReleaseInfo,
-  statuses: Statuses,
   version: string,
 };
 
-function Dashboard({releaseInfo, statuses, version}: DashboardPropType) {
+function Dashboard({releaseInfo, checkResults, version}: DashboardPropType) {
   if (version === '') {
     return (
       <p>
@@ -249,107 +250,63 @@ function Dashboard({releaseInfo, statuses, version}: DashboardPropType) {
       </p>
     );
   } else {
-    const {
-      archive,
-      product_details,
-      release_notes,
-      security_advisories,
-      download_links,
-    } = statuses;
     return (
       <div>
         <h2>
           Channel: {(releaseInfo && releaseInfo.channel) || ''}
         </h2>
         <div className="dashboard">
-          <div className="panel panel-default">
-            <div className="panel-body">
-              <h2>Archives</h2>
-              <DisplayStatus
-                url={
-                  'https://archive.mozilla.org/pub/firefox/releases/' +
-                  version +
-                  '/'
-                }
-                data={archive}
-              />
-            </div>
-          </div>
-
-          <div className="panel panel-default">
-            <div className="panel-body">
-              <h2>Product Details</h2>
-              <DisplayStatus
-                url={'https://product-details.mozilla.org/1.0/firefox.json'}
-                data={product_details}
-              />
-            </div>
-          </div>
-
-          <div className="panel panel-default">
-            <div className="panel-body">
-              <h2>Release Notes</h2>
-              <DisplayStatus
-                url={
-                  'https://www.mozilla.org/en-US/firefox/' +
-                  version +
-                  '/releasenotes/'
-                }
-                data={release_notes}
-              />
-            </div>
-          </div>
-
-          <div className="panel panel-default">
-            <div className="panel-body">
-              <h2>Security Advisories</h2>
-              <DisplayStatus
-                url={
-                  'https://www.mozilla.org/en-US/security/known-vulnerabilities/firefox/'
-                }
-                data={security_advisories}
-              />
-            </div>
-          </div>
-
-          <div className="panel panel-default">
-            <div className="panel-body">
-              <h2>Download links</h2>
-              <DisplayStatus
-                url={'https://www.mozilla.org/en-US/firefox/all/'}
-                data={download_links}
-              />
-            </div>
-          </div>
+          {Object.keys(checkResults).map(key =>
+            DisplayCheckResult(key, checkResults[key]),
+          )}
         </div>
       </div>
     );
   }
 }
 
-function DisplayStatus({url, data}: {url: string, data: ?CheckResult}) {
-  if (!data) {
-    return <Spinner />;
-  } else {
-    const {status, message} = data;
-    const statusToLabelClass = {
-      error: 'label-warning',
-      exists: 'label-success',
-      incomplete: 'label-info',
-      missing: 'label-danger',
-    };
-    const msg = message || '';
-    const labelText = status === 'error' ? 'Error: ' + msg : status;
-    return (
-      <a
-        className={'label ' + statusToLabelClass[status]}
-        title={message}
-        href={url}
-      >
-        {labelText}
-      </a>
-    );
-  }
+function DisplayCheckResult(title: string, checkResult: CheckResult) {
+  return (
+    <div className="panel panel-default">
+      <div className="panel-body">
+        <h2>
+          {title}
+        </h2>
+        <DisplayStatus
+          status={checkResult.status}
+          message={checkResult.message}
+          url={checkResult.link}
+        />
+      </div>
+    </div>
+  );
+}
+
+function DisplayStatus({
+  status,
+  message,
+  url,
+}: {
+  status: Status,
+  message: string,
+  url: string,
+}) {
+  const statusToLabelClass = {
+    error: 'label-warning',
+    exists: 'label-success',
+    incomplete: 'label-info',
+    missing: 'label-danger',
+  };
+  const labelText = status === 'error' ? 'Error: ' + message : status;
+  return (
+    <a
+      className={'label ' + statusToLabelClass[status]}
+      title={message}
+      href={url}
+    >
+      {labelText}
+    </a>
+  );
 }
 
 export default App;

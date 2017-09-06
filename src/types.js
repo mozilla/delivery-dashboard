@@ -44,6 +44,10 @@ export type CheckResult = {
   link: string,
 };
 
+export type CheckResults = {
+  [check: string]: CheckResult,
+};
+
 export type Statuses = {
   archive: ?CheckResult,
   product_details: ?CheckResult,
