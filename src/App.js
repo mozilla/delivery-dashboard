@@ -267,7 +267,7 @@ function Dashboard({releaseInfo, checkResults, version}: DashboardPropType) {
 
 function DisplayCheckResult(title: string, checkResult: CheckResult) {
   return (
-    <div className="panel panel-default">
+    <div className="panel panel-default" key={title}>
       <div className="panel-body">
         <h2>
           {title}
