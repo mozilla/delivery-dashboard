@@ -68,6 +68,17 @@ td {
   color: #ccc;
 }
 
+/* List of check results for a given release */
+.dashboard {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+.dashboard .panel {
+  flex: 0 0 30%;
+  text-align: center;
+}
+
 /* Firefox releases menu */
 .firefox-releases-menu button {
   padding: 0;

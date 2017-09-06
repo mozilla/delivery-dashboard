@@ -254,64 +254,66 @@ function Dashboard({statuses, version}: DashboardPropType) {
       download_links,
     } = statuses;
     return (
-      <div>
-        <table className="table">
-          <tbody>
-            <tr>
-              <td>
-                <h2>Archives</h2>
-                <DisplayStatus
-                  url={
-                    'https://archive.mozilla.org/pub/firefox/releases/' +
-                    version +
-                    '/'
-                  }
-                  data={archive}
-                />
-              </td>
+      <div className="dashboard">
+        <div className="panel panel-default">
+          <div className="panel-body">
+            <h2>Archives</h2>
+            <DisplayStatus
+              url={
+                'https://archive.mozilla.org/pub/firefox/releases/' +
+                version +
+                '/'
+              }
+              data={archive}
+            />
+          </div>
+        </div>
 
-              <td>
-                <h2>Product Details</h2>
-                <DisplayStatus
-                  url={'https://product-details.mozilla.org/1.0/firefox.json'}
-                  data={product_details}
-                />
-              </td>
-            </tr>
+        <div className="panel panel-default">
+          <div className="panel-body">
+            <h2>Product Details</h2>
+            <DisplayStatus
+              url={'https://product-details.mozilla.org/1.0/firefox.json'}
+              data={product_details}
+            />
+          </div>
+        </div>
 
-            <tr>
-              <td>
-                <h2>Release Notes</h2>
-                <DisplayStatus
-                  url={
-                    'https://www.mozilla.org/en-US/firefox/' +
-                    version +
-                    '/releasenotes/'
-                  }
-                  data={release_notes}
-                />
-              </td>
+        <div className="panel panel-default">
+          <div className="panel-body">
+            <h2>Release Notes</h2>
+            <DisplayStatus
+              url={
+                'https://www.mozilla.org/en-US/firefox/' +
+                version +
+                '/releasenotes/'
+              }
+              data={release_notes}
+            />
+          </div>
+        </div>
 
-              <td>
-                <h2>Security Advisories</h2>
-                <DisplayStatus
-                  url={
-                    'https://www.mozilla.org/en-US/security/known-vulnerabilities/firefox/'
-                  }
-                  data={security_advisories}
-                />
-              </td>
+        <div className="panel panel-default">
+          <div className="panel-body">
+            <h2>Security Advisories</h2>
+            <DisplayStatus
+              url={
+                'https://www.mozilla.org/en-US/security/known-vulnerabilities/firefox/'
+              }
+              data={security_advisories}
+            />
+          </div>
+        </div>
 
-              <td>
-                <h2>Download links</h2>
-                <DisplayStatus
-                  url={'https://www.mozilla.org/en-US/firefox/all/'}
-                  data={download_links}
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="panel panel-default">
+          <div className="panel-body">
+            <h2>Download links</h2>
+            <DisplayStatus
+              url={'https://www.mozilla.org/en-US/firefox/all/'}
+              data={download_links}
+            />
+          </div>
+        </div>
       </div>
     );
   }
