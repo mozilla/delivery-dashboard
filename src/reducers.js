@@ -1,6 +1,7 @@
 // @flow
 
 import {
+  ADD_CHECK_RESULT,
   SET_VERSION,
   UPDATE_STATUSES,
   SUBMIT_VERSION,
@@ -24,6 +25,7 @@ const initialState: State = {
   latestChannelVersions: null,
   releaseInfo: null,
   statuses: initialStatuses,
+  checkResults: {},
 };
 
 export function deliveryDashboard(
@@ -31,11 +33,18 @@ export function deliveryDashboard(
   action: Action,
 ): State {
   switch (action.type) {
+    case ADD_CHECK_RESULT:
+      return Object.assign({}, state, {
+        checkResults: Object.assign({}, state.checkResults, {
+          [action.title]: action.result,
+        }),
+      });
     case SET_VERSION:
       return Object.assign({}, state, {
         version: action.version,
         versionInput: action.version,
         statuses: initialStatuses,
+        checkResults: {},
       });
     case UPDATE_VERSION_INPUT:
       return Object.assign({}, state, {

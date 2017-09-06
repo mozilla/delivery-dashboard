@@ -44,3 +44,7 @@ export function getReleaseInfo(version: string): Promise<ReleaseInfo> {
     `https://pollbot.dev.mozaws.net/v1/firefox/${version}`,
   ).then(resp => resp.json());
 }
+
+export function checkStatus(url: string): Promise<CheckResult> {
+  return fetch(url).then(resp => resp.json());
+}

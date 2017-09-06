@@ -1,6 +1,7 @@
 // @flow
 
 import {
+  ADD_CHECK_RESULT,
   SET_VERSION,
   UPDATE_VERSION_INPUT,
   SUBMIT_VERSION,
@@ -8,8 +9,16 @@ import {
   UPDATE_STATUSES,
   UPDATE_RELEASE_INFO,
 } from './types.js';
-import {getOngoingVersions, getReleaseInfo, getStatuses} from './PollbotAPI.js';
+import {
+  checkStatus,
+  getOngoingVersions,
+  getReleaseInfo,
+  getStatuses,
+} from './PollbotAPI.js';
 import type {
+  AddCheckResult,
+  CheckInfo,
+  CheckResult,
   Dispatch,
   GetState,
   OngoingVersions,
@@ -54,6 +63,13 @@ export function updateReleaseInfo(releaseInfo: ReleaseInfo): UpdateReleaseInfo {
   return {type: UPDATE_RELEASE_INFO, releaseInfo};
 }
 
+export function addCheckResult(
+  title: string,
+  result: CheckResult,
+): AddCheckResult {
+  return {type: ADD_CHECK_RESULT, title, result};
+}
+
 // ASYNC (THUNK) ACTIONS.
 
 // Fetching the statuses.
@@ -73,6 +89,11 @@ export function requestStatus(version: ?string): ThunkAction<void> {
     getReleaseInfo(versionToCheck)
       .then(releaseInfo => {
         dispatch(updateReleaseInfo(releaseInfo));
+        releaseInfo.checks.map((check: CheckInfo) => {
+          checkStatus(check.url).then(result => {
+            dispatch(addCheckResult(check.title, result));
+          });
+        });
       })
       .catch((err: string) => {
         console.error(

@@ -40,7 +40,8 @@ export type ReleaseInfo = {
 
 export type CheckResult = {
   status: Status,
-  message?: string,
+  message: string,
+  link: string,
 };
 
 export type Statuses = {
@@ -57,11 +58,13 @@ export type State = {
   latestChannelVersions: ?OngoingVersions,
   releaseInfo: ?ReleaseInfo,
   statuses: Statuses,
+  checkResults: {[check: string]: CheckResult},
 };
 
 /*
  * action types
  */
+export const ADD_CHECK_RESULT = 'ADD_CHECK_RESULT';
 export const SET_VERSION = 'SET_VERSION';
 export const UPDATE_VERSION_INPUT = 'UPDATE_VERSION_INPUT';
 export const SUBMIT_VERSION = 'SUBMIT_VERSION';
@@ -69,6 +72,11 @@ export const UPDATE_LATEST_CHANNEL_VERSIONS = 'UPDATE_LATEST_CHANNEL_VERSIONS';
 export const UPDATE_STATUSES = 'UPDATE_STATUSES';
 export const UPDATE_RELEASE_INFO = 'UPDATE_RELEASE_INFO';
 
+export type AddCheckResult = {
+  type: 'ADD_CHECK_RESULT',
+  title: string,
+  result: CheckResult,
+};
 export type SetVersion = {
   type: 'SET_VERSION',
   version: string,
@@ -94,6 +102,7 @@ export type UpdateReleaseInfo = {
 };
 
 export type Action =
+  | AddCheckResult
   | SetVersion
   | SubmitVersion
   | UpdateLatestChannelVersions
