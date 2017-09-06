@@ -10,10 +10,10 @@ import type {
  * state types
  */
 export type OngoingVersions = ?{
-  nightly: string,
-  beta: string,
-  release: string,
-  esr: string,
+  +nightly: string,
+  +beta: string,
+  +release: string,
+  +esr: string,
 };
 
 export type Product = 'firefox';
@@ -27,21 +27,21 @@ export type Check =
   | 'download_links';
 
 export type CheckInfo = {
-  url: string,
-  title: string,
+  +url: string,
+  +title: string,
 };
 
 export type ReleaseInfo = {
-  channel: Channel,
-  product: Product,
-  version: string,
-  checks: CheckInfo[],
+  +channel: Channel,
+  +product: Product,
+  +version: string,
+  +checks: CheckInfo[],
 };
 
 export type CheckResult = {
-  status: Status,
-  message: string,
-  link: string,
+  +status: Status,
+  +message: string,
+  +link: string,
 };
 
 export type CheckResults = {
@@ -49,11 +49,11 @@ export type CheckResults = {
 };
 
 export type State = {
-  version: string,
-  versionInput: string,
-  latestChannelVersions: ?OngoingVersions,
-  releaseInfo: ?ReleaseInfo,
-  checkResults: {[check: string]: CheckResult},
+  +version: string,
+  +versionInput: string,
+  +latestChannelVersions: ?OngoingVersions,
+  +releaseInfo: ?ReleaseInfo,
+  +checkResults: {[check: string]: CheckResult},
 };
 
 /*
@@ -66,30 +66,30 @@ export const SUBMIT_VERSION = 'SUBMIT_VERSION';
 export const UPDATE_LATEST_CHANNEL_VERSIONS = 'UPDATE_LATEST_CHANNEL_VERSIONS';
 export const UPDATE_RELEASE_INFO = 'UPDATE_RELEASE_INFO';
 
-export type AddCheckResult = {
+export type AddCheckResult = {|
   type: 'ADD_CHECK_RESULT',
   title: string,
   result: CheckResult,
-};
-export type SetVersion = {
+|};
+export type SetVersion = {|
   type: 'SET_VERSION',
   version: string,
-};
-export type UpdateVersionInput = {
+|};
+export type UpdateVersionInput = {|
   type: 'UPDATE_VERSION_INPUT',
   version: string,
-};
-export type SubmitVersion = {
+|};
+export type SubmitVersion = {|
   type: 'SUBMIT_VERSION',
-};
-export type UpdateLatestChannelVersions = {
+|};
+export type UpdateLatestChannelVersions = {|
   type: 'UPDATE_LATEST_CHANNEL_VERSIONS',
   versions: OngoingVersions,
-};
-export type UpdateReleaseInfo = {
+|};
+export type UpdateReleaseInfo = {|
   type: 'UPDATE_RELEASE_INFO',
   releaseInfo: ReleaseInfo,
-};
+|};
 
 export type Action =
   | AddCheckResult
