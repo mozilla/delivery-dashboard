@@ -59,7 +59,7 @@ class ConnectedApp extends React.Component<{dispatch: Dispatch}, void> {
     // Setup auto-refresh.
     this.refreshIntervalId = setInterval(
       () => this.props.dispatch(requestStatus()),
-      5000,
+      60000,
     );
     // Setup notifications.
     requestNotificationPermission();
