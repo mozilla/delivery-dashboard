@@ -6,17 +6,20 @@ import {
   SUBMIT_VERSION,
   UPDATE_LATEST_CHANNEL_VERSIONS,
   UPDATE_STATUSES,
+  UPDATE_RELEASE_INFO,
 } from './types.js';
-import {getOngoingVersions, getStatuses} from './PollbotAPI.js';
+import {getOngoingVersions, getReleaseInfo, getStatuses} from './PollbotAPI.js';
 import type {
   Dispatch,
   GetState,
   OngoingVersions,
+  ReleaseInfo,
   SetVersion,
   Statuses,
   SubmitVersion,
   ThunkAction,
   UpdateLatestChannelVersions,
+  UpdateReleaseInfo,
   UpdateStatuses,
   UpdateVersionInput,
 } from './types.js';
@@ -47,6 +50,10 @@ export function updateStatuses(statuses: Statuses): UpdateStatuses {
   return {type: UPDATE_STATUSES, statuses};
 }
 
+export function updateReleaseInfo(releaseInfo: ReleaseInfo): UpdateReleaseInfo {
+  return {type: UPDATE_RELEASE_INFO, releaseInfo};
+}
+
 // ASYNC (THUNK) ACTIONS.
 
 // Fetching the statuses.
@@ -59,11 +66,22 @@ export function requestStatus(version: ?string): ThunkAction<void> {
   };
 
   return function(dispatch: Dispatch, getState: GetState) {
-    version = version || getState().version;
-    if (!version) {
+    const versionToCheck = version || getState().version;
+    if (!versionToCheck) {
       return;
     }
-    getStatuses(version)
+    getReleaseInfo(versionToCheck)
+      .then(releaseInfo => {
+        dispatch(updateReleaseInfo(releaseInfo));
+      })
+      .catch((err: string) => {
+        console.error(
+          `Failed getting the release info for ${versionToCheck}`,
+          err,
+        );
+      });
+
+    getStatuses(versionToCheck)
       .then(statuses => {
         // Detect if some status changed, and notify!
         const changed = Object.keys(statuses).filter(key => {
@@ -83,9 +101,9 @@ export function requestStatus(version: ?string): ThunkAction<void> {
         };
         dispatch(updateStatuses(normalizedStatuses));
       })
-      .catch((err: string) =>
-        console.error('Failed getting the latest channel versions', err),
-      );
+      .catch((err: string) => {
+        console.error(`Failed getting the statuses for ${versionToCheck}`, err);
+      });
   };
 }
 

@@ -16,6 +16,7 @@ export type OngoingVersions = ?{
   esr: string,
 };
 
+export type Product = 'firefox';
 export type Channel = 'nightly' | 'beta' | 'release' | 'esr';
 export type Status = 'missing' | 'exists' | 'incomplete' | 'error';
 export type Check =
@@ -24,6 +25,18 @@ export type Check =
   | 'release_notes'
   | 'security_advisories'
   | 'download_links';
+
+export type CheckInfo = {
+  url: string,
+  title: string,
+};
+
+export type ReleaseInfo = {
+  channel: Channel,
+  product: Product,
+  version: string,
+  checks: CheckInfo[],
+};
 
 export type CheckResult = {
   status: Status,
@@ -42,6 +55,7 @@ export type State = {
   version: string,
   versionInput: string,
   latestChannelVersions: ?OngoingVersions,
+  releaseInfo: ?ReleaseInfo,
   statuses: Statuses,
 };
 
@@ -53,6 +67,7 @@ export const UPDATE_VERSION_INPUT = 'UPDATE_VERSION_INPUT';
 export const SUBMIT_VERSION = 'SUBMIT_VERSION';
 export const UPDATE_LATEST_CHANNEL_VERSIONS = 'UPDATE_LATEST_CHANNEL_VERSIONS';
 export const UPDATE_STATUSES = 'UPDATE_STATUSES';
+export const UPDATE_RELEASE_INFO = 'UPDATE_RELEASE_INFO';
 
 export type SetVersion = {
   type: 'SET_VERSION',
@@ -73,13 +88,18 @@ export type UpdateStatuses = {
   type: 'UPDATE_STATUSES',
   statuses: Statuses,
 };
+export type UpdateReleaseInfo = {
+  type: 'UPDATE_RELEASE_INFO',
+  releaseInfo: ReleaseInfo,
+};
 
 export type Action =
   | SetVersion
-  | UpdateVersionInput
   | SubmitVersion
   | UpdateLatestChannelVersions
-  | UpdateStatuses;
+  | UpdateReleaseInfo
+  | UpdateStatuses
+  | UpdateVersionInput;
 
 /*
  * Redux types
