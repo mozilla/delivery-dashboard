@@ -48,20 +48,11 @@ export type CheckResults = {
   [check: string]: CheckResult,
 };
 
-export type Statuses = {
-  archive: ?CheckResult,
-  product_details: ?CheckResult,
-  release_notes: ?CheckResult,
-  security_advisories: ?CheckResult,
-  download_links: ?CheckResult,
-};
-
 export type State = {
   version: string,
   versionInput: string,
   latestChannelVersions: ?OngoingVersions,
   releaseInfo: ?ReleaseInfo,
-  statuses: Statuses,
   checkResults: {[check: string]: CheckResult},
 };
 
@@ -73,7 +64,6 @@ export const SET_VERSION = 'SET_VERSION';
 export const UPDATE_VERSION_INPUT = 'UPDATE_VERSION_INPUT';
 export const SUBMIT_VERSION = 'SUBMIT_VERSION';
 export const UPDATE_LATEST_CHANNEL_VERSIONS = 'UPDATE_LATEST_CHANNEL_VERSIONS';
-export const UPDATE_STATUSES = 'UPDATE_STATUSES';
 export const UPDATE_RELEASE_INFO = 'UPDATE_RELEASE_INFO';
 
 export type AddCheckResult = {
@@ -96,10 +86,6 @@ export type UpdateLatestChannelVersions = {
   type: 'UPDATE_LATEST_CHANNEL_VERSIONS',
   versions: OngoingVersions,
 };
-export type UpdateStatuses = {
-  type: 'UPDATE_STATUSES',
-  statuses: Statuses,
-};
 export type UpdateReleaseInfo = {
   type: 'UPDATE_RELEASE_INFO',
   releaseInfo: ReleaseInfo,
@@ -111,7 +97,6 @@ export type Action =
   | SubmitVersion
   | UpdateLatestChannelVersions
   | UpdateReleaseInfo
-  | UpdateStatuses
   | UpdateVersionInput;
 
 /*

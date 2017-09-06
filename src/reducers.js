@@ -3,28 +3,18 @@
 import {
   ADD_CHECK_RESULT,
   SET_VERSION,
-  UPDATE_STATUSES,
   SUBMIT_VERSION,
   UPDATE_LATEST_CHANNEL_VERSIONS,
   UPDATE_VERSION_INPUT,
   UPDATE_RELEASE_INFO,
 } from './types.js';
-import type {Action, State, Statuses} from './types.js';
-
-const initialStatuses: Statuses = {
-  archive: null,
-  release_notes: null,
-  security_advisories: null,
-  download_links: null,
-  product_details: null,
-};
+import type {Action, State} from './types.js';
 
 const initialState: State = {
   version: '',
   versionInput: '',
   latestChannelVersions: null,
   releaseInfo: null,
-  statuses: initialStatuses,
   checkResults: {},
 };
 
@@ -43,7 +33,6 @@ export function deliveryDashboard(
       return Object.assign({}, state, {
         version: action.version,
         versionInput: action.version,
-        statuses: initialStatuses,
         checkResults: {},
       });
     case UPDATE_VERSION_INPUT:
@@ -61,10 +50,6 @@ export function deliveryDashboard(
     case UPDATE_RELEASE_INFO:
       return Object.assign({}, state, {
         releaseInfo: action.releaseInfo,
-      });
-    case UPDATE_STATUSES:
-      return Object.assign({}, state, {
-        statuses: action.statuses,
       });
     default:
       return state;

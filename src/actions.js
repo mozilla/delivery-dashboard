@@ -6,15 +6,9 @@ import {
   UPDATE_VERSION_INPUT,
   SUBMIT_VERSION,
   UPDATE_LATEST_CHANNEL_VERSIONS,
-  UPDATE_STATUSES,
   UPDATE_RELEASE_INFO,
 } from './types.js';
-import {
-  checkStatus,
-  getOngoingVersions,
-  getReleaseInfo,
-  getStatuses,
-} from './PollbotAPI.js';
+import {checkStatus, getOngoingVersions, getReleaseInfo} from './PollbotAPI.js';
 import type {
   AddCheckResult,
   CheckInfo,
@@ -24,12 +18,10 @@ import type {
   OngoingVersions,
   ReleaseInfo,
   SetVersion,
-  Statuses,
   SubmitVersion,
   ThunkAction,
   UpdateLatestChannelVersions,
   UpdateReleaseInfo,
-  UpdateStatuses,
   UpdateVersionInput,
 } from './types.js';
 
@@ -55,10 +47,6 @@ export function updateLatestChannelVersions(
   return {type: UPDATE_LATEST_CHANNEL_VERSIONS, versions};
 }
 
-export function updateStatuses(statuses: Statuses): UpdateStatuses {
-  return {type: UPDATE_STATUSES, statuses};
-}
-
 export function updateReleaseInfo(releaseInfo: ReleaseInfo): UpdateReleaseInfo {
   return {type: UPDATE_RELEASE_INFO, releaseInfo};
 }
@@ -74,10 +62,9 @@ export function addCheckResult(
 
 // Fetching the statuses.
 export function requestStatus(version: ?string): ThunkAction<void> {
-  const notifyChanges = changed => {
+  const notifyChanges = checkTitle => {
     if (Notification.permission === 'granted') {
-      const names = changed.map(s => s.replace('_', ' ')).join(', ');
-      new Notification(`${document.title}: Status of ${names} changed.`);
+      new Notification(`${document.title}: Status of ${checkTitle} changed.`);
     }
   };
 
@@ -90,7 +77,12 @@ export function requestStatus(version: ?string): ThunkAction<void> {
       .then(releaseInfo => {
         dispatch(updateReleaseInfo(releaseInfo));
         releaseInfo.checks.map((check: CheckInfo) => {
-          checkStatus(check.url).then(result => {
+          return checkStatus(check.url).then(result => {
+            // Detect if the result changed, and notify!
+            const prevResult = getState().checkResults[check.title];
+            if (prevResult && prevResult.status !== result.status) {
+              notifyChanges(check.title);
+            }
             dispatch(addCheckResult(check.title, result));
           });
         });
@@ -100,30 +92,6 @@ export function requestStatus(version: ?string): ThunkAction<void> {
           `Failed getting the release info for ${versionToCheck}`,
           err,
         );
-      });
-
-    getStatuses(versionToCheck)
-      .then(statuses => {
-        // Detect if some status changed, and notify!
-        const changed = Object.keys(statuses).filter(key => {
-          const previous = getState().statuses[key];
-          return previous !== null && previous.status !== statuses[key].status;
-        });
-        if (changed.length > 0) {
-          notifyChanges(changed);
-        }
-        // Save current state.
-        const normalizedStatuses: Statuses = {
-          archive: statuses.archive || null,
-          product_details: statuses.product_details || null,
-          release_notes: statuses.release_notes || null,
-          security_advisories: statuses.security_advisories || null,
-          download_links: statuses.download_links || null,
-        };
-        dispatch(updateStatuses(normalizedStatuses));
-      })
-      .catch((err: string) => {
-        console.error(`Failed getting the statuses for ${versionToCheck}`, err);
       });
   };
 }
