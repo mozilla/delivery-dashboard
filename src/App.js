@@ -4,19 +4,20 @@ import {ButtonGroup, Col, Grid, Navbar, Panel, Row} from 'react-bootstrap';
 import './App.css';
 import {connect} from 'react-redux';
 import {
-  setVersion,
-  updateVersionInput,
-  submitVersion,
-  requestStatus,
-  updateUrl,
   localUrlFromVersion,
   requestOngoingVersions,
+  requestStatus,
+  setVersion,
+  submitVersion,
+  updateUrl,
+  updateVersionInput,
 } from './actions.js';
 import type {
+  CheckResult,
   Dispatch,
   OngoingVersions,
+  ReleaseInfo,
   State,
-  CheckResult,
   Statuses,
 } from './types.js';
 
@@ -225,6 +226,7 @@ function ReleaseItem({title, version}: {title: string, version: string}) {
 const CurrentRelease = connect(
   // mapStateToProps
   (state: State) => ({
+    releaseInfo: state.releaseInfo,
     statuses: state.statuses,
     version: state.version,
   }),
@@ -233,11 +235,12 @@ const CurrentRelease = connect(
 )(Dashboard);
 
 type DashboardPropType = {
-  version: string,
+  releaseInfo: ?ReleaseInfo,
   statuses: Statuses,
+  version: string,
 };
 
-function Dashboard({statuses, version}: DashboardPropType) {
+function Dashboard({releaseInfo, statuses, version}: DashboardPropType) {
   if (version === '') {
     return (
       <p>
@@ -254,64 +257,69 @@ function Dashboard({statuses, version}: DashboardPropType) {
       download_links,
     } = statuses;
     return (
-      <div className="dashboard">
-        <div className="panel panel-default">
-          <div className="panel-body">
-            <h2>Archives</h2>
-            <DisplayStatus
-              url={
-                'https://archive.mozilla.org/pub/firefox/releases/' +
-                version +
-                '/'
-              }
-              data={archive}
-            />
+      <div>
+        <h2>
+          Channel: {(releaseInfo && releaseInfo.channel) || ''}
+        </h2>
+        <div className="dashboard">
+          <div className="panel panel-default">
+            <div className="panel-body">
+              <h2>Archives</h2>
+              <DisplayStatus
+                url={
+                  'https://archive.mozilla.org/pub/firefox/releases/' +
+                  version +
+                  '/'
+                }
+                data={archive}
+              />
+            </div>
           </div>
-        </div>
 
-        <div className="panel panel-default">
-          <div className="panel-body">
-            <h2>Product Details</h2>
-            <DisplayStatus
-              url={'https://product-details.mozilla.org/1.0/firefox.json'}
-              data={product_details}
-            />
+          <div className="panel panel-default">
+            <div className="panel-body">
+              <h2>Product Details</h2>
+              <DisplayStatus
+                url={'https://product-details.mozilla.org/1.0/firefox.json'}
+                data={product_details}
+              />
+            </div>
           </div>
-        </div>
 
-        <div className="panel panel-default">
-          <div className="panel-body">
-            <h2>Release Notes</h2>
-            <DisplayStatus
-              url={
-                'https://www.mozilla.org/en-US/firefox/' +
-                version +
-                '/releasenotes/'
-              }
-              data={release_notes}
-            />
+          <div className="panel panel-default">
+            <div className="panel-body">
+              <h2>Release Notes</h2>
+              <DisplayStatus
+                url={
+                  'https://www.mozilla.org/en-US/firefox/' +
+                  version +
+                  '/releasenotes/'
+                }
+                data={release_notes}
+              />
+            </div>
           </div>
-        </div>
 
-        <div className="panel panel-default">
-          <div className="panel-body">
-            <h2>Security Advisories</h2>
-            <DisplayStatus
-              url={
-                'https://www.mozilla.org/en-US/security/known-vulnerabilities/firefox/'
-              }
-              data={security_advisories}
-            />
+          <div className="panel panel-default">
+            <div className="panel-body">
+              <h2>Security Advisories</h2>
+              <DisplayStatus
+                url={
+                  'https://www.mozilla.org/en-US/security/known-vulnerabilities/firefox/'
+                }
+                data={security_advisories}
+              />
+            </div>
           </div>
-        </div>
 
-        <div className="panel panel-default">
-          <div className="panel-body">
-            <h2>Download links</h2>
-            <DisplayStatus
-              url={'https://www.mozilla.org/en-US/firefox/all/'}
-              data={download_links}
-            />
+          <div className="panel panel-default">
+            <div className="panel-body">
+              <h2>Download links</h2>
+              <DisplayStatus
+                url={'https://www.mozilla.org/en-US/firefox/all/'}
+                data={download_links}
+              />
+            </div>
           </div>
         </div>
       </div>
