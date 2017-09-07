@@ -53,7 +53,7 @@ export type State = {
   +versionInput: string,
   +latestChannelVersions: ?OngoingVersions,
   +releaseInfo: ?ReleaseInfo,
-  +checkResults: {[check: string]: CheckResult},
+  +checkResults: CheckResults,
 };
 
 /*

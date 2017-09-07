@@ -47,21 +47,47 @@ const parseUrl = (
   };
 };
 
-class ConnectedApp extends React.Component<{dispatch: Dispatch}, void> {
+type ConnectedAppProps = {
+  dispatch: Dispatch,
+  checkResults: CheckResults,
+};
+class ConnectedApp extends React.Component<ConnectedAppProps, void> {
   refreshIntervalId: ?number;
 
-  constructor(props: {dispatch: Dispatch}): void {
+  constructor(props: ConnectedAppProps): void {
     super(props);
     this.refreshIntervalId = null;
   }
 
+  setUpAutoRefresh(): void {
+    if (this.shouldRefresh()) {
+      this.refreshIntervalId = setInterval(
+        () => this.props.dispatch(requestStatus()),
+        60000,
+      );
+    } else {
+      this.stopAutoRefresh();
+    }
+  }
+
+  stopAutoRefresh(): void {
+    if (this.refreshIntervalId) {
+      clearInterval(this.refreshIntervalId);
+      this.refreshIntervalId = null;
+    }
+  }
+
+  shouldRefresh(): boolean {
+    const checkTitles = Object.keys(this.props.checkResults);
+    const failingChecks = checkTitles.filter(
+      title => this.props.checkResults[title].status !== 'exists',
+    );
+    return failingChecks.length !== 0;
+  }
+
   componentDidMount(): void {
     this.props.dispatch(requestOngoingVersions());
-    // Setup auto-refresh.
-    this.refreshIntervalId = setInterval(
-      () => this.props.dispatch(requestStatus()),
-      60000,
-    );
+    this.setUpAutoRefresh();
     // Setup notifications.
     requestNotificationPermission();
     // Listen to url hash changes.
@@ -70,10 +96,12 @@ class ConnectedApp extends React.Component<{dispatch: Dispatch}, void> {
     this.versionFromHash();
   }
 
+  componentDidUpdate(): void {
+    this.setUpAutoRefresh();
+  }
+
   componentWillUnmount(): void {
-    if (this.refreshIntervalId) {
-      clearInterval(this.refreshIntervalId);
-    }
+    this.stopAutoRefresh();
   }
 
   versionFromHash = (): void => {
@@ -110,7 +138,14 @@ class ConnectedApp extends React.Component<{dispatch: Dispatch}, void> {
     );
   }
 }
-const App = connect()(ConnectedApp);
+const App = connect(
+  // mapStateToProps
+  (state: State) => ({
+    checkResults: state.checkResults,
+  }),
+  // mapDispatchToProps
+  null,
+)(ConnectedApp);
 
 const VersionInput = connect(
   // mapStateToProps
