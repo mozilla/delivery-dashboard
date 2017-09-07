@@ -1,24 +1,27 @@
 // @flow
 
 import {
+  ADD_CHECK_RESULT,
   SET_VERSION,
   UPDATE_VERSION_INPUT,
   SUBMIT_VERSION,
   UPDATE_LATEST_CHANNEL_VERSIONS,
-  UPDATE_STATUSES,
+  UPDATE_RELEASE_INFO,
 } from './types.js';
+import {checkStatus, getOngoingVersions, getReleaseInfo} from './PollbotAPI.js';
 import type {
-  Check,
+  AddCheckResult,
+  CheckInfo,
   CheckResult,
   Dispatch,
   GetState,
   OngoingVersions,
+  ReleaseInfo,
   SetVersion,
-  Statuses,
   SubmitVersion,
   ThunkAction,
   UpdateLatestChannelVersions,
-  UpdateStatuses,
+  UpdateReleaseInfo,
   UpdateVersionInput,
 } from './types.js';
 
@@ -44,85 +47,60 @@ export function updateLatestChannelVersions(
   return {type: UPDATE_LATEST_CHANNEL_VERSIONS, versions};
 }
 
-export function updateStatuses(statuses: Statuses): UpdateStatuses {
-  return {type: UPDATE_STATUSES, statuses};
+export function updateReleaseInfo(releaseInfo: ReleaseInfo): UpdateReleaseInfo {
+  return {type: UPDATE_RELEASE_INFO, releaseInfo};
+}
+
+export function addCheckResult(
+  title: string,
+  result: CheckResult,
+): AddCheckResult {
+  return {type: ADD_CHECK_RESULT, title, result};
 }
 
 // ASYNC (THUNK) ACTIONS.
 
 // Fetching the statuses.
-function fetchStatus(version: string): Promise<*> {
-  const stateToUrl = {
-    archive: 'archive',
-    release_notes: 'bedrock/release-notes',
-    security_advisories: 'bedrock/security-advisories',
-    download_links: 'bedrock/download-links',
-    product_details: 'product-details',
-  };
-  return Promise.all(
-    Object.keys(stateToUrl).map((key: Check) => {
-      const endpoint = stateToUrl[key];
-      return fetch(
-        `https://pollbot.dev.mozaws.net/v1/firefox/${version}/${endpoint}`,
-      )
-        .then(resp => resp.json())
-        .then((details: CheckResult) => ({key, details}));
-    }),
-  ).then((results): {
-    [key: string]: CheckResult,
-  } =>
-    results.reduce((acc, {key, details}) => {
-      acc[key] = details;
-      return acc;
-    }, {}),
-  );
-}
-
 export function requestStatus(version: ?string): ThunkAction<void> {
-  const notifyChanges = changed => {
+  const notifyChanges = checkTitle => {
     if (Notification.permission === 'granted') {
-      const names = changed.map(s => s.replace('_', ' ')).join(', ');
-      new Notification(`${document.title}: Status of ${names} changed.`);
+      new Notification(`${document.title}: Status of ${checkTitle} changed.`);
     }
   };
 
   return function(dispatch: Dispatch, getState: GetState) {
-    version = version || getState().version;
-    if (!version) {
+    const versionToCheck = version || getState().version;
+    if (!versionToCheck) {
       return;
     }
-    fetchStatus(version)
-      .then(statuses => {
-        // Detect if some status changed, and notify!
-        const changed = Object.keys(statuses).filter(key => {
-          const previous = getState().statuses[key];
-          return previous !== null && previous.status !== statuses[key].status;
+    getReleaseInfo(versionToCheck)
+      .then(releaseInfo => {
+        dispatch(updateReleaseInfo(releaseInfo));
+        releaseInfo.checks.map((check: CheckInfo) => {
+          return checkStatus(check.url).then(result => {
+            // Detect if the result changed, and notify!
+            const prevResult = getState().checkResults[check.title];
+            if (prevResult && prevResult.status !== result.status) {
+              notifyChanges(check.title);
+            }
+            dispatch(addCheckResult(check.title, result));
+          });
         });
-        if (changed.length > 0) {
-          notifyChanges(changed);
-        }
-        // Save current state.
-        const normalizedStatuses: Statuses = {
-          archive: statuses.archive || null,
-          product_details: statuses.product_details || null,
-          release_notes: statuses.release_notes || null,
-          security_advisories: statuses.security_advisories || null,
-          download_links: statuses.download_links || null,
-        };
-        dispatch(updateStatuses(normalizedStatuses));
       })
-      .catch((err: string) =>
-        console.error('Failed getting the latest channel versions', err),
-      );
+      .catch((err: string) => {
+        console.error(
+          `Failed getting the release info for ${versionToCheck}`,
+          err,
+        );
+      });
   };
 }
 
 // Fetching the ongoing versions.
 export function requestOngoingVersions() {
   return function(dispatch: Dispatch) {
-    fetch('https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions')
-      .then(resp => resp.json())
-      .then((data: OngoingVersions) => {
+    getOngoingVersions()
+      .then(data => {
         dispatch(updateLatestChannelVersions(data));
       })
       .catch((err: string) =>

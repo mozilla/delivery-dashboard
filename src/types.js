@@ -10,12 +10,13 @@ import type {
  * state types
  */
 export type OngoingVersions = ?{
-  nightly: string,
-  beta: string,
-  release: string,
-  esr: string,
+  +nightly: string,
+  +beta: string,
+  +release: string,
+  +esr: string,
 };
 
+export type Product = 'firefox';
 export type Channel = 'nightly' | 'beta' | 'release' | 'esr';
 export type Status = 'missing' | 'exists' | 'incomplete' | 'error';
 export type Check =
@@ -25,61 +26,78 @@ export type Check =
   | 'security_advisories'
   | 'download_links';
 
-export type CheckResult = {
-  status: Status,
-  message?: string,
+export type CheckInfo = {
+  +url: string,
+  +title: string,
 };
 
-export type Statuses = {
-  archive: ?CheckResult,
-  product_details: ?CheckResult,
-  release_notes: ?CheckResult,
-  security_advisories: ?CheckResult,
-  download_links: ?CheckResult,
+export type ReleaseInfo = {
+  +channel: Channel,
+  +product: Product,
+  +version: string,
+  +checks: CheckInfo[],
+};
+
+export type CheckResult = {
+  +status: Status,
+  +message: string,
+  +link: string,
+};
+
+export type CheckResults = {
+  [check: string]: CheckResult,
 };
 
 export type State = {
-  version: string,
-  versionInput: string,
-  latestChannelVersions: ?OngoingVersions,
-  statuses: Statuses,
+  +version: string,
+  +versionInput: string,
+  +latestChannelVersions: ?OngoingVersions,
+  +releaseInfo: ?ReleaseInfo,
+  +checkResults: CheckResults,
 };
 
 /*
  * action types
  */
+export const ADD_CHECK_RESULT = 'ADD_CHECK_RESULT';
 export const SET_VERSION = 'SET_VERSION';
 export const UPDATE_VERSION_INPUT = 'UPDATE_VERSION_INPUT';
 export const SUBMIT_VERSION = 'SUBMIT_VERSION';
 export const UPDATE_LATEST_CHANNEL_VERSIONS = 'UPDATE_LATEST_CHANNEL_VERSIONS';
-export const UPDATE_STATUSES = 'UPDATE_STATUSES';
+export const UPDATE_RELEASE_INFO = 'UPDATE_RELEASE_INFO';
 
-export type SetVersion = {
+export type AddCheckResult = {|
+  type: 'ADD_CHECK_RESULT',
+  title: string,
+  result: CheckResult,
+|};
+export type SetVersion = {|
   type: 'SET_VERSION',
   version: string,
-};
-export type UpdateVersionInput = {
+|};
+export type UpdateVersionInput = {|
   type: 'UPDATE_VERSION_INPUT',
   version: string,
-};
-export type SubmitVersion = {
+|};
+export type SubmitVersion = {|
   type: 'SUBMIT_VERSION',
-};
-export type UpdateLatestChannelVersions = {
+|};
+export type UpdateLatestChannelVersions = {|
   type: 'UPDATE_LATEST_CHANNEL_VERSIONS',
   versions: OngoingVersions,
-};
-export type UpdateStatuses = {
-  type: 'UPDATE_STATUSES',
-  statuses: Statuses,
-};
+|};
+export type UpdateReleaseInfo = {|
+  type: 'UPDATE_RELEASE_INFO',
+  releaseInfo: ReleaseInfo,
+|};
 
 export type Action =
+  | AddCheckResult
   | SetVersion
-  | UpdateVersionInput
   | SubmitVersion
   | UpdateLatestChannelVersions
-  | UpdateStatuses;
+  | UpdateReleaseInfo
+  | UpdateVersionInput;
 
 /*
  * Redux types

@@ -68,6 +68,16 @@ td {
   color: #ccc;
 }
 
+/* List of check results for a given release */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(30%, 1fr));
+  grid-gap: 20px;
+}
+.dashboard .panel {
+  text-align: center;
+}
+
 /* Firefox releases menu */
 .firefox-releases-menu button {
   padding: 0;

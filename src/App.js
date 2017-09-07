@@ -4,20 +4,22 @@ import {ButtonGroup, Col, Grid, Navbar, Panel, Row} from 'react-bootstrap';
 import './App.css';
 import {connect} from 'react-redux';
 import {
-  setVersion,
-  updateVersionInput,
-  submitVersion,
-  requestStatus,
-  updateUrl,
   localUrlFromVersion,
   requestOngoingVersions,
+  requestStatus,
+  setVersion,
+  submitVersion,
+  updateUrl,
+  updateVersionInput,
 } from './actions.js';
 import type {
+  CheckResult,
+  CheckResults,
   Dispatch,
   OngoingVersions,
+  ReleaseInfo,
   State,
-  CheckResult,
-  Statuses,
+  Status,
 } from './types.js';
 
 function requestNotificationPermission(): void {
@@ -45,21 +47,47 @@ const parseUrl = (
   };
 };
 
-class ConnectedApp extends React.Component<{dispatch: Dispatch}, void> {
+type ConnectedAppProps = {
+  dispatch: Dispatch,
+  checkResults: CheckResults,
+};
+class ConnectedApp extends React.Component<ConnectedAppProps, void> {
   refreshIntervalId: ?number;
 
-  constructor(props: {dispatch: Dispatch}): void {
+  constructor(props: ConnectedAppProps): void {
     super(props);
     this.refreshIntervalId = null;
   }
 
+  setUpAutoRefresh(): void {
+    if (this.shouldRefresh()) {
+      this.refreshIntervalId = setInterval(
+        () => this.props.dispatch(requestStatus()),
+        60000,
+      );
+    } else {
+      this.stopAutoRefresh();
+    }
+  }
+
+  stopAutoRefresh(): void {
+    if (this.refreshIntervalId) {
+      clearInterval(this.refreshIntervalId);
+      this.refreshIntervalId = null;
+    }
+  }
+
+  shouldRefresh(): boolean {
+    const checkTitles = Object.keys(this.props.checkResults);
+    const failingChecks = checkTitles.filter(
+      title => this.props.checkResults[title].status !== 'exists',
+    );
+    return failingChecks.length !== 0;
+  }
+
   componentDidMount(): void {
     this.props.dispatch(requestOngoingVersions());
-    // Setup auto-refresh.
-    this.refreshIntervalId = setInterval(
-      () => this.props.dispatch(requestStatus()),
-      5000,
-    );
+    this.setUpAutoRefresh();
     // Setup notifications.
     requestNotificationPermission();
     // Listen to url hash changes.
@@ -68,10 +96,12 @@ class ConnectedApp extends React.Component<{dispatch: Dispatch}, void> {
     this.versionFromHash();
   }
 
+  componentDidUpdate(): void {
+    this.setUpAutoRefresh();
+  }
+
   componentWillUnmount(): void {
-    if (this.refreshIntervalId) {
-      clearInterval(this.refreshIntervalId);
-    }
+    this.stopAutoRefresh();
   }
 
   versionFromHash = (): void => {
@@ -108,7 +138,14 @@ class ConnectedApp extends React.Component<{dispatch: Dispatch}, void> {
     );
   }
 }
-const App = connect()(ConnectedApp);
+const App = connect(
+  // mapStateToProps
+  (state: State) => ({
+    checkResults: state.checkResults,
+  }),
+  // mapDispatchToProps
+  null,
+)(ConnectedApp);
 
 const VersionInput = connect(
   // mapStateToProps
@@ -225,7 +262,8 @@ function ReleaseItem({title, version}: {title: string, version: string}) {
 const CurrentRelease = connect(
   // mapStateToProps
   (state: State) => ({
-    statuses: state.statuses,
+    checkResults: state.checkResults,
+    releaseInfo: state.releaseInfo,
     version: state.version,
   }),
   // mapDispatchToProps
@@ -233,11 +271,12 @@ const CurrentRelease = connect(
 )(Dashboard);
 
 type DashboardPropType = {
+  checkResults: CheckResults,
+  releaseInfo: ?ReleaseInfo,
   version: string,
-  statuses: Statuses,
 };
 
-function Dashboard({statuses, version}: DashboardPropType) {
+function Dashboard({releaseInfo, checkResults, version}: DashboardPropType) {
   if (version === '') {
     return (
       <p>
@@ -245,101 +284,69 @@ function Dashboard({statuses, version}: DashboardPropType) {
         <strong> Select or enter your version number.</strong>
       </p>
     );
+  } else if (!releaseInfo) {
+    return <Spinner />;
   } else {
-    const {
-      archive,
-      product_details,
-      release_notes,
-      security_advisories,
-      download_links,
-    } = statuses;
     return (
       <div>
-        <table className="table">
-          <tbody>
-            <tr>
-              <td>
-                <h2>Archives</h2>
-                <DisplayStatus
-                  url={
-                    'https://archive.mozilla.org/pub/firefox/releases/' +
-                    version +
-                    '/'
-                  }
-                  data={archive}
-                />
-              </td>
-
-              <td>
-                <h2>Product Details</h2>
-                <DisplayStatus
-                  url={'https://product-details.mozilla.org/1.0/firefox.json'}
-                  data={product_details}
-                />
-              </td>
-            </tr>
-
-            <tr>
-              <td>
-                <h2>Release Notes</h2>
-                <DisplayStatus
-                  url={
-                    'https://www.mozilla.org/en-US/firefox/' +
-                    version +
-                    '/releasenotes/'
-                  }
-                  data={release_notes}
-                />
-              </td>
-
-              <td>
-                <h2>Security Advisories</h2>
-                <DisplayStatus
-                  url={
-                    'https://www.mozilla.org/en-US/security/known-vulnerabilities/firefox/'
-                  }
-                  data={security_advisories}
-                />
-              </td>
-
-              <td>
-                <h2>Download links</h2>
-                <DisplayStatus
-                  url={'https://www.mozilla.org/en-US/firefox/all/'}
-                  data={download_links}
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <h2>
+          Channel: {releaseInfo.channel}
+        </h2>
+        <div className="dashboard">
+          {releaseInfo.checks.map(check =>
+            // Map on the checklist to display the results in the same order.
+            DisplayCheckResult(check.title, checkResults[check.title]),
+          )}
+        </div>
       </div>
     );
   }
 }
 
-function DisplayStatus({url, data}: {url: string, data: ?CheckResult}) {
-  if (!data) {
-    return <Spinner />;
-  } else {
-    const {status, message} = data;
-    const statusToLabelClass = {
-      error: 'label-warning',
-      exists: 'label-success',
-      incomplete: 'label-info',
-      missing: 'label-danger',
-    };
-    const msg = message || '';
-    const labelText = status === 'error' ? 'Error: ' + msg : status;
-    return (
-      <a
-        className={'label ' + statusToLabelClass[status]}
-        title={message}
-        href={url}
-      >
-        {labelText}
-      </a>
-    );
-  }
+function DisplayCheckResult(title: string, checkResult: ?CheckResult) {
+  return (
+    <div className="panel panel-default" key={title}>
+      <div className="panel-body">
+        <h2>
+          {title}
+        </h2>
+        {checkResult
+          ? <DisplayStatus
+              status={checkResult.status}
+              message={checkResult.message}
+              url={checkResult.link}
+            />
+          : <Spinner />}
+      </div>
+    </div>
+  );
+}
+
+function DisplayStatus({
+  status,
+  message,
+  url,
+}: {
+  status: Status,
+  message: string,
+  url: string,
+}) {
+  const statusToLabelClass = {
+    error: 'label-warning',
+    exists: 'label-success',
+    incomplete: 'label-info',
+    missing: 'label-danger',
+  };
+  const labelText = status === 'error' ? 'Error: ' + message : status;
+  return (
+    <a
+      className={'label ' + statusToLabelClass[status]}
+      title={message}
+      href={url}
+    >
+      {labelText}
+    </a>
+  );
 }
 
 export default App;
