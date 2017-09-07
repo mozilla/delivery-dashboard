@@ -242,7 +242,7 @@ type DashboardPropType = {
 };
 
 function Dashboard({releaseInfo, checkResults, version}: DashboardPropType) {
-  if (version === '') {
+  if (version === '' || !releaseInfo) {
     return (
       <p>
         Learn more about a specific version.
@@ -253,11 +253,12 @@ function Dashboard({releaseInfo, checkResults, version}: DashboardPropType) {
     return (
       <div>
         <h2>
-          Channel: {(releaseInfo && releaseInfo.channel) || ''}
+          Channel: {releaseInfo.channel}
         </h2>
         <div className="dashboard">
-          {Object.keys(checkResults).map(key =>
-            DisplayCheckResult(key, checkResults[key]),
+          {releaseInfo.checks.map(check =>
+            // Map on the checklist to display the results in the same order.
+            DisplayCheckResult(check.title, checkResults[check.title]),
           )}
         </div>
       </div>
@@ -265,18 +266,20 @@ function Dashboard({releaseInfo, checkResults, version}: DashboardPropType) {
   }
 }
 
-function DisplayCheckResult(title: string, checkResult: CheckResult) {
+function DisplayCheckResult(title: string, checkResult: ?CheckResult) {
   return (
     <div className="panel panel-default" key={title}>
       <div className="panel-body">
         <h2>
           {title}
         </h2>
-        <DisplayStatus
-          status={checkResult.status}
-          message={checkResult.message}
-          url={checkResult.link}
-        />
+        {checkResult
+          ? <DisplayStatus
+              status={checkResult.status}
+              message={checkResult.message}
+              url={checkResult.link}
+            />
+          : <Spinner />}
       </div>
     </div>
   );
