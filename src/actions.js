@@ -62,9 +62,9 @@ export function addCheckResult(
 
 // Fetching the statuses.
 export function requestStatus(version: ?string): ThunkAction<void> {
-  const notifyChanges = checkTitle => {
+  const notifyChanges = (checkTitle, status) => {
     if (Notification.permission === 'granted') {
-      new Notification(`${document.title}: Status of ${checkTitle} changed.`);
+      new Notification(`${checkTitle} : status changed (${status}).`);
     }
   };
 
@@ -81,7 +81,7 @@ export function requestStatus(version: ?string): ThunkAction<void> {
             // Detect if the result changed, and notify!
             const prevResult = getState().checkResults[check.title];
             if (prevResult && prevResult.status !== result.status) {
-              notifyChanges(check.title);
+              notifyChanges(check.title, result.status);
             }
             dispatch(addCheckResult(check.title, result));
           });
