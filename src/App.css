@@ -70,12 +70,11 @@ td {
 
 /* List of check results for a given release */
 .dashboard {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(30%, 1fr));
+  grid-gap: 20px;
 }
 .dashboard .panel {
-  flex: 0 0 30%;
   text-align: center;
 }
 
