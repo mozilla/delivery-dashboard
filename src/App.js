@@ -61,6 +61,10 @@ class ConnectedApp extends React.Component<ConnectedAppProps, void> {
 
   setUpAutoRefresh(): void {
     if (this.shouldRefresh()) {
+      if (this.refreshIntervalId) {
+        // The auto-refresh is already enabled.
+        return;
+      }
       this.refreshIntervalId = setInterval(
         () => this.props.dispatch(requestStatus()),
         60000,
