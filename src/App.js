@@ -277,13 +277,15 @@ type DashboardPropType = {
 };
 
 function Dashboard({releaseInfo, checkResults, version}: DashboardPropType) {
-  if (version === '' || !releaseInfo) {
+  if (version === '') {
     return (
       <p>
         Learn more about a specific version.
         <strong> Select or enter your version number.</strong>
       </p>
     );
+  } else if (!releaseInfo) {
+    return <Spinner />;
   } else {
     return (
       <div>
