@@ -6,6 +6,7 @@ import {connect} from 'react-redux';
 import {
   localUrlFromVersion,
   requestOngoingVersions,
+  requestPollbotVersion,
   requestStatus,
   setVersion,
   submitVersion,
@@ -13,6 +14,7 @@ import {
   updateVersionInput,
 } from './actions.js';
 import type {
+  APIVersionData,
   CheckResult,
   CheckResults,
   Dispatch,
@@ -21,6 +23,8 @@ import type {
   State,
   Status,
 } from './types.js';
+
+const deliveryDashboardVersionData = require('./version.json');
 
 function requestNotificationPermission(): void {
   if (
@@ -48,8 +52,9 @@ const parseUrl = (
 };
 
 type ConnectedAppProps = {
-  dispatch: Dispatch,
   checkResults: CheckResults,
+  dispatch: Dispatch,
+  pollbotVersion: APIVersionData,
 };
 class ConnectedApp extends React.Component<ConnectedAppProps, void> {
   refreshIntervalId: ?number;
@@ -90,6 +95,7 @@ class ConnectedApp extends React.Component<ConnectedAppProps, void> {
   }
 
   componentDidMount(): void {
+    this.props.dispatch(requestPollbotVersion());
     this.props.dispatch(requestOngoingVersions());
     this.setUpAutoRefresh();
     // Setup notifications.
@@ -141,7 +147,10 @@ class ConnectedApp extends React.Component<ConnectedAppProps, void> {
         </Grid>
         <footer>
           <p className="text-muted">
-            Delivery dashboard version: <VersionLink />
+            Delivery dashboard version:{' '}
+            <VersionLink versionData={deliveryDashboardVersionData} />
+            &nbsp;--&nbsp;Pollbot version:{' '}
+            <VersionLink versionData={this.props.pollbotVersion} />
           </p>
         </footer>
       </div>
@@ -152,6 +161,7 @@ const App = connect(
   // mapStateToProps
   (state: State) => ({
     checkResults: state.checkResults,
+    pollbotVersion: state.pollbotVersion,
   }),
   // mapDispatchToProps
   null,
@@ -359,8 +369,10 @@ function DisplayStatus({
   );
 }
 
-var versionData = require('./version.json');
-function VersionLink() {
+function VersionLink({versionData}: {versionData: APIVersionData}) {
+  if (!versionData) {
+    return null;
+  }
   const {commit, source, version} = versionData;
   const sourceUrl = source.replace(/\.git/, '');
   const url = `${sourceUrl}/commit/${commit}`;

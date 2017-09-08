@@ -48,12 +48,20 @@ export type CheckResults = {
   [check: string]: CheckResult,
 };
 
+export type APIVersionData = {
+  name: string,
+  version: string,
+  source: string,
+  commit: string,
+};
+
 export type State = {
   +version: string,
   +versionInput: string,
   +latestChannelVersions: ?OngoingVersions,
   +releaseInfo: ?ReleaseInfo,
   +checkResults: CheckResults,
+  +pollbotVersion: ?APIVersionData,
 };
 
 /*
@@ -65,6 +73,7 @@ export const UPDATE_VERSION_INPUT = 'UPDATE_VERSION_INPUT';
 export const SUBMIT_VERSION = 'SUBMIT_VERSION';
 export const UPDATE_LATEST_CHANNEL_VERSIONS = 'UPDATE_LATEST_CHANNEL_VERSIONS';
 export const UPDATE_RELEASE_INFO = 'UPDATE_RELEASE_INFO';
+export const UPDATE_POLLBOT_VERSION = 'UPDATE_POLLBOT_VERSION';
 
 export type AddCheckResult = {|
   type: 'ADD_CHECK_RESULT',
@@ -90,12 +99,17 @@ export type UpdateReleaseInfo = {|
   type: 'UPDATE_RELEASE_INFO',
   releaseInfo: ReleaseInfo,
 |};
+export type UpdatePollbotVersion = {|
+  type: 'UPDATE_POLLBOT_VERSION',
+  version: APIVersionData,
+|};
 
 export type Action =
   | AddCheckResult
   | SetVersion
   | SubmitVersion
   | UpdateLatestChannelVersions
+  | UpdatePollbotVersion
   | UpdateReleaseInfo
   | UpdateVersionInput;
 

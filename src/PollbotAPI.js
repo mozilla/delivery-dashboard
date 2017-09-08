@@ -1,5 +1,10 @@
 // @flow
-import type {CheckResult, OngoingVersions, ReleaseInfo} from './types.js';
+import type {
+  APIVersionData,
+  CheckResult,
+  OngoingVersions,
+  ReleaseInfo,
+} from './types.js';
 
 export function getOngoingVersions(): Promise<OngoingVersions> {
   return fetch(
@@ -15,4 +20,10 @@ export function getReleaseInfo(version: string): Promise<ReleaseInfo> {
 
 export function checkStatus(url: string): Promise<CheckResult> {
   return fetch(url).then(resp => resp.json());
+}
+
+export function getPollbotVersion(): Promise<APIVersionData> {
+  return fetch(`https://pollbot.dev.mozaws.net/v1/__version__`).then(resp =>
+    resp.json(),
+  );
 }

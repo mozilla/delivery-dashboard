@@ -95,7 +95,6 @@ footer {
   bottom: 0;
   height: 30px;
   position: absolute;
-  right: 20px;
-  text-align: right;
+  text-align: center;
   width: 100%;
 }

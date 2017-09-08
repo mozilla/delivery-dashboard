@@ -5,6 +5,7 @@ import {
   SET_VERSION,
   SUBMIT_VERSION,
   UPDATE_LATEST_CHANNEL_VERSIONS,
+  UPDATE_POLLBOT_VERSION,
   UPDATE_VERSION_INPUT,
   UPDATE_RELEASE_INFO,
 } from './types.js';
@@ -16,6 +17,7 @@ const initialState: State = {
   latestChannelVersions: null,
   releaseInfo: null,
   checkResults: {},
+  pollbotVersion: null,
 };
 
 export function deliveryDashboard(
@@ -50,6 +52,10 @@ export function deliveryDashboard(
     case UPDATE_RELEASE_INFO:
       return Object.assign({}, state, {
         releaseInfo: action.releaseInfo,
+      });
+    case UPDATE_POLLBOT_VERSION:
+      return Object.assign({}, state, {
+        pollbotVersion: action.version,
       });
     default:
       return state;
