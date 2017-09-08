@@ -26,7 +26,8 @@
     "lint-fix": "yarn lint -- --fix",
     "flow": "flow",
     "flow-coverage": "flow-coverage-report -i 'src/**/*.js' -t html -t text",
-    "check": "yarn lint && yarn flow"
+    "check": "yarn lint && yarn flow",
+    "version-file": "./update_version.sh"
   },
   "devDependencies": {
     "eslint": "^4.4.1",
