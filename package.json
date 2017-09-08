@@ -18,7 +18,9 @@
   "homepage": "https://mozilla.github.io/delivery-dashboard/",
   "scripts": {
     "start": "react-scripts start",
+    "prestart": "yarn run version-file",
     "build": "react-scripts build",
+    "prebuild": "yarn run version-file",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy": "npm run build && gh-pages --add --dist build/",
