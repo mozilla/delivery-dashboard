@@ -118,7 +118,7 @@ class ConnectedApp extends React.Component<ConnectedAppProps, void> {
 
   render() {
     return (
-      <Grid fluid>
+      <div>
         <Navbar collapseOnSelect fluid>
           <Navbar.Header>
             <Navbar.Brand>
@@ -126,18 +126,25 @@ class ConnectedApp extends React.Component<ConnectedAppProps, void> {
             </Navbar.Brand>
           </Navbar.Header>
         </Navbar>
-        <Row>
-          <Col sm={9}>
-            <VersionInput />
-            <CurrentRelease />
-          </Col>
-          <Col sm={3} className="firefox-releases-menu">
-            <Panel header={<strong>Firefox Releases</strong>}>
-              <SideBar />
-            </Panel>
-          </Col>
-        </Row>
-      </Grid>
+        <Grid fluid>
+          <Row>
+            <Col sm={9}>
+              <VersionInput />
+              <CurrentRelease />
+            </Col>
+            <Col sm={3} className="firefox-releases-menu">
+              <Panel header={<strong>Firefox Releases</strong>}>
+                <SideBar />
+              </Panel>
+            </Col>
+          </Row>
+        </Grid>
+        <footer>
+          <p className="text-muted">
+            Delivery dashboard version: <VersionLink />
+          </p>
+        </footer>
+      </div>
     );
   }
 }
@@ -348,6 +355,18 @@ function DisplayStatus({
       href={url}
     >
       {labelText}
+    </a>
+  );
+}
+
+var versionData = require('./version.json');
+function VersionLink() {
+  const {commit, source, version} = versionData;
+  const sourceUrl = source.replace(/\.git/, '');
+  const url = `${sourceUrl}/commit/${commit}`;
+  return (
+    <a href={url}>
+      {version}
     </a>
   );
 }

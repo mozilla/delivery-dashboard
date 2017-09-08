@@ -82,3 +82,20 @@ td {
 .firefox-releases-menu button {
   padding: 0;
 }
+
+/* Sticky footer */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  margin-bottom: 30px;
+}
+footer {
+  bottom: 0;
+  height: 30px;
+  position: absolute;
+  right: 20px;
+  text-align: right;
+  width: 100%;
+}
