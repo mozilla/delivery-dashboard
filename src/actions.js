@@ -73,6 +73,7 @@ export function requestStatus(version: ?string): ThunkAction<void> {
     if (!versionToCheck) {
       return;
     }
+    dispatch(setVersion(versionToCheck));
     getReleaseInfo(versionToCheck)
       .then(releaseInfo => {
         dispatch(updateReleaseInfo(releaseInfo));

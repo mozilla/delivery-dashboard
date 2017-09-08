@@ -112,7 +112,6 @@ class ConnectedApp extends React.Component<ConnectedAppProps, void> {
     const parsedUrl = parseUrl(window.location.hash);
     if (parsedUrl) {
       const version = parsedUrl.version;
-      this.props.dispatch(setVersion(version));
       this.props.dispatch(requestStatus(version));
     }
   };
