@@ -73,13 +73,16 @@ export function requestStatus(version: ?string): ThunkAction<void> {
     if (!versionToCheck) {
       return;
     }
+    // Save previous results so we can check if something changed.
+    const prevResults = getState().checkResults;
+    dispatch(setVersion(versionToCheck));
     getReleaseInfo(versionToCheck)
       .then(releaseInfo => {
         dispatch(updateReleaseInfo(releaseInfo));
         releaseInfo.checks.map((check: CheckInfo) => {
           return checkStatus(check.url).then(result => {
             // Detect if the result changed, and notify!
-            const prevResult = getState().checkResults[check.title];
+            const prevResult = prevResults[check.title];
             if (prevResult && prevResult.status !== result.status) {
               notifyChanges(check.title, result.status);
             }
