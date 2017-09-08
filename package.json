@@ -29,6 +29,7 @@
     "flow": "flow",
     "flow-coverage": "flow-coverage-report -i 'src/**/*.js' -t html -t text",
     "check": "yarn lint && yarn flow",
+    "precheck": "yarn run version-file",
     "version-file": "./update_version.sh"
   },
   "devDependencies": {
