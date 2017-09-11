@@ -6,6 +6,7 @@ import {connect} from 'react-redux';
 import {
   localUrlFromVersion,
   requestOngoingVersions,
+  requestPollbotVersion,
   requestStatus,
   setVersion,
   submitVersion,
@@ -13,6 +14,7 @@ import {
   updateVersionInput,
 } from './actions.js';
 import type {
+  APIVersionData,
   CheckResult,
   CheckResults,
   Dispatch,
@@ -21,6 +23,8 @@ import type {
   State,
   Status,
 } from './types.js';
+
+const deliveryDashboardVersionData = require('./version.json');
 
 function requestNotificationPermission(): void {
   if (
@@ -48,8 +52,9 @@ const parseUrl = (
 };
 
 type ConnectedAppProps = {
-  dispatch: Dispatch,
   checkResults: CheckResults,
+  dispatch: Dispatch,
+  pollbotVersion: APIVersionData,
 };
 class ConnectedApp extends React.Component<ConnectedAppProps, void> {
   refreshIntervalId: ?number;
@@ -90,6 +95,7 @@ class ConnectedApp extends React.Component<ConnectedAppProps, void> {
   }
 
   componentDidMount(): void {
+    this.props.dispatch(requestPollbotVersion());
     this.props.dispatch(requestOngoingVersions());
     this.setUpAutoRefresh();
     // Setup notifications.
@@ -118,7 +124,7 @@ class ConnectedApp extends React.Component<ConnectedAppProps, void> {
 
   render() {
     return (
-      <Grid fluid>
+      <div>
         <Navbar collapseOnSelect fluid>
           <Navbar.Header>
             <Navbar.Brand>
@@ -126,18 +132,28 @@ class ConnectedApp extends React.Component<ConnectedAppProps, void> {
             </Navbar.Brand>
           </Navbar.Header>
         </Navbar>
-        <Row>
-          <Col sm={9}>
-            <VersionInput />
-            <CurrentRelease />
-          </Col>
-          <Col sm={3} className="firefox-releases-menu">
-            <Panel header={<strong>Firefox Releases</strong>}>
-              <SideBar />
-            </Panel>
-          </Col>
-        </Row>
-      </Grid>
+        <Grid fluid>
+          <Row>
+            <Col sm={9}>
+              <VersionInput />
+              <CurrentRelease />
+            </Col>
+            <Col sm={3} className="firefox-releases-menu">
+              <Panel header={<strong>Firefox Releases</strong>}>
+                <SideBar />
+              </Panel>
+            </Col>
+          </Row>
+        </Grid>
+        <footer>
+          <p className="text-muted">
+            Delivery dashboard version:{' '}
+            <VersionLink versionData={deliveryDashboardVersionData} />
+            &nbsp;--&nbsp;Pollbot version:{' '}
+            <VersionLink versionData={this.props.pollbotVersion} />
+          </p>
+        </footer>
+      </div>
     );
   }
 }
@@ -145,6 +161,7 @@ const App = connect(
   // mapStateToProps
   (state: State) => ({
     checkResults: state.checkResults,
+    pollbotVersion: state.pollbotVersion,
   }),
   // mapDispatchToProps
   null,
@@ -348,6 +365,20 @@ function DisplayStatus({
       href={url}
     >
       {labelText}
+    </a>
+  );
+}
+
+function VersionLink({versionData}: {versionData: APIVersionData}) {
+  if (!versionData) {
+    return null;
+  }
+  const {commit, source, version} = versionData;
+  const sourceUrl = source.replace(/\.git/, '');
+  const url = `${sourceUrl}/commit/${commit}`;
+  return (
+    <a href={url}>
+      {version}
     </a>
   );
 }

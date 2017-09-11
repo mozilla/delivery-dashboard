@@ -18,7 +18,9 @@
   "homepage": "https://mozilla.github.io/delivery-dashboard/",
   "scripts": {
     "start": "react-scripts start",
+    "prestart": "yarn run version-file",
     "build": "react-scripts build",
+    "prebuild": "yarn run version-file",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy": "npm run build && gh-pages --add --dist build/",
@@ -26,7 +28,9 @@
     "lint-fix": "yarn lint -- --fix",
     "flow": "flow",
     "flow-coverage": "flow-coverage-report -i 'src/**/*.js' -t html -t text",
-    "check": "yarn lint && yarn flow"
+    "check": "yarn lint && yarn flow",
+    "precheck": "yarn run version-file",
+    "version-file": "./update_version.sh"
   },
   "devDependencies": {
     "eslint": "^4.4.1",

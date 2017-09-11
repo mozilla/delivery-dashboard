@@ -6,11 +6,18 @@ import {
   UPDATE_VERSION_INPUT,
   SUBMIT_VERSION,
   UPDATE_LATEST_CHANNEL_VERSIONS,
+  UPDATE_POLLBOT_VERSION,
   UPDATE_RELEASE_INFO,
 } from './types.js';
-import {checkStatus, getOngoingVersions, getReleaseInfo} from './PollbotAPI.js';
+import {
+  checkStatus,
+  getOngoingVersions,
+  getPollbotVersion,
+  getReleaseInfo,
+} from './PollbotAPI.js';
 import type {
   AddCheckResult,
+  APIVersionData,
   CheckInfo,
   CheckResult,
   Dispatch,
@@ -21,6 +28,7 @@ import type {
   SubmitVersion,
   ThunkAction,
   UpdateLatestChannelVersions,
+  UpdatePollbotVersion,
   UpdateReleaseInfo,
   UpdateVersionInput,
 } from './types.js';
@@ -45,6 +53,12 @@ export function updateLatestChannelVersions(
   versions: OngoingVersions,
 ): UpdateLatestChannelVersions {
   return {type: UPDATE_LATEST_CHANNEL_VERSIONS, versions};
+}
+
+export function updatePollbotVersion(
+  version: APIVersionData,
+): UpdatePollbotVersion {
+  return {type: UPDATE_POLLBOT_VERSION, version};
 }
 
 export function updateReleaseInfo(releaseInfo: ReleaseInfo): UpdateReleaseInfo {
@@ -119,5 +133,18 @@ export const localUrlFromVersion = (version: string) =>
 export function updateUrl(): ThunkAction<void> {
   return function(dispatch: Dispatch, getState: GetState) {
     window.location.hash = localUrlFromVersion(getState().version);
+  };
+}
+
+// Fetching the pollbot version.
+export function requestPollbotVersion() {
+  return function(dispatch: Dispatch) {
+    getPollbotVersion()
+      .then(data => {
+        dispatch(updatePollbotVersion(data));
+      })
+      .catch((err: string) =>
+        console.error('Failed getting the pollbot version', err),
+      );
   };
 }
