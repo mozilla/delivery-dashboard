@@ -92,14 +92,16 @@ export function requestStatus(version: ?string) {
     try {
       const releaseInfo = await getReleaseInfo(versionToCheck);
       dispatch(updateReleaseInfo(releaseInfo));
-      releaseInfo.checks.map(async (check: CheckInfo) => {
-        const result = await checkStatus(check.url);
-        const prevResult = prevResults[check.title];
-        if (prevResult && prevResult.status !== result.status) {
-          notifyChanges(check.title, result.status);
-        }
-        dispatch(addCheckResult(check.title, result));
+      const checks = releaseInfo.checks.map((check: CheckInfo) => {
+        return checkStatus(check.url).then(result => {
+          const prevResult = prevResults[check.title];
+          if (prevResult && prevResult.status !== result.status) {
+            notifyChanges(check.title, result.status);
+          }
+          dispatch(addCheckResult(check.title, result));
+        });
       });
+      Promise.all(checks);
     } catch (err) {
       console.error(
         `Failed getting the release info for ${versionToCheck}`,
