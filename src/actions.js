@@ -100,12 +100,14 @@ export function requestStatus(version: ?string) {
         dispatch(addCheckResult(check.title, result));
       });
     });
-    return Promise.all(checks).catch((err: string) => {
+    try {
+      await Promise.all(checks);
+    } catch (err) {
       console.error(
         `Failed getting the release info for ${versionToCheck}`,
         err,
       );
-    });
+    }
   };
 }
 
