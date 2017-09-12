@@ -89,25 +89,23 @@ export function requestStatus(version: ?string) {
     // Save previous results so we can check if something changed.
     const prevResults = getState().checkResults;
     dispatch(setVersion(versionToCheck));
-    try {
-      const releaseInfo = await getReleaseInfo(versionToCheck);
-      dispatch(updateReleaseInfo(releaseInfo));
-      const checks = releaseInfo.checks.map((check: CheckInfo) => {
-        return checkStatus(check.url).then(result => {
-          const prevResult = prevResults[check.title];
-          if (prevResult && prevResult.status !== result.status) {
-            notifyChanges(check.title, result.status);
-          }
-          dispatch(addCheckResult(check.title, result));
-        });
+    const releaseInfo = await getReleaseInfo(versionToCheck);
+    dispatch(updateReleaseInfo(releaseInfo));
+    const checks = releaseInfo.checks.map((check: CheckInfo) => {
+      return checkStatus(check.url).then(result => {
+        const prevResult = prevResults[check.title];
+        if (prevResult && prevResult.status !== result.status) {
+          notifyChanges(check.title, result.status);
+        }
+        dispatch(addCheckResult(check.title, result));
       });
-      Promise.all(checks);
-    } catch (err) {
+    });
+    return Promise.all(checks).catch((err: string) => {
       console.error(
         `Failed getting the release info for ${versionToCheck}`,
         err,
       );
-    }
+    });
   };
 }
 
