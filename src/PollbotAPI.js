@@ -6,17 +6,15 @@ import type {
   ReleaseInfo,
 } from './types.js';
 
+const SERVER = 'https://pollbot.dev.mozaws.net/v1';
+
 export async function getOngoingVersions(): Promise<OngoingVersions> {
-  const response = await fetch(
-    'https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions',
-  );
+  const response = await fetch(`${SERVER}/firefox/ongoing-versions`);
   return response.json();
 }
 
 export async function getReleaseInfo(version: string): Promise<ReleaseInfo> {
-  const response = await fetch(
-    `https://pollbot.dev.mozaws.net/v1/firefox/${version}`,
-  );
+  const response = await fetch(`${SERVER}/firefox/${version}`);
   return response.json();
 }
 
@@ -26,6 +24,6 @@ export async function checkStatus(url: string): Promise<CheckResult> {
 }
 
 export async function getPollbotVersion(): Promise<APIVersionData> {
-  const response = await fetch(`https://pollbot.dev.mozaws.net/v1/__version__`);
+  const response = await fetch(`${SERVER}/__version__`);
   return response.json();
 }
