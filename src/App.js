@@ -24,7 +24,7 @@ import type {
   Status,
 } from './types.js';
 
-const deliveryDashboardVersionData = require('./version.json');
+const deliveryDashboardVersionData: APIVersionData = require('./version.json');
 
 function requestNotificationPermission(): void {
   if (
@@ -272,9 +272,7 @@ function ReleasesMenu({versions}: {versions: OngoingVersions}) {
 function ReleaseItem({title, version}: {title: string, version: string}) {
   return (
     <li key={title}>
-      <a href={localUrlFromVersion(version)}>
-        {title + ': ' + version}
-      </a>
+      <a href={localUrlFromVersion(version)}>{title + ': ' + version}</a>
     </li>
   );
 }
@@ -309,9 +307,7 @@ function Dashboard({releaseInfo, checkResults, version}: DashboardPropType) {
   } else {
     return (
       <div>
-        <h2>
-          Channel: {releaseInfo.channel}
-        </h2>
+        <h2>Channel: {releaseInfo.channel}</h2>
         <div className="dashboard">
           {releaseInfo.checks.map(check =>
             // Map on the checklist to display the results in the same order.
@@ -327,16 +323,16 @@ function DisplayCheckResult(title: string, checkResult: ?CheckResult) {
   return (
     <div className="panel panel-default" key={title}>
       <div className="panel-body">
-        <h2>
-          {title}
-        </h2>
-        {checkResult
-          ? <DisplayStatus
-              status={checkResult.status}
-              message={checkResult.message}
-              url={checkResult.link}
-            />
-          : <Spinner />}
+        <h2>{title}</h2>
+        {checkResult ? (
+          <DisplayStatus
+            status={checkResult.status}
+            message={checkResult.message}
+            url={checkResult.link}
+          />
+        ) : (
+          <Spinner />
+        )}
       </div>
     </div>
   );
@@ -376,11 +372,7 @@ function VersionLink({versionData}: {versionData: APIVersionData}) {
   const {commit, source, version} = versionData;
   const sourceUrl = source.replace(/\.git/, '');
   const url = `${sourceUrl}/commit/${commit}`;
-  return (
-    <a href={url}>
-      {version}
-    </a>
-  );
+  return <a href={url}>{version}</a>;
 }
 
 export default App;
