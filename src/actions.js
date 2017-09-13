@@ -91,14 +91,13 @@ export function requestStatus(version: ?string) {
     dispatch(setVersion(versionToCheck));
     const releaseInfo = await getReleaseInfo(versionToCheck);
     dispatch(updateReleaseInfo(releaseInfo));
-    const checks = releaseInfo.checks.map((check: CheckInfo) => {
-      return checkStatus(check.url).then(result => {
-        const prevResult = prevResults[check.title];
-        if (prevResult && prevResult.status !== result.status) {
-          notifyChanges(check.title, result.status);
-        }
-        dispatch(addCheckResult(check.title, result));
-      });
+    const checks = releaseInfo.checks.map(async (check: CheckInfo) => {
+      const result = await checkStatus(check.url);
+      const prevResult = prevResults[check.title];
+      if (prevResult && prevResult.status !== result.status) {
+        notifyChanges(check.title, result.status);
+      }
+      dispatch(addCheckResult(check.title, result));
     });
     try {
       await Promise.all(checks);
