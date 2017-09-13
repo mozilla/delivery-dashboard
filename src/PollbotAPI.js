@@ -6,24 +6,24 @@ import type {
   ReleaseInfo,
 } from './types.js';
 
-export function getOngoingVersions(): Promise<OngoingVersions> {
-  return fetch(
-    'https://pollbot.dev.mozaws.net/v1/firefox/ongoing-versions',
-  ).then(resp => resp.json());
+const SERVER = 'https://pollbot.dev.mozaws.net/v1';
+
+export async function getOngoingVersions(): Promise<OngoingVersions> {
+  const response = await fetch(`${SERVER}/firefox/ongoing-versions`);
+  return response.json();
 }
 
-export function getReleaseInfo(version: string): Promise<ReleaseInfo> {
-  return fetch(
-    `https://pollbot.dev.mozaws.net/v1/firefox/${version}`,
-  ).then(resp => resp.json());
+export async function getReleaseInfo(version: string): Promise<ReleaseInfo> {
+  const response = await fetch(`${SERVER}/firefox/${version}`);
+  return response.json();
 }
 
-export function checkStatus(url: string): Promise<CheckResult> {
-  return fetch(url).then(resp => resp.json());
+export async function checkStatus(url: string): Promise<CheckResult> {
+  const response = await fetch(url);
+  return response.json();
 }
 
-export function getPollbotVersion(): Promise<APIVersionData> {
-  return fetch(`https://pollbot.dev.mozaws.net/v1/__version__`).then(resp =>
-    resp.json(),
-  );
+export async function getPollbotVersion(): Promise<APIVersionData> {
+  const response = await fetch(`${SERVER}/__version__`);
+  return response.json();
 }

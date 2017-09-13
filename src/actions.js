@@ -26,7 +26,6 @@ import type {
   ReleaseInfo,
   SetVersion,
   SubmitVersion,
-  ThunkAction,
   UpdateLatestChannelVersions,
   UpdatePollbotVersion,
   UpdateReleaseInfo,
@@ -75,14 +74,14 @@ export function addCheckResult(
 // ASYNC (THUNK) ACTIONS.
 
 // Fetching the statuses.
-export function requestStatus(version: ?string): ThunkAction<void> {
+export function requestStatus(version: ?string) {
   const notifyChanges = (checkTitle, status) => {
     if (Notification.permission === 'granted') {
       new Notification(`${checkTitle} : status changed (${status}).`);
     }
   };
 
-  return function(dispatch: Dispatch, getState: GetState) {
+  return async function(dispatch: Dispatch, getState: GetState) {
     const versionToCheck = version || getState().version;
     if (!versionToCheck) {
       return;
@@ -90,39 +89,36 @@ export function requestStatus(version: ?string): ThunkAction<void> {
     // Save previous results so we can check if something changed.
     const prevResults = getState().checkResults;
     dispatch(setVersion(versionToCheck));
-    getReleaseInfo(versionToCheck)
-      .then(releaseInfo => {
-        dispatch(updateReleaseInfo(releaseInfo));
-        releaseInfo.checks.map((check: CheckInfo) => {
-          return checkStatus(check.url).then(result => {
-            // Detect if the result changed, and notify!
-            const prevResult = prevResults[check.title];
-            if (prevResult && prevResult.status !== result.status) {
-              notifyChanges(check.title, result.status);
-            }
-            dispatch(addCheckResult(check.title, result));
-          });
-        });
-      })
-      .catch((err: string) => {
-        console.error(
-          `Failed getting the release info for ${versionToCheck}`,
-          err,
-        );
-      });
+    const releaseInfo = await getReleaseInfo(versionToCheck);
+    dispatch(updateReleaseInfo(releaseInfo));
+    const checks = releaseInfo.checks.map(async ({url, title}: CheckInfo) => {
+      const result = await checkStatus(url);
+      const prevResult = prevResults[title];
+      if (prevResult && prevResult.status !== result.status) {
+        notifyChanges(title, result.status);
+      }
+      dispatch(addCheckResult(title, result));
+    });
+    try {
+      await Promise.all(checks);
+    } catch (err) {
+      console.error(
+        `Failed getting the release info for ${versionToCheck}`,
+        err,
+      );
+    }
   };
 }
 
 // Fetching the ongoing versions.
 export function requestOngoingVersions() {
-  return function(dispatch: Dispatch) {
-    getOngoingVersions()
-      .then(data => {
-        dispatch(updateLatestChannelVersions(data));
-      })
-      .catch((err: string) =>
-        console.error('Failed getting the latest channel versions', err),
-      );
+  return async function(dispatch: Dispatch) {
+    try {
+      const ongoingVersions = await getOngoingVersions();
+      dispatch(updateLatestChannelVersions(ongoingVersions));
+    } catch (err) {
+      console.error('Failed getting the latest channel versions', err);
+    }
   };
 }
 
@@ -130,7 +126,7 @@ export function requestOngoingVersions() {
 // We do that in a thunk action to have access to the state via "getState".
 export const localUrlFromVersion = (version: string) =>
   `#pollbot/firefox/${version}`;
-export function updateUrl(): ThunkAction<void> {
+export function updateUrl() {
   return function(dispatch: Dispatch, getState: GetState) {
     window.location.hash = localUrlFromVersion(getState().version);
   };
@@ -138,13 +134,12 @@ export function updateUrl(): ThunkAction<void> {
 
 // Fetching the pollbot version.
 export function requestPollbotVersion() {
-  return function(dispatch: Dispatch) {
-    getPollbotVersion()
-      .then(data => {
-        dispatch(updatePollbotVersion(data));
-      })
-      .catch((err: string) =>
-        console.error('Failed getting the pollbot version', err),
-      );
+  return async function(dispatch: Dispatch) {
+    try {
+      const pollbotVersion = await getPollbotVersion();
+      dispatch(updatePollbotVersion(pollbotVersion));
+    } catch (err) {
+      console.error('Failed getting the pollbot version', err);
+    }
   };
 }
