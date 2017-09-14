@@ -6,7 +6,7 @@ import type {
   ReleaseInfo,
 } from './types';
 
-const SERVER = 'https://pollbot.dev.mozaws.net/v1';
+export const SERVER = 'https://pollbot.dev.mozaws.net/v1';
 
 export async function getOngoingVersions(): Promise<OngoingVersions> {
   const response = await fetch(`${SERVER}/firefox/ongoing-versions`);

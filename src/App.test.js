@@ -3,6 +3,7 @@ import {App, parseUrl} from './App';
 import renderer from 'react-test-renderer';
 import {Provider} from 'react-redux';
 import createStore from './create-store';
+import {SERVER} from './PollbotAPI';
 
 // Mock the Notification API.
 global.Notification = {
@@ -48,9 +49,7 @@ describe('App', () => {
         <App />
       </Provider>,
     );
-    expect(
-      global.Notification.requestPermission.mock.calls.length,
-    ).toBeGreaterThanOrEqual(1);
+    expect(global.Notification.requestPermission).toHaveBeenCalled();
   });
   it('requests PollBot for its version', () => {
     renderer.create(
@@ -58,7 +57,25 @@ describe('App', () => {
         <App />
       </Provider>,
     );
-    expect(global.fetch.mock.calls.length).toBeGreaterThanOrEqual(1);
+    expect(global.fetch).toHaveBeenCalledWith(`${SERVER}/__version__`);
+  });
+  it('calls requestStatus(version) with the version from the hash', () => {
+    global.window.location.hash = '#pollbot/firefox/123.0';
+
+    const module = require('./actions');
+    module.requestStatus = jest.fn();
+
+    const store = createStore();
+    // We also need to mock the dispatch function, as it doesn't like to be
+    // called with a mock.
+    store.dispatch = jest.fn();
+
+    renderer.create(
+      <Provider store={store}>
+        <App />
+      </Provider>,
+    );
+    expect(module.requestStatus).toBeCalledWith('123.0');
   });
 });
 
