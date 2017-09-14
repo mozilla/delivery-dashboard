@@ -8,13 +8,13 @@ import {
   UPDATE_LATEST_CHANNEL_VERSIONS,
   UPDATE_POLLBOT_VERSION,
   UPDATE_RELEASE_INFO,
-} from './types.js';
+} from './types';
 import {
   checkStatus,
   getOngoingVersions,
   getPollbotVersion,
   getReleaseInfo,
-} from './PollbotAPI.js';
+} from './PollbotAPI';
 import type {
   AddCheckResult,
   APIVersionData,
@@ -30,7 +30,7 @@ import type {
   UpdatePollbotVersion,
   UpdateReleaseInfo,
   UpdateVersionInput,
-} from './types.js';
+} from './types';
 
 /*
  * action creators

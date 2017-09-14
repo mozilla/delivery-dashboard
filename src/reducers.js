@@ -8,8 +8,8 @@ import {
   UPDATE_POLLBOT_VERSION,
   UPDATE_VERSION_INPUT,
   UPDATE_RELEASE_INFO,
-} from './types.js';
-import type {Action, State} from './types.js';
+} from './types';
+import type {Action, State} from './types';
 
 const initialState: State = {
   version: '',

@@ -12,7 +12,7 @@ import {
   submitVersion,
   updateUrl,
   updateVersionInput,
-} from './actions.js';
+} from './actions';
 import type {
   APIVersionData,
   CheckResult,
@@ -22,7 +22,7 @@ import type {
   ReleaseInfo,
   State,
   Status,
-} from './types.js';
+} from './types';
 
 const deliveryDashboardVersionData: APIVersionData = require('./version.json');
 
