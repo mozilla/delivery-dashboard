@@ -35,7 +35,7 @@ function requestNotificationPermission(): void {
   }
 }
 
-const parseUrl = (
+export const parseUrl = (
   url: string,
 ): ?{service: string, product: string, version: string} => {
   const re = /^#(\w+)\/(\w+)\/([^/]+)\/?/; // Eg: #pollbot/firefox/50.0
@@ -157,7 +157,7 @@ class ConnectedApp extends React.Component<ConnectedAppProps, void> {
     );
   }
 }
-const App = connect(
+export const App = connect(
   // mapStateToProps
   (state: State) => ({
     checkResults: state.checkResults,

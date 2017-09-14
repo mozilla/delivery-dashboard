@@ -1,14 +1,8 @@
 import React from 'react';
-import App from './App';
+import {App, parseUrl} from './App';
 import renderer from 'react-test-renderer';
 import {Provider} from 'react-redux';
 import createStore from './create-store';
-
-function fetchMocker(response) {
-  return jest
-    .fn()
-    .mockImplementation(() => Promise.resolve({json: () => response}));
-}
 
 // Mock the Notification API.
 global.Notification = {
@@ -18,6 +12,12 @@ global.Notification = {
 // Mock the Pollbot version (version won't be visible in the rendered
 // component, as it's only visible after the state has been updated, not on
 // first render.
+function fetchMocker(response) {
+  return jest
+    .fn()
+    .mockImplementation(() => Promise.resolve({json: () => response}));
+}
+
 global.fetch = fetchMocker({
   version: 'pollbot-version-number',
   commit: 'pollbot-commit-hash',
@@ -59,5 +59,19 @@ describe('App', () => {
       </Provider>,
     );
     expect(global.fetch.mock.calls.length).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe('parseUrl', () => {
+  it('returns null for a non matching url', () => {
+    expect(parseUrl('')).toBeNull();
+    expect(parseUrl('#foobar')).toBeNull();
+  });
+  it('returns the proper structure for a matching url', () => {
+    expect(parseUrl('#pollbot/firefox/50.0')).toEqual({
+      service: 'pollbot',
+      product: 'firefox',
+      version: '50.0',
+    });
   });
 });
