@@ -10,17 +10,30 @@ function fetchMocker(response) {
     .mockImplementation(() => Promise.resolve({json: () => response}));
 }
 
-describe('App', () => {
-  global.Notification = {
-    requestPermission: jest.fn(),
-  };
-  global.fetch = fetchMocker({
-    version: '0.2.1-13-g0d7bd3d',
-    commit: '0d7bd3d68f334ef8cf126fefa858100aab6de46b',
-    source: 'https://github.com/mozilla/PollBot.git',
-    name: 'pollbot',
-  });
+// Mock the Notification API.
+global.Notification = {
+  requestPermission: jest.fn(),
+};
 
+// Mock the Pollbot version (version won't be visible in the rendered
+// component, as it's only visible after the state has been updated, not on
+// first render.
+global.fetch = fetchMocker({
+  version: 'pollbot-version-number',
+  commit: 'pollbot-commit-hash',
+  source: 'https://github.com/mozilla/PollBot.git',
+  name: 'pollbot',
+});
+
+// Mock the delivery-dashboard version
+jest.mock('./version', () => ({
+  version: 'version-number',
+  commit: 'commit-hash',
+  source: 'https://github.com/mozilla/delivery-dashboard.git',
+  name: 'delivery-dashboard',
+}));
+
+describe('App', () => {
   it('renders without crashing', () => {
     const app = renderer.create(
       <Provider store={createStore()}>

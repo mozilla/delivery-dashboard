@@ -94,9 +94,9 @@ exports[`App renders without crashing 1`] = `
       Delivery dashboard version:
        
       <a
-        href="https://github.com/mozilla/delivery-dashboard/commit/3993300c934775c3f4c7ffd325ee3e1f4d8fe311"
+        href="https://github.com/mozilla/delivery-dashboard/commit/commit-hash"
       >
-        3993300
+        version-number
       </a>
        -- Pollbot version:
        
