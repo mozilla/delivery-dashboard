@@ -94,9 +94,7 @@ describe('<App />', () => {
     // called with a mock.
     const dispatch = jest.fn();
 
-    const app = shallow(
-      <App store={createStore()} dispatch={dispatch} />,
-    ).instance();
+    const app = shallow(<App dispatch={dispatch} />).instance();
     app.stopAutoRefresh = jest.fn();
 
     // Shouldn't auto-refresh => stop auto refresh.
@@ -125,7 +123,7 @@ describe('<App />', () => {
     expect(module.requestStatus).toHaveBeenCalledTimes(2); // Not called again.
   });
   it('stops auto-refresh', () => {
-    const app = shallow(<App store={createStore()} />).instance();
+    const app = shallow(<App />).instance();
 
     // Shouldn't call clearInterval if not needed.
     expect(app.refreshIntervalId).toBeNull();
