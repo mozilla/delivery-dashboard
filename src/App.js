@@ -51,15 +51,15 @@ export const parseUrl = (
   };
 };
 
-type ConnectedAppProps = {
+type AppProps = {
   checkResults: CheckResults,
   dispatch: Dispatch,
   pollbotVersion: APIVersionData,
 };
-class ConnectedApp extends React.Component<ConnectedAppProps, void> {
+export class App extends React.Component<AppProps, void> {
   refreshIntervalId: ?number;
 
-  constructor(props: ConnectedAppProps): void {
+  constructor(props: AppProps): void {
     super(props);
     this.refreshIntervalId = null;
   }
@@ -157,7 +157,7 @@ class ConnectedApp extends React.Component<ConnectedAppProps, void> {
     );
   }
 }
-export const App = connect(
+export const ConnectedApp = connect(
   // mapStateToProps
   (state: State) => ({
     checkResults: state.checkResults,
@@ -165,7 +165,7 @@ export const App = connect(
   }),
   // mapDispatchToProps
   null,
-)(ConnectedApp);
+)(App);
 
 const VersionInput = connect(
   // mapStateToProps
@@ -375,4 +375,4 @@ function VersionLink({versionData}: {versionData: APIVersionData}) {
   return <a href={url}>{version}</a>;
 }
 
-export default App;
+export default ConnectedApp;

@@ -1,7 +1,8 @@
 import React from 'react';
-import {App, parseUrl} from './App';
 import renderer from 'react-test-renderer';
 import {Provider} from 'react-redux';
+import {shallow} from 'enzyme';
+import {App, ConnectedApp, parseUrl} from './App';
 import createStore from './create-store';
 import {SERVER} from './PollbotAPI';
 
@@ -34,11 +35,19 @@ jest.mock('./version', () => ({
   name: 'delivery-dashboard',
 }));
 
-describe('App', () => {
+beforeAll(() => {
+  jest.useFakeTimers();
+});
+
+afterAll(() => {
+  jest.clearAllTimers();
+});
+
+describe('<App />', () => {
   it('renders without crashing', () => {
     const app = renderer.create(
       <Provider store={createStore()}>
-        <App />
+        <ConnectedApp />
       </Provider>,
     );
     expect(app.toJSON()).toMatchSnapshot();
@@ -46,7 +55,7 @@ describe('App', () => {
   it('requests for Notification permissions', () => {
     renderer.create(
       <Provider store={createStore()}>
-        <App />
+        <ConnectedApp />
       </Provider>,
     );
     expect(global.Notification.requestPermission).toHaveBeenCalled();
@@ -54,7 +63,7 @@ describe('App', () => {
   it('requests PollBot for its version', () => {
     renderer.create(
       <Provider store={createStore()}>
-        <App />
+        <ConnectedApp />
       </Provider>,
     );
     expect(global.fetch).toHaveBeenCalledWith(`${SERVER}/__version__`);
@@ -72,10 +81,48 @@ describe('App', () => {
 
     renderer.create(
       <Provider store={store}>
-        <App />
+        <ConnectedApp />
       </Provider>,
     );
-    expect(module.requestStatus).toBeCalledWith('123.0');
+    expect(module.requestStatus).toHaveBeenCalledWith('123.0');
+  });
+  it('sets up auto-refresh', () => {
+    const module = require('./actions');
+    module.requestStatus = jest.fn();
+
+    // We also need to mock the dispatch function, as it doesn't like to be
+    // called with a mock.
+    const dispatch = jest.fn();
+
+    const app = shallow(
+      <App store={createStore()} dispatch={dispatch} />,
+    ).instance();
+    app.stopAutoRefresh = jest.fn();
+
+    // Shouldn't auto-refresh => stop auto refresh.
+    app.shouldRefresh = jest.fn(() => false);
+    expect(app.refreshIntervalId).toBeNull();
+    app.setUpAutoRefresh();
+    expect(app.stopAutoRefresh).toHaveBeenCalledTimes(1);
+    expect(app.refreshIntervalId).toBeNull();
+    jest.runOnlyPendingTimers();
+    // Called once, on mounting the component.
+    expect(module.requestStatus).toHaveBeenCalledTimes(1);
+    // Should auto-refresh => start auto refresh.
+    app.shouldRefresh = jest.fn(() => true);
+    expect(app.refreshIntervalId).toBeNull();
+    app.setUpAutoRefresh();
+    expect(app.stopAutoRefresh).toHaveBeenCalledTimes(1); // Not called again.
+    expect(setInterval).toHaveBeenCalledTimes(1);
+    expect(app.refreshIntervalId).toBeTruthy();
+    jest.runOnlyPendingTimers();
+    expect(module.requestStatus).toHaveBeenCalledTimes(2);
+    // Should auto-refresh, but already set up => don't start auto refresh.
+    app.setUpAutoRefresh();
+    expect(app.stopAutoRefresh).toHaveBeenCalledTimes(1); // Not called again.
+    expect(setInterval).toHaveBeenCalledTimes(1); // Not called again.
+    expect(app.refreshIntervalId).toBeTruthy();
+    expect(module.requestStatus).toHaveBeenCalledTimes(2); // Not called again.
   });
 });
 
