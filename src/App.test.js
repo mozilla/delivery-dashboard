@@ -135,6 +135,28 @@ describe('<App />', () => {
     expect(clearInterval).toHaveBeenCalledWith(123);
     expect(app.refreshIntervalId).toBeNull();
   });
+  it('checks if it should auto-refresh', () => {
+    // Shouldn't auto-refresh if there's no check results.
+    let app = shallow(<App checkResults={{}} />).instance();
+    expect(app.shouldRefresh()).toBe(false);
+
+    // Shouldn't auto-refresh if there's only successful results.
+    app = shallow(
+      <App checkResults={{successfulCheck: {status: 'exists'}}} />,
+    ).instance();
+    expect(app.shouldRefresh()).toBe(false);
+
+    // Should auto-refresh if there's at least one failed result.
+    app = shallow(
+      <App
+        checkResults={{
+          successfulCheck: {status: 'exists'},
+          failingCheck: {status: 'incomplete'},
+        }}
+      />,
+    ).instance();
+    expect(app.shouldRefresh()).toBe(true);
+  });
 });
 
 describe('parseUrl', () => {
