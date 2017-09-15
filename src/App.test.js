@@ -1,8 +1,14 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
 import {Provider} from 'react-redux';
-import {shallow} from 'enzyme';
-import {App, ConnectedApp, parseUrl} from './App';
+import {mount, shallow} from 'enzyme';
+import {
+  App,
+  ConnectedApp,
+  parseUrl,
+  SearchForm,
+  versionInputDispatchProps,
+} from './App';
 import createStore from './create-store';
 import {SERVER} from './PollbotAPI';
 
@@ -177,5 +183,48 @@ describe('parseUrl', () => {
       product: 'firefox',
       version: '50.0',
     });
+  });
+});
+
+describe('<SearchForm />', () => {
+  it('handles input text change', () => {
+    const module = require('./actions');
+    module.updateVersionInput = jest.fn();
+
+    const {handleSearchBoxChange} = versionInputDispatchProps(jest.fn());
+    const wrapper = mount(
+      <SearchForm handleSearchBoxChange={handleSearchBoxChange} />,
+    );
+    const input = wrapper.find('input');
+    input.node.value = 'foobar'; // Workaround for https://github.com/airbnb/enzyme/issues/218
+    input.simulate('change', input);
+    expect(module.updateVersionInput).toHaveBeenCalledWith('foobar');
+  });
+  it('handles dismissing a version', () => {
+    const module = require('./actions');
+    module.setVersion = jest.fn();
+
+    const {handleDismissSearchBoxVersion} = versionInputDispatchProps(
+      jest.fn(),
+    );
+    const wrapper = mount(
+      <SearchForm
+        handleDismissSearchBoxVersion={handleDismissSearchBoxVersion}
+      />,
+    );
+    wrapper.find('.text-clear-btn').simulate('click');
+    expect(global.window.location.hash).toBe('');
+    expect(module.setVersion).toHaveBeenCalledWith('');
+  });
+  it('handles the form submission', () => {
+    const module = require('./actions');
+    module.submitVersion = jest.fn();
+    module.updateUrl = jest.fn();
+
+    const {onSubmit} = versionInputDispatchProps(jest.fn());
+    const wrapper = mount(<SearchForm onSubmit={onSubmit} />);
+    wrapper.simulate('submit');
+    expect(module.submitVersion).toHaveBeenCalled();
+    expect(module.updateUrl).toHaveBeenCalled();
   });
 });

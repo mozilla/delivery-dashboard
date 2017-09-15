@@ -167,26 +167,28 @@ export const ConnectedApp = connect(
   null,
 )(App);
 
+export const versionInputDispatchProps = (dispatch: Dispatch) => ({
+  onSubmit: (e: SyntheticEvent<HTMLInputElement>): void => {
+    e.preventDefault();
+    dispatch(submitVersion());
+    dispatch(updateUrl());
+  },
+  handleSearchBoxChange: (e: SyntheticEvent<HTMLInputElement>): void => {
+    dispatch(updateVersionInput(e.currentTarget.value));
+  },
+  handleDismissSearchBoxVersion: (): void => {
+    window.location.hash = '';
+    dispatch(setVersion(''));
+  },
+});
+
 const VersionInput = connect(
   // mapStateToProps
   (state: State) => ({
     value: state.versionInput,
   }),
   // mapDispatchToProps
-  (dispatch: Dispatch) => ({
-    onSubmit: (e: SyntheticEvent<HTMLInputElement>): void => {
-      e.preventDefault();
-      dispatch(submitVersion());
-      dispatch(updateUrl());
-    },
-    handleSearchBoxChange: (e: SyntheticEvent<HTMLInputElement>): void => {
-      dispatch(updateVersionInput(e.currentTarget.value));
-    },
-    handleDismissSearchBoxVersion: (): void => {
-      window.location.hash = '';
-      dispatch(setVersion(''));
-    },
-  }),
+  (dispatch: Dispatch) => versionInputDispatchProps(dispatch),
 )(SearchForm);
 
 type SearchFormProps = {
@@ -196,7 +198,7 @@ type SearchFormProps = {
   value: string,
 };
 
-function SearchForm({
+export function SearchForm({
   onSubmit,
   handleSearchBoxChange,
   handleDismissSearchBoxVersion,
