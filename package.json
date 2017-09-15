@@ -28,7 +28,7 @@
     "lint": "eslint *.js src",
     "lint-fix": "yarn lint --fix",
     "flow": "flow",
-    "flow-coverage": "flow-coverage-report -i 'src/**/*.js' -t html -t text",
+    "flow-coverage": "flow-coverage-report -i 'src/**/*.js' -x 'src/**/*.test.js' -t html -t text",
     "check": "yarn lint && yarn flow",
     "precheck": "yarn run version-file",
     "version-file": "./update_version.sh"
