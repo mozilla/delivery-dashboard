@@ -157,6 +157,13 @@ describe('<App />', () => {
     ).instance();
     expect(app.shouldRefresh()).toBe(true);
   });
+  it('stops the auto-refresh on unmount', () => {
+    const wrapper = shallow(<App />);
+    const app = wrapper.instance();
+    app.stopAutoRefresh = jest.fn();
+    wrapper.unmount();
+    expect(app.stopAutoRefresh).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('parseUrl', () => {
