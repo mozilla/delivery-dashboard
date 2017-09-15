@@ -124,6 +124,19 @@ describe('<App />', () => {
     expect(app.refreshIntervalId).toBeTruthy();
     expect(module.requestStatus).toHaveBeenCalledTimes(2); // Not called again.
   });
+  it('stops auto-refresh', () => {
+    const app = shallow(<App store={createStore()} />).instance();
+
+    // Shouldn't call clearInterval if not needed.
+    expect(app.refreshIntervalId).toBeNull();
+    app.stopAutoRefresh();
+    expect(clearInterval).toHaveBeenCalledTimes(0);
+    // Should call clearInterval if needed.
+    app.refreshIntervalId = 123;
+    app.stopAutoRefresh();
+    expect(clearInterval).toHaveBeenCalledWith(123);
+    expect(app.refreshIntervalId).toBeNull();
+  });
 });
 
 describe('parseUrl', () => {
