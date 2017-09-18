@@ -242,7 +242,7 @@ function ClearableTextInput({
   );
 }
 
-function Spinner() {
+export function Spinner() {
   return <div className="loader" />;
 }
 
@@ -296,7 +296,11 @@ type DashboardPropType = {
   version: string,
 };
 
-function Dashboard({releaseInfo, checkResults, version}: DashboardPropType) {
+export function Dashboard({
+  releaseInfo,
+  checkResults,
+  version,
+}: DashboardPropType) {
   if (version === '') {
     return (
       <p>
@@ -321,7 +325,7 @@ function Dashboard({releaseInfo, checkResults, version}: DashboardPropType) {
   }
 }
 
-function DisplayCheckResult(title: string, checkResult: ?CheckResult) {
+export function DisplayCheckResult(title: string, checkResult: ?CheckResult) {
   return (
     <div className="panel panel-default" key={title}>
       <div className="panel-body">
@@ -340,7 +344,7 @@ function DisplayCheckResult(title: string, checkResult: ?CheckResult) {
   );
 }
 
-function DisplayStatus({
+export function DisplayStatus({
   status,
   message,
   url,

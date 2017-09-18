@@ -5,8 +5,11 @@ import {mount, shallow} from 'enzyme';
 import {
   App,
   ConnectedApp,
+  Dashboard,
+  DisplayStatus,
   parseUrl,
   SearchForm,
+  Spinner,
   versionInputDispatchProps,
 } from './App';
 import createStore from './create-store';
@@ -226,5 +229,48 @@ describe('<SearchForm />', () => {
     wrapper.simulate('submit');
     expect(module.submitVersion).toHaveBeenCalled();
     expect(module.updateUrl).toHaveBeenCalled();
+  });
+});
+
+describe('<Dashboard />', () => {
+  it('displays a help text when no version is selected', () => {
+    const wrapper = shallow(<Dashboard version="" />);
+    expect(wrapper.text()).toContain('enter your version number');
+  });
+  it('displays a spinner when a version is selected', () => {
+    const wrapper = shallow(<Dashboard version="50.0" />);
+    expect(wrapper.find(Spinner).length).toBe(1);
+  });
+  it('displays a list of check results when a release info is present', () => {
+    const releaseInfo = {
+      channel: 'nightly',
+      product: 'firefox',
+      version: '50.0',
+      checks: [
+        {url: 'some-url', title: 'some title'},
+        {url: 'some-url-2', title: 'some title 2'},
+      ],
+    };
+    const checkResults = {
+      'some title': {
+        status: 'exists',
+        message: 'check is successful',
+        link: 'some link',
+      },
+      'some title 2': {
+        status: 'exists',
+        message: 'check is successful',
+        link: 'some link',
+      },
+    };
+    const wrapper = shallow(
+      <Dashboard
+        version="50.0"
+        releaseInfo={releaseInfo}
+        checkResults={checkResults}
+      />,
+    );
+    expect(wrapper.find(Spinner).length).toBe(0);
+    expect(wrapper.find(DisplayStatus).length).toBe(2);
   });
 });
