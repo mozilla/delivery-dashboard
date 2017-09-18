@@ -274,3 +274,28 @@ describe('<Dashboard />', () => {
     expect(wrapper.find(DisplayStatus).length).toBe(2);
   });
 });
+
+describe('<DisplayStatus />', () => {
+  const checkDisplayStatus = (status, label, message) => {
+    const wrapper = shallow(
+      <DisplayStatus status={status} message="check message" url="check url" />,
+    );
+    const link = wrapper.find('a');
+    expect(link.prop('className')).toContain(`label-${label}`);
+    expect(link.prop('title')).toEqual('check message');
+    expect(link.prop('href')).toEqual('check url');
+    expect(link.text()).toEqual(message || status);
+  };
+  it('displays the status when the status is exists', () => {
+    checkDisplayStatus('exists', 'success');
+  });
+  it('displays the status when the status is incomplete', () => {
+    checkDisplayStatus('incomplete', 'info');
+  });
+  it('displays the status when the status is missing', () => {
+    checkDisplayStatus('missing', 'danger');
+  });
+  it('displays the error message when there an error', () => {
+    checkDisplayStatus('error', 'warning', 'Error: check message');
+  });
+});
