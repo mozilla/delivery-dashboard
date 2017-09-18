@@ -1,6 +1,6 @@
 /* Functional tests of the Pollbot API */
 
-import {getOngoingVersions, getReleaseInfo} from './PollbotAPI';
+import {checkStatus, getOngoingVersions, getReleaseInfo} from './PollbotAPI';
 
 describe('getOngoingVersions', () => {
   it('retrieves the list of ongoing versions', async () => {
@@ -34,6 +34,18 @@ describe('getReleaseInfo', () => {
         title: expect.any(String),
         url: expect.any(String),
       });
+    });
+  });
+});
+describe('checkStatus', () => {
+  it('retrieves the status of a given check', async () => {
+    const status = await checkStatus(
+      'https://pollbot.dev.mozaws.net/v1/firefox/50.0/product-details',
+    );
+    expect(status).toEqual({
+      link: 'https://product-details.mozilla.org/1.0/firefox.json',
+      status: 'exists',
+      message: 'We found product-details information about version 50.0',
     });
   });
 });
