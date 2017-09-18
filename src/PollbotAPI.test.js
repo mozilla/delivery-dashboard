@@ -1,6 +1,11 @@
 /* Functional tests of the Pollbot API */
 
-import {checkStatus, getOngoingVersions, getReleaseInfo} from './PollbotAPI';
+import {
+  checkStatus,
+  getPollbotVersion,
+  getOngoingVersions,
+  getReleaseInfo,
+} from './PollbotAPI';
 
 describe('getOngoingVersions', () => {
   it('retrieves the list of ongoing versions', async () => {
@@ -46,6 +51,17 @@ describe('checkStatus', () => {
       link: 'https://product-details.mozilla.org/1.0/firefox.json',
       status: 'exists',
       message: 'We found product-details information about version 50.0',
+    });
+  });
+});
+describe('getPollbotVersion', () => {
+  it('retrieves the version from Pollbot', async () => {
+    const version = await getPollbotVersion();
+    expect(version).toMatchObject({
+      commit: expect.any(String),
+      name: 'pollbot',
+      source: expect.any(String),
+      version: expect.any(String),
     });
   });
 });
