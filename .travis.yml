@@ -6,4 +6,6 @@ cache:
   directories:
   - node_modules
 script:
-  - yarn run check && yarn run flow-coverage
+  - yarn run check
+  - yarn run flow-coverage
+  - yarn run test-coverage && codecov

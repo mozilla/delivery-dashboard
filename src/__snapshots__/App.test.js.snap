@@ -1,0 +1,106 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<App /> renders without crashing 1`] = `
+<div>
+  <nav
+    className="navbar navbar-default"
+  >
+    <div
+      className="container-fluid"
+    >
+      <div
+        className="navbar-header"
+      >
+        <a
+          className="navbar-brand"
+          href="."
+        >
+          Delivery Dashboard
+        </a>
+      </div>
+    </div>
+  </nav>
+  <div
+    className="container-fluid"
+  >
+    <div
+      className="row"
+    >
+      <div
+        className="col-sm-9"
+      >
+        <form
+          className="search-form well"
+          onSubmit={[Function]}
+        >
+          <div
+            className="clearable-text btn-group"
+          >
+            <input
+              className="form-control"
+              onChange={[Function]}
+              placeholder="Firefox version, eg. \\"57.0\\""
+              type="search"
+              value=""
+            />
+            <span
+              className="text-clear-btn"
+              onClick={[Function]}
+            >
+              <i
+                className="glyphicon glyphicon-remove"
+              />
+            </span>
+          </div>
+        </form>
+        <p>
+          Learn more about a specific version.
+          <strong>
+             Select or enter your version number.
+          </strong>
+        </p>
+      </div>
+      <div
+        className="firefox-releases-menu col-sm-3"
+      >
+        <div
+          className="panel panel-default"
+          id={undefined}
+        >
+          <div
+            className="panel-heading"
+          >
+            <strong
+              className="panel-title"
+            >
+              Firefox Releases
+            </strong>
+          </div>
+          <div
+            className="panel-body"
+          >
+            <div
+              className="loader"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <p
+      className="text-muted"
+    >
+      Delivery dashboard version:
+       
+      <a
+        href="https://github.com/mozilla/delivery-dashboard/commit/commit-hash"
+      >
+        version-number
+      </a>
+       -- Pollbot version:
+       
+    </p>
+  </footer>
+</div>
+`;

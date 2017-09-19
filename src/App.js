@@ -12,7 +12,7 @@ import {
   submitVersion,
   updateUrl,
   updateVersionInput,
-} from './actions.js';
+} from './actions';
 import type {
   APIVersionData,
   CheckResult,
@@ -22,7 +22,7 @@ import type {
   ReleaseInfo,
   State,
   Status,
-} from './types.js';
+} from './types';
 
 const deliveryDashboardVersionData: APIVersionData = require('./version.json');
 
@@ -35,7 +35,7 @@ function requestNotificationPermission(): void {
   }
 }
 
-const parseUrl = (
+export const parseUrl = (
   url: string,
 ): ?{service: string, product: string, version: string} => {
   const re = /^#(\w+)\/(\w+)\/([^/]+)\/?/; // Eg: #pollbot/firefox/50.0
@@ -51,15 +51,15 @@ const parseUrl = (
   };
 };
 
-type ConnectedAppProps = {
+type AppProps = {
   checkResults: CheckResults,
   dispatch: Dispatch,
   pollbotVersion: APIVersionData,
 };
-class ConnectedApp extends React.Component<ConnectedAppProps, void> {
+export class App extends React.Component<AppProps, void> {
   refreshIntervalId: ?number;
 
-  constructor(props: ConnectedAppProps): void {
+  constructor(props: AppProps): void {
     super(props);
     this.refreshIntervalId = null;
   }
@@ -157,7 +157,7 @@ class ConnectedApp extends React.Component<ConnectedAppProps, void> {
     );
   }
 }
-const App = connect(
+export const ConnectedApp = connect(
   // mapStateToProps
   (state: State) => ({
     checkResults: state.checkResults,
@@ -165,7 +165,22 @@ const App = connect(
   }),
   // mapDispatchToProps
   null,
-)(ConnectedApp);
+)(App);
+
+export const versionInputDispatchProps = (dispatch: Dispatch) => ({
+  onSubmit: (e: SyntheticEvent<HTMLInputElement>): void => {
+    e.preventDefault();
+    dispatch(submitVersion());
+    dispatch(updateUrl());
+  },
+  handleSearchBoxChange: (e: SyntheticEvent<HTMLInputElement>): void => {
+    dispatch(updateVersionInput(e.currentTarget.value));
+  },
+  handleDismissSearchBoxVersion: (): void => {
+    window.location.hash = '';
+    dispatch(setVersion(''));
+  },
+});
 
 const VersionInput = connect(
   // mapStateToProps
@@ -173,20 +188,7 @@ const VersionInput = connect(
     value: state.versionInput,
   }),
   // mapDispatchToProps
-  (dispatch: Dispatch) => ({
-    onSubmit: (e: SyntheticEvent<HTMLInputElement>): void => {
-      e.preventDefault();
-      dispatch(submitVersion());
-      dispatch(updateUrl());
-    },
-    handleSearchBoxChange: (e: SyntheticEvent<HTMLInputElement>): void => {
-      dispatch(updateVersionInput(e.currentTarget.value));
-    },
-    handleDismissSearchBoxVersion: (): void => {
-      window.location.hash = '';
-      dispatch(setVersion(''));
-    },
-  }),
+  (dispatch: Dispatch) => versionInputDispatchProps(dispatch),
 )(SearchForm);
 
 type SearchFormProps = {
@@ -196,7 +198,7 @@ type SearchFormProps = {
   value: string,
 };
 
-function SearchForm({
+export function SearchForm({
   onSubmit,
   handleSearchBoxChange,
   handleDismissSearchBoxVersion,
@@ -240,7 +242,7 @@ function ClearableTextInput({
   );
 }
 
-function Spinner() {
+export function Spinner() {
   return <div className="loader" />;
 }
 
@@ -294,7 +296,11 @@ type DashboardPropType = {
   version: string,
 };
 
-function Dashboard({releaseInfo, checkResults, version}: DashboardPropType) {
+export function Dashboard({
+  releaseInfo,
+  checkResults,
+  version,
+}: DashboardPropType) {
   if (version === '') {
     return (
       <p>
@@ -319,7 +325,7 @@ function Dashboard({releaseInfo, checkResults, version}: DashboardPropType) {
   }
 }
 
-function DisplayCheckResult(title: string, checkResult: ?CheckResult) {
+export function DisplayCheckResult(title: string, checkResult: ?CheckResult) {
   return (
     <div className="panel panel-default" key={title}>
       <div className="panel-body">
@@ -338,7 +344,7 @@ function DisplayCheckResult(title: string, checkResult: ?CheckResult) {
   );
 }
 
-function DisplayStatus({
+export function DisplayStatus({
   status,
   message,
   url,
@@ -375,4 +381,4 @@ function VersionLink({versionData}: {versionData: APIVersionData}) {
   return <a href={url}>{version}</a>;
 }
 
-export default App;
+export default ConnectedApp;
