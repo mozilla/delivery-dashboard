@@ -11,6 +11,7 @@ import {
 } from './types';
 import {
   addCheckResult,
+  requestOngoingVersions,
   requestStatus,
   setVersion,
   submitVersion,
@@ -290,6 +291,42 @@ describe('thunk action creator requestStatus', () => {
     await store.dispatch(requestStatus());
     expect(console.error).toHaveBeenCalledWith(
       'Failed getting the release info for 51.0',
+      'some error',
+    );
+  });
+});
+
+describe('thunk action creator requestOngoingVersions', () => {
+  it('updates the ongoing versions', async () => {
+    const ongoingVersions = {
+      nightly: '57.0a1',
+      beta: '56.0b12',
+      release: '55.0.3',
+      esr: '52.3.0esr',
+    };
+    // Mock the pollbot API calls.
+    const module = require('./PollbotAPI');
+    module.getOngoingVersions = jest.fn(() => ongoingVersions);
+
+    const expectedActions = [
+      {type: 'UPDATE_LATEST_CHANNEL_VERSIONS', versions: ongoingVersions},
+    ];
+    const store = mockStore({});
+    await store.dispatch(requestOngoingVersions());
+    expect(store.getActions()).toEqual(expectedActions);
+  });
+  it('logs an error to the console if something went wrong', async () => {
+    // Mock the pollbot API calls.
+    const module = require('./PollbotAPI');
+    module.getOngoingVersions = jest.fn(() => {
+      throw 'some error';
+    });
+    // Mock the console.error call.
+    console.error = jest.fn();
+    const store = mockStore({});
+    await store.dispatch(requestOngoingVersions());
+    expect(console.error).toHaveBeenCalledWith(
+      'Failed getting the latest channel versions',
       'some error',
     );
   });
