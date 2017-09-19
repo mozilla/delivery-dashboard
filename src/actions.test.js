@@ -18,6 +18,7 @@ import {
   updateLatestChannelVersions,
   updatePollbotVersion,
   updateReleaseInfo,
+  updateUrl,
   updateVersionInput,
 } from './actions';
 
@@ -329,5 +330,14 @@ describe('thunk action creator requestOngoingVersions', () => {
       'Failed getting the latest channel versions',
       'some error',
     );
+  });
+});
+
+describe('thunk action creator updateUrl', () => {
+  it('updates the url hash', async () => {
+    window.location.hash = 'previous url';
+    const store = mockStore({version: '50.0'});
+    await store.dispatch(updateUrl());
+    expect(window.location.hash).toEqual('#pollbot/firefox/50.0');
   });
 });
