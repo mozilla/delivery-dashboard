@@ -42,6 +42,7 @@ describe('getReleaseInfo', () => {
     });
   });
 });
+
 describe('checkStatus', () => {
   it('retrieves the status of a given check', async () => {
     const status = await checkStatus(
@@ -54,6 +55,7 @@ describe('checkStatus', () => {
     });
   });
 });
+
 describe('getPollbotVersion', () => {
   it('retrieves the version from Pollbot', async () => {
     const version = await getPollbotVersion();

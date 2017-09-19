@@ -77,7 +77,7 @@ export function addCheckResult(
 export function requestStatus(version: ?string) {
   const notifyChanges = (checkTitle, status) => {
     if (Notification.permission === 'granted') {
-      new Notification(`${checkTitle} : status changed (${status}).`);
+      new Notification(`${checkTitle}: status changed (${status}).`);
     }
   };
 
