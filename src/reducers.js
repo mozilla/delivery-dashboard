@@ -11,7 +11,7 @@ import {
 } from './types';
 import type {Action, State} from './types';
 
-const initialState: State = {
+export const initialState: State = {
   version: '',
   versionInput: '',
   latestChannelVersions: null,
