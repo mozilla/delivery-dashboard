@@ -16,39 +16,79 @@ describe('deliveryDashboard reducer', () => {
     expect(deliveryDashboard(undefined, {})).toEqual(initialState);
   });
   it('handles ADD_CHECK_RESULT', () => {
+    const checkResult = {
+      status: 'exists',
+      message: 'successful test',
+      link: 'some url',
+    };
     expect(
       deliveryDashboard(undefined, {
         type: ADD_CHECK_RESULT,
         title: 'some test',
-        result: 'some result',
+        result: checkResult,
       }),
     ).toEqual(
       stateWith({
         checkResults: {
-          'some test': 'some result',
+          'some test': checkResult,
         },
+        shouldRefresh: false,
       }),
     );
 
+    const otherCheckResult = {
+      status: 'exists',
+      message: 'successful test',
+      link: 'some url',
+    };
     expect(
       deliveryDashboard(
         stateWith({
           checkResults: {
-            'some test': 'some result',
+            'some test': checkResult,
           },
         }),
         {
           type: ADD_CHECK_RESULT,
           title: 'some other test',
-          result: 'some other result',
+          result: otherCheckResult,
         },
       ),
     ).toEqual(
       stateWith({
         checkResults: {
-          'some test': 'some result',
-          'some other test': 'some other result',
+          'some test': checkResult,
+          'some other test': otherCheckResult,
         },
+        shouldRefresh: false,
+      }),
+    );
+
+    const failingCheckResult = {
+      status: 'incomplete',
+      message: 'successful test',
+      link: 'some url',
+    };
+    expect(
+      deliveryDashboard(
+        stateWith({
+          checkResults: {
+            'some test': checkResult,
+          },
+        }),
+        {
+          type: ADD_CHECK_RESULT,
+          title: 'some other test',
+          result: failingCheckResult,
+        },
+      ),
+    ).toEqual(
+      stateWith({
+        checkResults: {
+          'some test': checkResult,
+          'some other test': failingCheckResult,
+        },
+        shouldRefresh: true,
       }),
     );
   });
@@ -58,7 +98,9 @@ describe('deliveryDashboard reducer', () => {
         type: SET_VERSION,
         version: '50.0',
       }),
-    ).toEqual(stateWith({version: '50.0', versionInput: '50.0'}));
+    ).toEqual(
+      stateWith({version: '50.0', versionInput: '50.0', shouldRefresh: false}),
+    );
     expect(
       deliveryDashboard(
         stateWith({
@@ -70,7 +112,9 @@ describe('deliveryDashboard reducer', () => {
           version: '51.0',
         },
       ),
-    ).toEqual(stateWith({version: '51.0', versionInput: '51.0'}));
+    ).toEqual(
+      stateWith({version: '51.0', versionInput: '51.0', shouldRefresh: false}),
+    );
   });
   it('handles UPDATE_VERSION_INPUT', () => {
     expect(

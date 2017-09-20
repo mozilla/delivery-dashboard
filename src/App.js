@@ -7,6 +7,7 @@ import {
   localUrlFromVersion,
   requestOngoingVersions,
   requestPollbotVersion,
+  refreshStatus,
   requestStatus,
   setVersion,
   submitVersion,
@@ -55,6 +56,7 @@ type AppProps = {
   checkResults: CheckResults,
   dispatch: Dispatch,
   pollbotVersion: APIVersionData,
+  shouldRefresh: boolean,
 };
 export class App extends React.Component<AppProps, void> {
   refreshIntervalId: ?number;
@@ -65,13 +67,13 @@ export class App extends React.Component<AppProps, void> {
   }
 
   setUpAutoRefresh(): void {
-    if (this.shouldRefresh()) {
+    if (this.props.shouldRefresh) {
       if (this.refreshIntervalId) {
         // The auto-refresh is already enabled.
         return;
       }
       this.refreshIntervalId = setInterval(
-        () => this.props.dispatch(requestStatus()),
+        () => this.props.dispatch(refreshStatus()),
         60000,
       );
     } else {
@@ -86,18 +88,9 @@ export class App extends React.Component<AppProps, void> {
     }
   }
 
-  shouldRefresh(): boolean {
-    const checkTitles = Object.keys(this.props.checkResults);
-    const failingChecks = checkTitles.filter(
-      title => this.props.checkResults[title].status !== 'exists',
-    );
-    return failingChecks.length !== 0;
-  }
-
   componentDidMount(): void {
     this.props.dispatch(requestPollbotVersion());
     this.props.dispatch(requestOngoingVersions());
-    this.setUpAutoRefresh();
     // Setup notifications.
     requestNotificationPermission();
     // Listen to url hash changes.
@@ -162,6 +155,7 @@ export const ConnectedApp = connect(
   (state: State) => ({
     checkResults: state.checkResults,
     pollbotVersion: state.pollbotVersion,
+    shouldRefresh: state.shouldRefresh,
   }),
   // mapDispatchToProps
   null,

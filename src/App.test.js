@@ -98,16 +98,18 @@ describe('<App />', () => {
   it('sets up auto-refresh', () => {
     const module = require('./actions');
     module.requestStatus = jest.fn();
+    module.refreshStatus = jest.fn();
 
     // We also need to mock the dispatch function, as it doesn't like to be
     // called with a mock.
     const dispatch = jest.fn();
 
-    const app = shallow(<App dispatch={dispatch} />).instance();
+    const wrapper = shallow(<App dispatch={dispatch} />);
+    const app = wrapper.instance();
     app.stopAutoRefresh = jest.fn();
 
     // Shouldn't auto-refresh => stop auto refresh.
-    app.shouldRefresh = jest.fn(() => false);
+    wrapper.setProps({shouldRefresh: false});
     expect(app.refreshIntervalId).toBeNull();
     app.setUpAutoRefresh();
     expect(app.stopAutoRefresh).toHaveBeenCalledTimes(1);
@@ -115,21 +117,27 @@ describe('<App />', () => {
     jest.runOnlyPendingTimers();
     // Called once, on mounting the component.
     expect(module.requestStatus).toHaveBeenCalledTimes(1);
+    expect(module.refreshStatus).toHaveBeenCalledTimes(0);
+
     // Should auto-refresh => start auto refresh.
-    app.shouldRefresh = jest.fn(() => true);
+    wrapper.setProps({shouldRefresh: true});
     expect(app.refreshIntervalId).toBeNull();
     app.setUpAutoRefresh();
     expect(app.stopAutoRefresh).toHaveBeenCalledTimes(1); // Not called again.
     expect(setInterval).toHaveBeenCalledTimes(1);
     expect(app.refreshIntervalId).toBeTruthy();
     jest.runOnlyPendingTimers();
-    expect(module.requestStatus).toHaveBeenCalledTimes(2);
+    expect(module.requestStatus).toHaveBeenCalledTimes(1);
+    expect(module.refreshStatus).toHaveBeenCalledTimes(1);
+
     // Should auto-refresh, but already set up => don't start auto refresh.
+    wrapper.setProps({shouldRefresh: true});
     app.setUpAutoRefresh();
     expect(app.stopAutoRefresh).toHaveBeenCalledTimes(1); // Not called again.
     expect(setInterval).toHaveBeenCalledTimes(1); // Not called again.
     expect(app.refreshIntervalId).toBeTruthy();
-    expect(module.requestStatus).toHaveBeenCalledTimes(2); // Not called again.
+    expect(module.requestStatus).toHaveBeenCalledTimes(1);
+    expect(module.refreshStatus).toHaveBeenCalledTimes(1); // Not called again.
   });
   it('stops auto-refresh', () => {
     const app = shallow(<App />).instance();
@@ -143,28 +151,6 @@ describe('<App />', () => {
     app.stopAutoRefresh();
     expect(clearInterval).toHaveBeenCalledWith(123);
     expect(app.refreshIntervalId).toBeNull();
-  });
-  it('checks if it should auto-refresh', () => {
-    // Shouldn't auto-refresh if there's no check results.
-    let app = shallow(<App checkResults={{}} />).instance();
-    expect(app.shouldRefresh()).toBe(false);
-
-    // Shouldn't auto-refresh if there's only successful results.
-    app = shallow(
-      <App checkResults={{successfulCheck: {status: 'exists'}}} />,
-    ).instance();
-    expect(app.shouldRefresh()).toBe(false);
-
-    // Should auto-refresh if there's at least one failed result.
-    app = shallow(
-      <App
-        checkResults={{
-          successfulCheck: {status: 'exists'},
-          failingCheck: {status: 'incomplete'},
-        }}
-      />,
-    ).instance();
-    expect(app.shouldRefresh()).toBe(true);
   });
   it('stops the auto-refresh on unmount', () => {
     const wrapper = shallow(<App />);

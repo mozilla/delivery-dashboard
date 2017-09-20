@@ -73,8 +73,8 @@ export function addCheckResult(
 
 // ASYNC (THUNK) ACTIONS.
 
-// Fetching the statuses.
-export function requestStatus(version: ?string) {
+// Refreshing a status for the current version.
+export function refreshStatus() {
   const notifyChanges = (checkTitle, status) => {
     if (Notification.permission === 'granted') {
       new Notification(`${checkTitle}: status changed (${status}).`);
@@ -82,30 +82,44 @@ export function requestStatus(version: ?string) {
   };
 
   return async function(dispatch: Dispatch, getState: GetState) {
-    const versionToCheck = version || getState().version;
-    if (!versionToCheck) {
-      return;
-    }
+    const state = getState();
     // Save previous results so we can check if something changed.
-    const prevResults = getState().checkResults;
-    dispatch(setVersion(versionToCheck));
-    const releaseInfo = await getReleaseInfo(versionToCheck);
+    const prevResults = state.checkResults;
+    dispatch(setVersion(state.version));
+    if (state.releaseInfo) {
+      const checks = state.releaseInfo.checks.map(
+        async ({url, title}: CheckInfo) => {
+          const result = await checkStatus(url);
+          const prevResult = prevResults[title];
+          if (prevResult && prevResult.status !== result.status) {
+            notifyChanges(title, result.status);
+          }
+          dispatch(addCheckResult(title, result));
+        },
+      );
+      try {
+        await Promise.all(checks);
+      } catch (err) {
+        console.error(`Failed getting check results for ${state.version}`, err);
+      }
+    }
+  };
+}
+
+// Requesting a status for a new version.
+export function requestStatus(version: string) {
+  return async function(dispatch: Dispatch) {
+    dispatch(setVersion(version));
+    const releaseInfo = await getReleaseInfo(version);
     dispatch(updateReleaseInfo(releaseInfo));
     const checks = releaseInfo.checks.map(async ({url, title}: CheckInfo) => {
       const result = await checkStatus(url);
-      const prevResult = prevResults[title];
-      if (prevResult && prevResult.status !== result.status) {
-        notifyChanges(title, result.status);
-      }
       dispatch(addCheckResult(title, result));
     });
     try {
       await Promise.all(checks);
     } catch (err) {
-      console.error(
-        `Failed getting the release info for ${versionToCheck}`,
-        err,
-      );
+      console.error(`Failed getting check results for ${version}`, err);
     }
   };
 }

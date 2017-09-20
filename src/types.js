@@ -62,6 +62,7 @@ export type State = {
   +releaseInfo: ?ReleaseInfo,
   +checkResults: CheckResults,
   +pollbotVersion: ?APIVersionData,
+  +shouldRefresh: boolean,
 };
 
 /*

@@ -13,6 +13,7 @@ import {
   addCheckResult,
   requestOngoingVersions,
   requestPollbotVersion,
+  refreshStatus,
   requestStatus,
   setVersion,
   submitVersion,
@@ -120,68 +121,18 @@ describe('action creators', () => {
 });
 
 describe('thunk action creator requestStatus', () => {
-  it('does nothing if no version requested and no version in state', async () => {
-    // No version requested, no version in the state => do nothing.
-    const store = mockStore({});
-    await store.dispatch(requestStatus());
-    expect(store.getActions()).toEqual([]);
-  });
-  it('requests the version from the state if none is provided', async () => {
-    const mockReleaseInfo = {
-      channel: 'release',
-      product: 'firefox',
-      version: '50.0',
-      checks: [
-        {
-          title: 'some test',
-          url: 'some url',
-        },
-      ],
-    };
-    const mockCheckResult = {
-      status: 'exists',
-      message: 'check succesful',
-      link: 'some link',
-    };
-    // Mock the pollbot api calls.
-    const module = require('./PollbotAPI');
-    module.getReleaseInfo = jest.fn(() => mockReleaseInfo);
-    module.checkStatus = jest.fn(() => mockCheckResult);
-
-    // No version requested, version 50.0 in the state.
-    let expectedActions = [
-      {type: 'SET_VERSION', version: '50.0'},
+  const releaseInfo = {
+    channel: 'release',
+    product: 'firefox',
+    version: '51.0',
+    checks: [
       {
-        releaseInfo: mockReleaseInfo,
-        type: 'UPDATE_RELEASE_INFO',
-      },
-      {
-        result: mockCheckResult,
         title: 'some test',
-        type: 'ADD_CHECK_RESULT',
+        url: 'some url',
       },
-    ];
-
-    const store = mockStore({
-      version: '50.0',
-      checkResults: {},
-    });
-    await store.dispatch(requestStatus());
-    expect(store.getActions()).toEqual(expectedActions);
-  });
-
-  it('requests the version given instead of the one in the state', async () => {
-    const mockReleaseInfo = {
-      channel: 'release',
-      product: 'firefox',
-      version: '51.0',
-      checks: [
-        {
-          title: 'some test',
-          url: 'some url',
-        },
-      ],
-    };
+    ],
+  };
+  it('requests the version given', async () => {
     const mockCheckResult = {
       status: 'exists',
       message: 'check succesful',
@@ -189,14 +140,14 @@ describe('thunk action creator requestStatus', () => {
     };
     // Mock the pollbot API calls.
     const module = require('./PollbotAPI');
-    module.getReleaseInfo = jest.fn(() => mockReleaseInfo);
+    module.getReleaseInfo = jest.fn(() => releaseInfo);
     module.checkStatus = jest.fn(() => mockCheckResult);
 
     // Version 51.0 requested, version 50.0 in the state.
     let expectedActions = [
       {type: 'SET_VERSION', version: '51.0'},
       {
-        releaseInfo: mockReleaseInfo,
+        releaseInfo: releaseInfo,
         type: 'UPDATE_RELEASE_INFO',
       },
       {
@@ -213,18 +164,67 @@ describe('thunk action creator requestStatus', () => {
     await store.dispatch(requestStatus('51.0'));
     expect(store.getActions()).toEqual(expectedActions);
   });
-  it('notifies if there were different previous results', async () => {
-    const mockReleaseInfo = {
-      channel: 'release',
-      product: 'firefox',
-      version: '51.0',
-      checks: [
-        {
-          title: 'some test',
-          url: 'some url',
-        },
-      ],
+  it('logs an error to the console if a check went wrong', async () => {
+    // Mock the pollbot API calls.
+    const module = require('./PollbotAPI');
+    module.checkStatus = jest.fn(() => {
+      throw 'some error';
+    });
+    // Mock the console.error call.
+    console.error = jest.fn();
+    const store = mockStore({
+      version: '50.0',
+      checkResults: {},
+      releaseInfo: releaseInfo,
+    });
+    await store.dispatch(requestStatus('50.0'));
+    expect(console.error).toHaveBeenCalledWith(
+      'Failed getting check results for 50.0',
+      'some error',
+    );
+  });
+});
+
+describe('thunk action creator refreshStatus', () => {
+  const releaseInfo = {
+    channel: 'release',
+    product: 'firefox',
+    version: '50.0',
+    checks: [
+      {
+        title: 'some test',
+        url: 'some url',
+      },
+    ],
+  };
+  it('refreshes the checks for the version in the state', async () => {
+    const mockCheckResult = {
+      status: 'exists',
+      message: 'check succesful',
+      link: 'some link',
     };
+    // Mock the pollbot api calls.
+    const module = require('./PollbotAPI');
+    module.checkStatus = jest.fn(() => mockCheckResult);
+
+    let expectedActions = [
+      {type: 'SET_VERSION', version: '50.0'},
+      {
+        result: mockCheckResult,
+        title: 'some test',
+        type: 'ADD_CHECK_RESULT',
+      },
+    ];
+
+    const store = mockStore({
+      version: '50.0',
+      releaseInfo: releaseInfo,
+      checkResults: {},
+    });
+    await store.dispatch(refreshStatus());
+    expect(store.getActions()).toEqual(expectedActions);
+  });
+  it('notifies if there were different previous results', async () => {
     const mockCheckIncompleteResult = {
       status: 'incomplete',
       message: 'check incomplete',
@@ -237,19 +237,13 @@ describe('thunk action creator requestStatus', () => {
     };
     // Mock the pollbot API calls.
     const module = require('./PollbotAPI');
-    module.getReleaseInfo = jest.fn(() => mockReleaseInfo);
     module.checkStatus = jest.fn(() => mockCheckExistsResult);
     // Mock the Notification API call.
     global.Notification = jest.fn();
     global.Notification.permission = 'granted';
 
-    // Version 51.0 requested, previous test was incomplete.
     let expectedActions = [
-      {type: 'SET_VERSION', version: '51.0'},
-      {
-        releaseInfo: mockReleaseInfo,
-        type: 'UPDATE_RELEASE_INFO',
-      },
+      {type: 'SET_VERSION', version: '50.0'},
       {
         result: mockCheckExistsResult,
         title: 'some test',
@@ -258,41 +252,34 @@ describe('thunk action creator requestStatus', () => {
     ];
 
     const store = mockStore({
-      version: '51.0',
+      version: '50.0',
       checkResults: {
         'some test': mockCheckIncompleteResult,
       },
+      releaseInfo: releaseInfo,
     });
-    await store.dispatch(requestStatus());
+    await store.dispatch(refreshStatus());
     expect(store.getActions()).toEqual(expectedActions);
     expect(global.Notification).toHaveBeenCalledWith(
       'some test: status changed (exists).',
     );
   });
   it('logs an error to the console if a check went wrong', async () => {
-    const mockReleaseInfo = {
-      channel: 'release',
-      product: 'firefox',
-      version: '51.0',
-      checks: [
-        {
-          title: 'some test',
-          url: 'some url',
-        },
-      ],
-    };
     // Mock the pollbot API calls.
     const module = require('./PollbotAPI');
-    module.getReleaseInfo = jest.fn(() => mockReleaseInfo);
     module.checkStatus = jest.fn(() => {
       throw 'some error';
     });
     // Mock the console.error call.
     console.error = jest.fn();
-    const store = mockStore({version: '51.0', checkResults: {}});
-    await store.dispatch(requestStatus());
+    const store = mockStore({
+      version: '50.0',
+      checkResults: {},
+      releaseInfo: releaseInfo,
+    });
+    await store.dispatch(refreshStatus());
     expect(console.error).toHaveBeenCalledWith(
-      'Failed getting the release info for 51.0',
+      'Failed getting check results for 50.0',
       'some error',
     );
   });
