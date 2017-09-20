@@ -18,6 +18,7 @@ export const initialState: State = {
   releaseInfo: null,
   checkResults: {},
   pollbotVersion: null,
+  shouldRefresh: false,
 };
 
 export function deliveryDashboard(
@@ -30,12 +31,15 @@ export function deliveryDashboard(
         checkResults: Object.assign({}, state.checkResults, {
           [action.title]: action.result,
         }),
+        shouldRefresh:
+          action.result.status !== 'exists' ? true : state.shouldRefresh,
       });
     case SET_VERSION:
       return Object.assign({}, state, {
         version: action.version,
         versionInput: action.version,
         checkResults: {},
+        shouldRefresh: false,
       });
     case UPDATE_VERSION_INPUT:
       return Object.assign({}, state, {
