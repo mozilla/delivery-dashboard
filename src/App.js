@@ -7,6 +7,7 @@ import {
   localUrlFromVersion,
   requestOngoingVersions,
   requestPollbotVersion,
+  refreshStatus,
   requestStatus,
   setVersion,
   submitVersion,
@@ -72,7 +73,7 @@ export class App extends React.Component<AppProps, void> {
         return;
       }
       this.refreshIntervalId = setInterval(
-        () => this.props.dispatch(requestStatus()),
+        () => this.props.dispatch(refreshStatus()),
         60000,
       );
     } else {

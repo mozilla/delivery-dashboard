@@ -98,6 +98,7 @@ describe('<App />', () => {
   it('sets up auto-refresh', () => {
     const module = require('./actions');
     module.requestStatus = jest.fn();
+    module.refreshStatus = jest.fn();
 
     // We also need to mock the dispatch function, as it doesn't like to be
     // called with a mock.
@@ -116,6 +117,7 @@ describe('<App />', () => {
     jest.runOnlyPendingTimers();
     // Called once, on mounting the component.
     expect(module.requestStatus).toHaveBeenCalledTimes(1);
+    expect(module.refreshStatus).toHaveBeenCalledTimes(0);
 
     // Should auto-refresh => start auto refresh.
     wrapper.setProps({shouldRefresh: true});
@@ -125,7 +127,8 @@ describe('<App />', () => {
     expect(setInterval).toHaveBeenCalledTimes(1);
     expect(app.refreshIntervalId).toBeTruthy();
     jest.runOnlyPendingTimers();
-    expect(module.requestStatus).toHaveBeenCalledTimes(2);
+    expect(module.requestStatus).toHaveBeenCalledTimes(1);
+    expect(module.refreshStatus).toHaveBeenCalledTimes(1);
 
     // Should auto-refresh, but already set up => don't start auto refresh.
     wrapper.setProps({shouldRefresh: true});
@@ -133,7 +136,8 @@ describe('<App />', () => {
     expect(app.stopAutoRefresh).toHaveBeenCalledTimes(1); // Not called again.
     expect(setInterval).toHaveBeenCalledTimes(1); // Not called again.
     expect(app.refreshIntervalId).toBeTruthy();
-    expect(module.requestStatus).toHaveBeenCalledTimes(2); // Not called again.
+    expect(module.requestStatus).toHaveBeenCalledTimes(1);
+    expect(module.refreshStatus).toHaveBeenCalledTimes(1); // Not called again.
   });
   it('stops auto-refresh', () => {
     const app = shallow(<App />).instance();
