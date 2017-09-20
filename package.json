@@ -22,7 +22,7 @@
     "build": "react-scripts build",
     "prebuild": "yarn run version-file",
     "test": "react-scripts test --env=jsdom --silent",
-    "test-coverage": "react-scripts test --env=jsdom --silent --coverage",
+    "test-coverage": "react-scripts test --env=jsdom --silent --coverage --collectCoverageFrom=src/**/*js --collectCoverageFrom=!src/index.js --collectCoverageFrom=!src/registerServiceWorker.js",
     "eject": "react-scripts eject",
     "deploy": "npm run build && gh-pages --add --dist build/",
     "lint": "eslint *.js src",
