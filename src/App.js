@@ -359,14 +359,13 @@ export function DisplayStatus({
     incomplete: 'label-info',
     missing: 'label-danger',
   };
-  const labelText = status === 'error' ? 'Error: ' + message : status;
   return (
     <a
       className={'label ' + statusToLabelClass[status]}
       title={message}
       href={url}
     >
-      {labelText}
+      {status}
     </a>
   );
 }
