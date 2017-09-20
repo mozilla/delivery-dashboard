@@ -276,7 +276,7 @@ describe('<Dashboard />', () => {
 });
 
 describe('<DisplayStatus />', () => {
-  const checkDisplayStatus = (status, label, message) => {
+  const checkDisplayStatus = (status, label) => {
     const wrapper = shallow(
       <DisplayStatus status={status} message="check message" url="check url" />,
     );
@@ -284,7 +284,7 @@ describe('<DisplayStatus />', () => {
     expect(link.prop('className')).toContain(`label-${label}`);
     expect(link.prop('title')).toEqual('check message');
     expect(link.prop('href')).toEqual('check url');
-    expect(link.text()).toEqual(message || status);
+    expect(link.text()).toEqual(status);
   };
   it('displays the status when the status is exists', () => {
     checkDisplayStatus('exists', 'success');
@@ -296,6 +296,6 @@ describe('<DisplayStatus />', () => {
     checkDisplayStatus('missing', 'danger');
   });
   it('displays the error message when there an error', () => {
-    checkDisplayStatus('error', 'warning', 'Error: check message');
+    checkDisplayStatus('error', 'warning');
   });
 });
