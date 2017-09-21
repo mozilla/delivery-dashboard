@@ -105,8 +105,18 @@ export type UpdatePollbotVersion = {|
   version: APIVersionData,
 |};
 
+/*
+ * saga types
+ */
+export const REQUEST_POLLBOT_VERSION = 'REQUEST_POLLBOT_VERSION';
+
+export type RequestPollbotVersion = {|
+  type: 'REQUEST_POLLBOT_VERSION',
+|};
+
 export type Action =
   | AddCheckResult
+  | RequestPollbotVersion
   | SetVersion
   | SubmitVersion
   | UpdateLatestChannelVersions

@@ -8,6 +8,7 @@ import {
   UPDATE_LATEST_CHANNEL_VERSIONS,
   UPDATE_POLLBOT_VERSION,
   UPDATE_RELEASE_INFO,
+  REQUEST_POLLBOT_VERSION,
 } from './types';
 import {
   addCheckResult,
@@ -116,6 +117,11 @@ describe('action creators', () => {
       type: ADD_CHECK_RESULT,
       title: 'some check',
       result: checkResult,
+    });
+  });
+  it('returns a REQUEST_POLLBOT_VERSION action for requestPollbotVersion', () => {
+    expect(requestPollbotVersion()).toEqual({
+      type: REQUEST_POLLBOT_VERSION,
     });
   });
 });
@@ -327,41 +333,5 @@ describe('thunk action creator updateUrl', () => {
     const store = mockStore({version: '50.0'});
     await store.dispatch(updateUrl());
     expect(window.location.hash).toEqual('#pollbot/firefox/50.0');
-  });
-});
-
-describe('thunk action creator requestPollbotVersion', () => {
-  it('updates the pollbot version', async () => {
-    const pollbotVersion = {
-      name: 'pollbot',
-      source: 'https://github.com/mozilla/PollBot.git',
-      version: '0.2.1-22-g8e09a0f',
-      commit: '8e09a0f8e995344ea24fbb940a6bddc17e0edaed',
-    };
-    // Mock the pollbot API calls.
-    const module = require('./PollbotAPI');
-    module.getPollbotVersion = jest.fn(() => pollbotVersion);
-
-    const expectedActions = [
-      {type: 'UPDATE_POLLBOT_VERSION', version: pollbotVersion},
-    ];
-    const store = mockStore({});
-    await store.dispatch(requestPollbotVersion());
-    expect(store.getActions()).toEqual(expectedActions);
-  });
-  it('logs an error to the console if something went wrong', async () => {
-    // Mock the pollbot API calls.
-    const module = require('./PollbotAPI');
-    module.getPollbotVersion = jest.fn(() => {
-      throw 'some error';
-    });
-    // Mock the console.error call.
-    console.error = jest.fn();
-    const store = mockStore({});
-    await store.dispatch(requestPollbotVersion());
-    expect(console.error).toHaveBeenCalledWith(
-      'Failed getting the pollbot version',
-      'some error',
-    );
   });
 });

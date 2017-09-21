@@ -8,13 +8,9 @@ import {
   UPDATE_LATEST_CHANNEL_VERSIONS,
   UPDATE_POLLBOT_VERSION,
   UPDATE_RELEASE_INFO,
+  REQUEST_POLLBOT_VERSION,
 } from './types';
-import {
-  checkStatus,
-  getOngoingVersions,
-  getPollbotVersion,
-  getReleaseInfo,
-} from './PollbotAPI';
+import {checkStatus, getOngoingVersions, getReleaseInfo} from './PollbotAPI';
 import type {
   AddCheckResult,
   APIVersionData,
@@ -24,6 +20,7 @@ import type {
   GetState,
   OngoingVersions,
   ReleaseInfo,
+  RequestPollbotVersion,
   SetVersion,
   SubmitVersion,
   UpdateLatestChannelVersions,
@@ -69,6 +66,11 @@ export function addCheckResult(
   result: CheckResult,
 ): AddCheckResult {
   return {type: ADD_CHECK_RESULT, title, result};
+}
+
+// For sagas
+export function requestPollbotVersion(): RequestPollbotVersion {
+  return {type: REQUEST_POLLBOT_VERSION};
 }
 
 // ASYNC (THUNK) ACTIONS.
@@ -143,17 +145,5 @@ export const localUrlFromVersion = (version: string) =>
 export function updateUrl() {
   return function(dispatch: Dispatch, getState: GetState) {
     window.location.hash = localUrlFromVersion(getState().version);
-  };
-}
-
-// Fetching the pollbot version.
-export function requestPollbotVersion() {
-  return async function(dispatch: Dispatch) {
-    try {
-      const pollbotVersion = await getPollbotVersion();
-      dispatch(updatePollbotVersion(pollbotVersion));
-    } catch (err) {
-      console.error('Failed getting the pollbot version', err);
-    }
   };
 }
