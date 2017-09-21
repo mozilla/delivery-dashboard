@@ -1,5 +1,7 @@
 # Delivery Dashboard
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/mozilla/delivery-dashboard.svg)](https://greenkeeper.io/)
+
 Product Delivery's Web Client to Microservices.
 
 The Product Delivery team is implementing various Microservices such as
