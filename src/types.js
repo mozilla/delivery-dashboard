@@ -108,7 +108,12 @@ export type UpdatePollbotVersion = {|
 /*
  * saga types
  */
+export const REQUEST_ONGOING_VERSIONS = 'REQUEST_ONGOING_VERSIONS';
 export const REQUEST_POLLBOT_VERSION = 'REQUEST_POLLBOT_VERSION';
+
+export type RequestOngoingVersions = {|
+  type: 'REQUEST_ONGOING_VERSIONS',
+|};
 
 export type RequestPollbotVersion = {|
   type: 'REQUEST_POLLBOT_VERSION',
@@ -116,6 +121,7 @@ export type RequestPollbotVersion = {|
 
 export type Action =
   | AddCheckResult
+  | RequestOngoingVersions
   | RequestPollbotVersion
   | SetVersion
   | SubmitVersion

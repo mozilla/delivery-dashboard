@@ -8,9 +8,10 @@ import {
   UPDATE_LATEST_CHANNEL_VERSIONS,
   UPDATE_POLLBOT_VERSION,
   UPDATE_RELEASE_INFO,
+  REQUEST_ONGOING_VERSIONS,
   REQUEST_POLLBOT_VERSION,
 } from './types';
-import {checkStatus, getOngoingVersions, getReleaseInfo} from './PollbotAPI';
+import {checkStatus, getReleaseInfo} from './PollbotAPI';
 import type {
   AddCheckResult,
   APIVersionData,
@@ -20,6 +21,7 @@ import type {
   GetState,
   OngoingVersions,
   ReleaseInfo,
+  RequestOngoingVersions,
   RequestPollbotVersion,
   SetVersion,
   SubmitVersion,
@@ -73,6 +75,10 @@ export function requestPollbotVersion(): RequestPollbotVersion {
   return {type: REQUEST_POLLBOT_VERSION};
 }
 
+export function requestOngoingVersions(): RequestOngoingVersions {
+  return {type: REQUEST_ONGOING_VERSIONS};
+}
+
 // ASYNC (THUNK) ACTIONS.
 
 // Refreshing a status for the current version.
@@ -122,18 +128,6 @@ export function requestStatus(version: string) {
       await Promise.all(checks);
     } catch (err) {
       console.error(`Failed getting check results for ${version}`, err);
-    }
-  };
-}
-
-// Fetching the ongoing versions.
-export function requestOngoingVersions() {
-  return async function(dispatch: Dispatch) {
-    try {
-      const ongoingVersions = await getOngoingVersions();
-      dispatch(updateLatestChannelVersions(ongoingVersions));
-    } catch (err) {
-      console.error('Failed getting the latest channel versions', err);
     }
   };
 }

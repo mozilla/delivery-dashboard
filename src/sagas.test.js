@@ -1,12 +1,12 @@
 import {call, put, takeEvery} from 'redux-saga/effects';
 import {cloneableGenerator} from 'redux-saga/utils';
-import {getPollbotVersion} from './PollbotAPI';
-import {updatePollbotVersion} from './actions';
-import {REQUEST_POLLBOT_VERSION} from './types';
-import {fetchPollbotVersion, rootSaga} from './sagas';
+import {getOngoingVersions, getPollbotVersion} from './PollbotAPI';
+import {updateLatestChannelVersions, updatePollbotVersion} from './actions';
+import {REQUEST_ONGOING_VERSIONS, REQUEST_POLLBOT_VERSION} from './types';
+import {fetchOngoingVersions, fetchPollbotVersion, rootSaga} from './sagas';
 
 describe('sagas', () => {
-  it('handles requestPollbotVersion', () => {
+  it('handles fetchPollbotVersion', () => {
     const data = {};
     data.saga = cloneableGenerator(fetchPollbotVersion)();
 
@@ -31,12 +31,39 @@ describe('sagas', () => {
     );
     expect(data.sagaThrow.next().done).toBe(true);
   });
+
+  it('handles fetchOngoingVersions', () => {
+    const data = {};
+    data.saga = cloneableGenerator(fetchOngoingVersions)();
+
+    const ongoingVersions = {
+      nightly: '57.0a1',
+      beta: '56.0b12',
+      release: '55.0.3',
+      esr: '52.3.0esr',
+    };
+    expect(data.saga.next().value).toEqual(call(getOngoingVersions));
+
+    // Clone to test success and failure of getOngoingVersions.
+    data.sagaThrow = data.saga.clone();
+
+    expect(data.saga.next(ongoingVersions).value).toEqual(
+      put(updateLatestChannelVersions(ongoingVersions)),
+    );
+    expect(data.saga.next().done).toBe(true);
+
+    expect(data.sagaThrow.throw('error').value).toEqual(
+      console.error('Failed getting the latest channel versions', 'error'),
+    );
+    expect(data.sagaThrow.next().done).toBe(true);
+  });
 });
 
 describe('rootSaga', () => {
   it('uses takeEvery on each saga available', () => {
     const saga = rootSaga();
     expect(saga.next().value).toEqual([
+      takeEvery(REQUEST_ONGOING_VERSIONS, fetchOngoingVersions),
       takeEvery(REQUEST_POLLBOT_VERSION, fetchPollbotVersion),
     ]);
     expect(saga.next().done).toBe(true);
