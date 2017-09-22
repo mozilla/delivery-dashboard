@@ -8,29 +8,34 @@ import {
   UPDATE_LATEST_CHANNEL_VERSIONS,
   UPDATE_POLLBOT_VERSION,
   UPDATE_RELEASE_INFO,
+  REQUEST_ONGOING_VERSIONS,
+  REQUEST_POLLBOT_VERSION,
+  UPDATE_URL,
+  REFRESH_STATUS,
+  REQUEST_STATUS,
 } from './types';
-import {
-  checkStatus,
-  getOngoingVersions,
-  getPollbotVersion,
-  getReleaseInfo,
-} from './PollbotAPI';
 import type {
   AddCheckResult,
   APIVersionData,
-  CheckInfo,
   CheckResult,
-  Dispatch,
-  GetState,
   OngoingVersions,
+  RefreshStatus,
   ReleaseInfo,
+  RequestOngoingVersions,
+  RequestPollbotVersion,
+  RequestStatus,
   SetVersion,
   SubmitVersion,
   UpdateLatestChannelVersions,
   UpdatePollbotVersion,
   UpdateReleaseInfo,
+  UpdateUrl,
   UpdateVersionInput,
 } from './types';
+
+// Small utility function.
+export const localUrlFromVersion = (version: string) =>
+  `#pollbot/firefox/${version}`;
 
 /*
  * action creators
@@ -71,89 +76,23 @@ export function addCheckResult(
   return {type: ADD_CHECK_RESULT, title, result};
 }
 
-// ASYNC (THUNK) ACTIONS.
-
-// Refreshing a status for the current version.
-export function refreshStatus() {
-  const notifyChanges = (checkTitle, status) => {
-    if (Notification.permission === 'granted') {
-      new Notification(`${checkTitle}: status changed (${status}).`);
-    }
-  };
-
-  return async function(dispatch: Dispatch, getState: GetState) {
-    const state = getState();
-    // Save previous results so we can check if something changed.
-    const prevResults = state.checkResults;
-    dispatch(setVersion(state.version));
-    if (state.releaseInfo) {
-      const checks = state.releaseInfo.checks.map(
-        async ({url, title}: CheckInfo) => {
-          const result = await checkStatus(url);
-          const prevResult = prevResults[title];
-          if (prevResult && prevResult.status !== result.status) {
-            notifyChanges(title, result.status);
-          }
-          dispatch(addCheckResult(title, result));
-        },
-      );
-      try {
-        await Promise.all(checks);
-      } catch (err) {
-        console.error(`Failed getting check results for ${state.version}`, err);
-      }
-    }
-  };
+// For sagas
+export function requestPollbotVersion(): RequestPollbotVersion {
+  return {type: REQUEST_POLLBOT_VERSION};
 }
 
-// Requesting a status for a new version.
-export function requestStatus(version: string) {
-  return async function(dispatch: Dispatch) {
-    dispatch(setVersion(version));
-    const releaseInfo = await getReleaseInfo(version);
-    dispatch(updateReleaseInfo(releaseInfo));
-    const checks = releaseInfo.checks.map(async ({url, title}: CheckInfo) => {
-      const result = await checkStatus(url);
-      dispatch(addCheckResult(title, result));
-    });
-    try {
-      await Promise.all(checks);
-    } catch (err) {
-      console.error(`Failed getting check results for ${version}`, err);
-    }
-  };
+export function requestOngoingVersions(): RequestOngoingVersions {
+  return {type: REQUEST_ONGOING_VERSIONS};
 }
 
-// Fetching the ongoing versions.
-export function requestOngoingVersions() {
-  return async function(dispatch: Dispatch) {
-    try {
-      const ongoingVersions = await getOngoingVersions();
-      dispatch(updateLatestChannelVersions(ongoingVersions));
-    } catch (err) {
-      console.error('Failed getting the latest channel versions', err);
-    }
-  };
+export function updateUrl(): UpdateUrl {
+  return {type: UPDATE_URL};
 }
 
-// Update the url from the version stored in the state.
-// We do that in a thunk action to have access to the state via "getState".
-export const localUrlFromVersion = (version: string) =>
-  `#pollbot/firefox/${version}`;
-export function updateUrl() {
-  return function(dispatch: Dispatch, getState: GetState) {
-    window.location.hash = localUrlFromVersion(getState().version);
-  };
+export function refreshStatus(): RefreshStatus {
+  return {type: REFRESH_STATUS};
 }
 
-// Fetching the pollbot version.
-export function requestPollbotVersion() {
-  return async function(dispatch: Dispatch) {
-    try {
-      const pollbotVersion = await getPollbotVersion();
-      dispatch(updatePollbotVersion(pollbotVersion));
-    } catch (err) {
-      console.error('Failed getting the pollbot version', err);
-    }
-  };
+export function requestStatus(version: string): RequestStatus {
+  return {type: REQUEST_STATUS, version: version};
 }
