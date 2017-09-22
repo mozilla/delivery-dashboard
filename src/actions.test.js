@@ -10,6 +10,7 @@ import {
   UPDATE_RELEASE_INFO,
   REQUEST_ONGOING_VERSIONS,
   REQUEST_POLLBOT_VERSION,
+  UPDATE_URL,
 } from './types';
 import {
   addCheckResult,
@@ -120,14 +121,22 @@ describe('action creators', () => {
       result: checkResult,
     });
   });
-  it('returns a REQUEST_ONGOING_VERSIONS action for requestOngoingVersions', () => {
+});
+
+describe('sagas action creator', () => {
+  it('handles a REQUEST_ONGOING_VERSIONS action for requestOngoingVersions', () => {
     expect(requestOngoingVersions()).toEqual({
       type: REQUEST_ONGOING_VERSIONS,
     });
   });
-  it('returns a REQUEST_POLLBOT_VERSION action for requestPollbotVersion', () => {
+  it('handles a REQUEST_POLLBOT_VERSION action for requestPollbotVersion', () => {
     expect(requestPollbotVersion()).toEqual({
       type: REQUEST_POLLBOT_VERSION,
+    });
+  });
+  it('handles a UPDATE_URL action for updateUrl', () => {
+    expect(updateUrl()).toEqual({
+      type: UPDATE_URL,
     });
   });
 });
@@ -294,14 +303,5 @@ describe('thunk action creator refreshStatus', () => {
       'Failed getting check results for 50.0',
       'some error',
     );
-  });
-});
-
-describe('thunk action creator updateUrl', () => {
-  it('updates the url hash', async () => {
-    window.location.hash = 'previous url';
-    const store = mockStore({version: '50.0'});
-    await store.dispatch(updateUrl());
-    expect(window.location.hash).toEqual('#pollbot/firefox/50.0');
   });
 });

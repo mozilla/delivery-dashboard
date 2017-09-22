@@ -1,9 +1,18 @@
-import {call, put, takeEvery} from 'redux-saga/effects';
+import {call, put, select, takeEvery} from 'redux-saga/effects';
 import {cloneableGenerator} from 'redux-saga/utils';
 import {getOngoingVersions, getPollbotVersion} from './PollbotAPI';
 import {updateLatestChannelVersions, updatePollbotVersion} from './actions';
-import {REQUEST_ONGOING_VERSIONS, REQUEST_POLLBOT_VERSION} from './types';
-import {fetchOngoingVersions, fetchPollbotVersion, rootSaga} from './sagas';
+import {
+  REQUEST_ONGOING_VERSIONS,
+  REQUEST_POLLBOT_VERSION,
+  UPDATE_URL,
+} from './types';
+import {
+  fetchOngoingVersions,
+  fetchPollbotVersion,
+  rootSaga,
+  updateUrl,
+} from './sagas';
 
 describe('sagas', () => {
   it('handles fetchPollbotVersion', () => {
@@ -57,6 +66,15 @@ describe('sagas', () => {
     );
     expect(data.sagaThrow.next().done).toBe(true);
   });
+
+  it('handles updateUrl', () => {
+    const saga = updateUrl();
+
+    expect(saga.next().value).toEqual(select());
+    expect(window.location.hash).not.toEqual('#pollbot/firefox/50.0');
+    saga.next({version: '50.0'});
+    expect(window.location.hash).toEqual('#pollbot/firefox/50.0');
+  });
 });
 
 describe('rootSaga', () => {
@@ -65,6 +83,7 @@ describe('rootSaga', () => {
     expect(saga.next().value).toEqual([
       takeEvery(REQUEST_ONGOING_VERSIONS, fetchOngoingVersions),
       takeEvery(REQUEST_POLLBOT_VERSION, fetchPollbotVersion),
+      takeEvery(UPDATE_URL, updateUrl),
     ]);
     expect(saga.next().done).toBe(true);
   });

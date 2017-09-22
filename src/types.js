@@ -110,6 +110,7 @@ export type UpdatePollbotVersion = {|
  */
 export const REQUEST_ONGOING_VERSIONS = 'REQUEST_ONGOING_VERSIONS';
 export const REQUEST_POLLBOT_VERSION = 'REQUEST_POLLBOT_VERSION';
+export const UPDATE_URL = 'UPDATE_URL';
 
 export type RequestOngoingVersions = {|
   type: 'REQUEST_ONGOING_VERSIONS',
@@ -117,6 +118,10 @@ export type RequestOngoingVersions = {|
 
 export type RequestPollbotVersion = {|
   type: 'REQUEST_POLLBOT_VERSION',
+|};
+
+export type UpdateUrl = {|
+  type: 'UPDATE_URL',
 |};
 
 export type Action =
@@ -128,6 +133,7 @@ export type Action =
   | UpdateLatestChannelVersions
   | UpdatePollbotVersion
   | UpdateReleaseInfo
+  | UpdateUrl
   | UpdateVersionInput;
 
 /*

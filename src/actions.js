@@ -10,6 +10,7 @@ import {
   UPDATE_RELEASE_INFO,
   REQUEST_ONGOING_VERSIONS,
   REQUEST_POLLBOT_VERSION,
+  UPDATE_URL,
 } from './types';
 import {checkStatus, getReleaseInfo} from './PollbotAPI';
 import type {
@@ -28,8 +29,13 @@ import type {
   UpdateLatestChannelVersions,
   UpdatePollbotVersion,
   UpdateReleaseInfo,
+  UpdateUrl,
   UpdateVersionInput,
 } from './types';
+
+// Small utility function.
+export const localUrlFromVersion = (version: string) =>
+  `#pollbot/firefox/${version}`;
 
 /*
  * action creators
@@ -77,6 +83,10 @@ export function requestPollbotVersion(): RequestPollbotVersion {
 
 export function requestOngoingVersions(): RequestOngoingVersions {
   return {type: REQUEST_ONGOING_VERSIONS};
+}
+
+export function updateUrl(): UpdateUrl {
+  return {type: UPDATE_URL};
 }
 
 // ASYNC (THUNK) ACTIONS.
@@ -129,15 +139,5 @@ export function requestStatus(version: string) {
     } catch (err) {
       console.error(`Failed getting check results for ${version}`, err);
     }
-  };
-}
-
-// Update the url from the version stored in the state.
-// We do that in a thunk action to have access to the state via "getState".
-export const localUrlFromVersion = (version: string) =>
-  `#pollbot/firefox/${version}`;
-export function updateUrl() {
-  return function(dispatch: Dispatch, getState: GetState) {
-    window.location.hash = localUrlFromVersion(getState().version);
   };
 }
