@@ -158,7 +158,8 @@ export const ConnectedApp = connect(
     shouldRefresh: state.shouldRefresh,
   }),
   // mapDispatchToProps
-  null,
+  // Need the following line because of https://github.com/flowtype/flow-typed/issues/1269
+  (dispatch: Dispatch) => ({dispatch: dispatch}),
 )(App);
 
 export const versionInputDispatchProps = (dispatch: Dispatch) => ({
@@ -246,7 +247,8 @@ const SideBar = connect(
     versions: state.latestChannelVersions,
   }),
   // mapDispatchToProps
-  null,
+  // Need the following line because of https://github.com/flowtype/flow-typed/issues/1269
+  (dispatch: Dispatch) => ({dispatch: dispatch}),
 )(ReleasesMenu);
 
 function ReleasesMenu({versions}: {versions: OngoingVersions}) {
@@ -281,7 +283,8 @@ const CurrentRelease = connect(
     version: state.version,
   }),
   // mapDispatchToProps
-  null,
+  // Need the following line because of https://github.com/flowtype/flow-typed/issues/1269
+  (dispatch: Dispatch) => ({dispatch: dispatch}),
 )(Dashboard);
 
 type DashboardPropType = {
