@@ -7,7 +7,14 @@ import {
   REFRESH_STATUS,
   REQUEST_STATUS,
 } from './types';
-import type {RequestStatus} from './types';
+import type {
+  APIVersionData,
+  CheckResults,
+  OngoingVersions,
+  ReleaseInfo,
+  RequestStatus,
+  State,
+} from './types';
 import {all, call, put, select, takeEvery} from 'redux-saga/effects';
 import {
   checkStatus,
@@ -29,7 +36,7 @@ type Saga = Generator<*, void, *>;
 // Fetching the version from the Pollbot service.
 export function* fetchPollbotVersion(): Saga {
   try {
-    const version = yield call(getPollbotVersion);
+    const version: APIVersionData = yield call(getPollbotVersion);
     yield put(updatePollbotVersion(version));
   } catch (err) {
     console.error('Failed getting the pollbot version', err);
@@ -39,7 +46,7 @@ export function* fetchPollbotVersion(): Saga {
 // Fetching the ongoing versions.
 export function* fetchOngoingVersions(): Saga {
   try {
-    const ongoingVersions = yield call(getOngoingVersions);
+    const ongoingVersions: OngoingVersions = yield call(getOngoingVersions);
     yield put(updateLatestChannelVersions(ongoingVersions));
   } catch (err) {
     console.error('Failed getting the latest channel versions', err);
@@ -48,7 +55,7 @@ export function* fetchOngoingVersions(): Saga {
 
 // Update the url from the version stored in the state.
 export function* updateUrl(): Saga {
-  const state = yield select();
+  const state: State = yield select();
   window.location.hash = localUrlFromVersion(state.version);
 }
 
@@ -60,7 +67,7 @@ export function* refreshStatus(): Saga {
     }
   };
 
-  const state = yield select();
+  const state: State = yield select();
   // Save previous results so we can check if something changed.
   const prevResults = state.checkResults;
   yield put(setVersion(state.version));
@@ -70,7 +77,7 @@ export function* refreshStatus(): Saga {
       ({url, title}) => (checks[title] = call(checkStatus, url)),
     );
     try {
-      const checkResults = yield all(checks);
+      const checkResults: CheckResults = yield all(checks);
       const addResults = Object.keys(checkResults).map(title => {
         const result = checkResults[title];
         const prevResult = prevResults[title];
@@ -90,14 +97,14 @@ export function* refreshStatus(): Saga {
 export function* requestStatus(action: RequestStatus): Saga {
   const version = action.version;
   yield put(setVersion(version));
-  const releaseInfo = yield call(getReleaseInfo, version);
+  const releaseInfo: ReleaseInfo = yield call(getReleaseInfo, version);
   yield put(updateReleaseInfo(releaseInfo));
   let checks = {};
   releaseInfo.checks.map(
     ({url, title}) => (checks[title] = call(checkStatus, url)),
   );
   try {
-    const checkResults = yield all(checks);
+    const checkResults: CheckResults = yield all(checks);
     const addResults = Object.keys(checkResults).map(title => {
       const result = checkResults[title];
       return put(addCheckResult(title, result));
