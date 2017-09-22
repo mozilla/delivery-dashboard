@@ -1,22 +1,30 @@
 import {all, call, put, select, takeEvery} from 'redux-saga/effects';
 import {cloneableGenerator} from 'redux-saga/utils';
-import {checkStatus, getOngoingVersions, getPollbotVersion} from './PollbotAPI';
+import {
+  checkStatus,
+  getOngoingVersions,
+  getPollbotVersion,
+  getReleaseInfo,
+} from './PollbotAPI';
 import {
   addCheckResult,
   setVersion,
   updateLatestChannelVersions,
   updatePollbotVersion,
+  updateReleaseInfo,
 } from './actions';
 import {
   REFRESH_STATUS,
   REQUEST_ONGOING_VERSIONS,
   REQUEST_POLLBOT_VERSION,
+  REQUEST_STATUS,
   UPDATE_URL,
 } from './types';
 import {
   fetchOngoingVersions,
   fetchPollbotVersion,
   refreshStatus,
+  requestStatus,
   rootSaga,
   updateUrl,
 } from './sagas';
@@ -175,17 +183,81 @@ describe('sagas', () => {
       'some other test: status changed (exists).',
     );
   });
+
+  it('handles requestStatus', () => {
+    const data = {};
+    data.saga = cloneableGenerator(requestStatus)({version: '50.0'});
+
+    const releaseInfo = {
+      channel: 'release',
+      product: 'firefox',
+      version: '50.0',
+      checks: [
+        {
+          title: 'some test',
+          url: 'some url',
+        },
+        {
+          title: 'some other test',
+          url: 'some other url',
+        },
+      ],
+    };
+    const checkResult = {
+      status: 'exists',
+      message: 'check succesful',
+      link: 'some link',
+    };
+
+    expect(data.saga.next().value).toEqual(put(setVersion('50.0')));
+    expect(data.saga.next().value).toEqual(call(getReleaseInfo, '50.0'));
+    expect(data.saga.next(releaseInfo).value).toEqual(
+      put(updateReleaseInfo(releaseInfo)),
+    );
+    expect(data.saga.next().value).toEqual(
+      all({
+        'some test': call(checkStatus, 'some url'),
+        'some other test': call(checkStatus, 'some other url'),
+      }),
+    );
+
+    // Clone to test success and failure of checkStatus.
+    data.sagaThrow = data.saga.clone();
+
+    // checkStatus throws an error.
+    expect(data.sagaThrow.throw('error').value).toEqual(
+      console.error('Failed getting check results for 50.0', 'error'),
+    );
+    expect(data.sagaThrow.next().done).toBe(true);
+
+    // checkStatus completes correctly.
+    expect(
+      data.saga.next({
+        'some test': checkResult,
+        'some other test': checkResult,
+      }).value,
+    ).toEqual(
+      all([
+        put(addCheckResult('some test', checkResult)),
+        put(addCheckResult('some other test', checkResult)),
+      ]),
+    );
+    expect(data.saga.next().done).toBe(true);
+  });
 });
 
 describe('rootSaga', () => {
   it('uses takeEvery on each saga available', () => {
     const saga = rootSaga();
-    expect(saga.next().value).toEqual([
-      takeEvery(REQUEST_ONGOING_VERSIONS, fetchOngoingVersions),
-      takeEvery(REQUEST_POLLBOT_VERSION, fetchPollbotVersion),
-      takeEvery(UPDATE_URL, updateUrl),
-      takeEvery(REFRESH_STATUS, refreshStatus),
-    ]);
+    expect(saga.next().value).toEqual(
+      all([
+        takeEvery(REQUEST_ONGOING_VERSIONS, fetchOngoingVersions),
+        takeEvery(REQUEST_POLLBOT_VERSION, fetchPollbotVersion),
+        takeEvery(UPDATE_URL, updateUrl),
+        takeEvery(REFRESH_STATUS, refreshStatus),
+        takeEvery(REQUEST_STATUS, requestStatus),
+      ]),
+    );
     expect(saga.next().done).toBe(true);
   });
 });

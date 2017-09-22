@@ -112,6 +112,7 @@ export const REQUEST_ONGOING_VERSIONS = 'REQUEST_ONGOING_VERSIONS';
 export const REQUEST_POLLBOT_VERSION = 'REQUEST_POLLBOT_VERSION';
 export const UPDATE_URL = 'UPDATE_URL';
 export const REFRESH_STATUS = 'REFRESH_STATUS';
+export const REQUEST_STATUS = 'REQUEST_STATUS';
 
 export type RequestOngoingVersions = {|
   type: 'REQUEST_ONGOING_VERSIONS',
@@ -129,11 +130,17 @@ export type RefreshStatus = {|
   type: 'REFRESH_STATUS',
 |};
 
+export type RequestStatus = {|
+  type: 'REQUEST_STATUS',
+  version: string,
+|};
+
 export type Action =
   | AddCheckResult
   | RefreshStatus
   | RequestOngoingVersions
   | RequestPollbotVersion
+  | RequestStatus
   | SetVersion
   | SubmitVersion
   | UpdateLatestChannelVersions

@@ -5,15 +5,23 @@ import {
   REQUEST_POLLBOT_VERSION,
   UPDATE_URL,
   REFRESH_STATUS,
+  REQUEST_STATUS,
 } from './types';
+import type {RequestStatus} from './types';
 import {all, call, put, select, takeEvery} from 'redux-saga/effects';
-import {checkStatus, getOngoingVersions, getPollbotVersion} from './PollbotAPI';
+import {
+  checkStatus,
+  getOngoingVersions,
+  getPollbotVersion,
+  getReleaseInfo,
+} from './PollbotAPI';
 import {
   addCheckResult,
   localUrlFromVersion,
   setVersion,
   updateLatestChannelVersions,
   updatePollbotVersion,
+  updateReleaseInfo,
 } from './actions';
 
 type Saga = Generator<*, void, *>;
@@ -78,11 +86,34 @@ export function* refreshStatus(): Saga {
   }
 }
 
+// Requesting a status for a new version.
+export function* requestStatus(action: RequestStatus): Saga {
+  const version = action.version;
+  yield put(setVersion(version));
+  const releaseInfo = yield call(getReleaseInfo, version);
+  yield put(updateReleaseInfo(releaseInfo));
+  let checks = {};
+  releaseInfo.checks.map(
+    ({url, title}) => (checks[title] = call(checkStatus, url)),
+  );
+  try {
+    const checkResults = yield all(checks);
+    const addResults = Object.keys(checkResults).map(title => {
+      const result = checkResults[title];
+      return put(addCheckResult(title, result));
+    });
+    yield all(addResults);
+  } catch (err) {
+    console.error(`Failed getting check results for ${version}`, err);
+  }
+}
+
 export function* rootSaga(): Saga {
-  yield [
+  yield all([
     takeEvery(REQUEST_ONGOING_VERSIONS, fetchOngoingVersions),
     takeEvery(REQUEST_POLLBOT_VERSION, fetchPollbotVersion),
     takeEvery(UPDATE_URL, updateUrl),
     takeEvery(REFRESH_STATUS, refreshStatus),
-  ];
+    takeEvery(REQUEST_STATUS, requestStatus),
+  ]);
 }

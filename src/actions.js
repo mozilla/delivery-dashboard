@@ -12,19 +12,18 @@ import {
   REQUEST_POLLBOT_VERSION,
   UPDATE_URL,
   REFRESH_STATUS,
+  REQUEST_STATUS,
 } from './types';
-import {checkStatus, getReleaseInfo} from './PollbotAPI';
 import type {
   AddCheckResult,
   APIVersionData,
-  CheckInfo,
   CheckResult,
-  Dispatch,
   OngoingVersions,
   RefreshStatus,
   ReleaseInfo,
   RequestOngoingVersions,
   RequestPollbotVersion,
+  RequestStatus,
   SetVersion,
   SubmitVersion,
   UpdateLatestChannelVersions,
@@ -94,22 +93,6 @@ export function refreshStatus(): RefreshStatus {
   return {type: REFRESH_STATUS};
 }
 
-// ASYNC (THUNK) ACTIONS.
-
-// Requesting a status for a new version.
-export function requestStatus(version: string) {
-  return async function(dispatch: Dispatch) {
-    dispatch(setVersion(version));
-    const releaseInfo = await getReleaseInfo(version);
-    dispatch(updateReleaseInfo(releaseInfo));
-    const checks = releaseInfo.checks.map(async ({url, title}: CheckInfo) => {
-      const result = await checkStatus(url);
-      dispatch(addCheckResult(title, result));
-    });
-    try {
-      await Promise.all(checks);
-    } catch (err) {
-      console.error(`Failed getting check results for ${version}`, err);
-    }
-  };
+export function requestStatus(version: string): RequestStatus {
+  return {type: REQUEST_STATUS, version: version};
 }

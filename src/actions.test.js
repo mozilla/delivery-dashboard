@@ -1,5 +1,3 @@
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import {
   ADD_CHECK_RESULT,
   SET_VERSION,
@@ -12,6 +10,7 @@ import {
   REQUEST_POLLBOT_VERSION,
   UPDATE_URL,
   REFRESH_STATUS,
+  REQUEST_STATUS,
 } from './types';
 import {
   addCheckResult,
@@ -27,9 +26,6 @@ import {
   updateUrl,
   updateVersionInput,
 } from './actions';
-
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
 
 describe('action creators', () => {
   it('returns a UPDATE_VERSION_INPUT action for setVersion', () => {
@@ -145,69 +141,10 @@ describe('sagas action creator', () => {
       type: REFRESH_STATUS,
     });
   });
-});
-
-describe('thunk action creator requestStatus', () => {
-  const releaseInfo = {
-    channel: 'release',
-    product: 'firefox',
-    version: '51.0',
-    checks: [
-      {
-        title: 'some test',
-        url: 'some url',
-      },
-    ],
-  };
-  it('requests the version given', async () => {
-    const mockCheckResult = {
-      status: 'exists',
-      message: 'check succesful',
-      link: 'some link',
-    };
-    // Mock the pollbot API calls.
-    const module = require('./PollbotAPI');
-    module.getReleaseInfo = jest.fn(() => releaseInfo);
-    module.checkStatus = jest.fn(() => mockCheckResult);
-
-    // Version 51.0 requested, version 50.0 in the state.
-    let expectedActions = [
-      {type: 'SET_VERSION', version: '51.0'},
-      {
-        releaseInfo: releaseInfo,
-        type: 'UPDATE_RELEASE_INFO',
-      },
-      {
-        result: mockCheckResult,
-        title: 'some test',
-        type: 'ADD_CHECK_RESULT',
-      },
-    ];
-
-    const store = mockStore({
+  it('handles a REQUEST_STATUS action for requestStatus', () => {
+    expect(requestStatus('50.0')).toEqual({
+      type: REQUEST_STATUS,
       version: '50.0',
-      checkResults: {},
     });
-    await store.dispatch(requestStatus('51.0'));
-    expect(store.getActions()).toEqual(expectedActions);
-  });
-  it('logs an error to the console if a check went wrong', async () => {
-    // Mock the pollbot API calls.
-    const module = require('./PollbotAPI');
-    module.checkStatus = jest.fn(() => {
-      throw 'some error';
-    });
-    // Mock the console.error call.
-    console.error = jest.fn();
-    const store = mockStore({
-      version: '50.0',
-      checkResults: {},
-      releaseInfo: releaseInfo,
-    });
-    await store.dispatch(requestStatus('50.0'));
-    expect(console.error).toHaveBeenCalledWith(
-      'Failed getting check results for 50.0',
-      'some error',
-    );
   });
 });
