@@ -50,8 +50,11 @@ describe('sagas', () => {
     );
     expect(data.saga.next().done).toBe(true);
 
-    expect(data.sagaThrow.throw('error').value).toEqual(
-      console.error('Failed getting the pollbot version', 'error'),
+    console.error = jest.fn();
+    data.sagaThrow.throw('error');
+    expect(console.error).toHaveBeenCalledWith(
+      'Failed getting the pollbot version',
+      'error',
     );
     expect(data.sagaThrow.next().done).toBe(true);
   });
@@ -76,8 +79,11 @@ describe('sagas', () => {
     );
     expect(data.saga.next().done).toBe(true);
 
-    expect(data.sagaThrow.throw('error').value).toEqual(
-      console.error('Failed getting the latest channel versions', 'error'),
+    console.error = jest.fn();
+    data.sagaThrow.throw('error');
+    expect(console.error).toHaveBeenCalledWith(
+      'Failed getting the latest channel versions',
+      'error',
     );
     expect(data.sagaThrow.next().done).toBe(true);
   });
@@ -159,8 +165,11 @@ describe('sagas', () => {
     data.sagaThrow = data.saga.clone();
 
     // checkStatus throws an error.
-    expect(data.sagaThrow.throw('error').value).toEqual(
-      console.error('Failed getting check results for 50.0', 'error'),
+    console.error = jest.fn();
+    data.sagaThrow.throw('error');
+    expect(console.error).toHaveBeenCalledWith(
+      'Failed getting check results for 50.0',
+      'error',
     );
     expect(data.sagaThrow.next().done).toBe(true);
 
@@ -225,8 +234,11 @@ describe('sagas', () => {
     data.sagaThrow = data.saga.clone();
 
     // checkStatus throws an error.
-    expect(data.sagaThrow.throw('error').value).toEqual(
-      console.error('Failed getting check results for 50.0', 'error'),
+    console.error = jest.fn();
+    data.sagaThrow.throw('error');
+    expect(console.error).toHaveBeenCalledWith(
+      'Failed getting check results for 50.0',
+      'error',
     );
     expect(data.sagaThrow.next().done).toBe(true);
 
