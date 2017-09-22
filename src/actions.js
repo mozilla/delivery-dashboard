@@ -11,6 +11,7 @@ import {
   REQUEST_ONGOING_VERSIONS,
   REQUEST_POLLBOT_VERSION,
   UPDATE_URL,
+  REFRESH_STATUS,
 } from './types';
 import {checkStatus, getReleaseInfo} from './PollbotAPI';
 import type {
@@ -19,8 +20,8 @@ import type {
   CheckInfo,
   CheckResult,
   Dispatch,
-  GetState,
   OngoingVersions,
+  RefreshStatus,
   ReleaseInfo,
   RequestOngoingVersions,
   RequestPollbotVersion,
@@ -89,40 +90,11 @@ export function updateUrl(): UpdateUrl {
   return {type: UPDATE_URL};
 }
 
-// ASYNC (THUNK) ACTIONS.
-
-// Refreshing a status for the current version.
-export function refreshStatus() {
-  const notifyChanges = (checkTitle, status) => {
-    if (Notification.permission === 'granted') {
-      new Notification(`${checkTitle}: status changed (${status}).`);
-    }
-  };
-
-  return async function(dispatch: Dispatch, getState: GetState) {
-    const state = getState();
-    // Save previous results so we can check if something changed.
-    const prevResults = state.checkResults;
-    dispatch(setVersion(state.version));
-    if (state.releaseInfo) {
-      const checks = state.releaseInfo.checks.map(
-        async ({url, title}: CheckInfo) => {
-          const result = await checkStatus(url);
-          const prevResult = prevResults[title];
-          if (prevResult && prevResult.status !== result.status) {
-            notifyChanges(title, result.status);
-          }
-          dispatch(addCheckResult(title, result));
-        },
-      );
-      try {
-        await Promise.all(checks);
-      } catch (err) {
-        console.error(`Failed getting check results for ${state.version}`, err);
-      }
-    }
-  };
+export function refreshStatus(): RefreshStatus {
+  return {type: REFRESH_STATUS};
 }
+
+// ASYNC (THUNK) ACTIONS.
 
 // Requesting a status for a new version.
 export function requestStatus(version: string) {

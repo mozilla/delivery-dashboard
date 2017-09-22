@@ -74,7 +74,7 @@ export class App extends React.Component<AppProps, void> {
       }
       this.refreshIntervalId = setInterval(
         () => this.props.dispatch(refreshStatus()),
-        60000,
+        5000,
       );
     } else {
       this.stopAutoRefresh();

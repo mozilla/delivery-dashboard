@@ -1,8 +1,14 @@
-import {call, put, select, takeEvery} from 'redux-saga/effects';
+import {all, call, put, select, takeEvery} from 'redux-saga/effects';
 import {cloneableGenerator} from 'redux-saga/utils';
-import {getOngoingVersions, getPollbotVersion} from './PollbotAPI';
-import {updateLatestChannelVersions, updatePollbotVersion} from './actions';
+import {checkStatus, getOngoingVersions, getPollbotVersion} from './PollbotAPI';
 import {
+  addCheckResult,
+  setVersion,
+  updateLatestChannelVersions,
+  updatePollbotVersion,
+} from './actions';
+import {
+  REFRESH_STATUS,
   REQUEST_ONGOING_VERSIONS,
   REQUEST_POLLBOT_VERSION,
   UPDATE_URL,
@@ -10,6 +16,7 @@ import {
 import {
   fetchOngoingVersions,
   fetchPollbotVersion,
+  refreshStatus,
   rootSaga,
   updateUrl,
 } from './sagas';
@@ -75,6 +82,99 @@ describe('sagas', () => {
     saga.next({version: '50.0'});
     expect(window.location.hash).toEqual('#pollbot/firefox/50.0');
   });
+
+  it('handles refreshStatus', () => {
+    const data = {};
+    data.saga = cloneableGenerator(refreshStatus)();
+
+    // Mock the Notification API call.
+    global.Notification = jest.fn();
+    global.Notification.permission = 'granted';
+
+    const releaseInfo = {
+      channel: 'release',
+      product: 'firefox',
+      version: '50.0',
+      checks: [
+        {
+          title: 'some test',
+          url: 'some url',
+        },
+        {
+          title: 'some other test',
+          url: 'some other url',
+        },
+      ],
+    };
+    const checkResult = {
+      status: 'exists',
+      message: 'check succesful',
+      link: 'some link',
+    };
+    const checkResultFailing = {
+      status: 'incomplete',
+      message: 'check incomplete',
+      link: 'some link',
+    };
+
+    expect(data.saga.next().value).toEqual(select());
+
+    // Clone to test the branch where there's no releaseInfo in the state.
+    data.sagaNoReleaseInfo = data.saga.clone();
+
+    // No releaseInfo in the state.
+    expect(data.sagaNoReleaseInfo.next({version: '50.0'}).value).toEqual(
+      put(setVersion('50.0')),
+    );
+    expect(data.sagaNoReleaseInfo.next().done).toBe(true);
+
+    // releaseInfo in the state.
+    expect(
+      data.saga.next({
+        version: '50.0',
+        releaseInfo: releaseInfo,
+        checkResults: {
+          'some test': checkResult,
+          'some other test': checkResultFailing,
+        },
+      }).value,
+    ).toEqual(put(setVersion('50.0')));
+
+    expect(data.saga.next().value).toEqual(
+      all({
+        'some test': call(checkStatus, 'some url'),
+        'some other test': call(checkStatus, 'some other url'),
+      }),
+    );
+
+    // Clone to test success and failure of checkStatus.
+    data.sagaThrow = data.saga.clone();
+
+    // checkStatus throws an error.
+    expect(data.sagaThrow.throw('error').value).toEqual(
+      console.error('Failed getting check results for 50.0', 'error'),
+    );
+    expect(data.sagaThrow.next().done).toBe(true);
+
+    // checkStatus completes correctly.
+    expect(
+      data.saga.next({
+        'some test': checkResult,
+        'some other test': checkResult,
+      }).value,
+    ).toEqual(
+      all([
+        put(addCheckResult('some test', checkResult)),
+        put(addCheckResult('some other test', checkResult)),
+      ]),
+    );
+    expect(data.saga.next().done).toBe(true);
+    // The notification has been sent for the previously failing test.
+    expect(global.Notification).toHaveBeenCalledTimes(1);
+    expect(global.Notification).toHaveBeenCalledWith(
+      'some other test: status changed (exists).',
+    );
+  });
 });
 
 describe('rootSaga', () => {
@@ -84,6 +184,7 @@ describe('rootSaga', () => {
       takeEvery(REQUEST_ONGOING_VERSIONS, fetchOngoingVersions),
       takeEvery(REQUEST_POLLBOT_VERSION, fetchPollbotVersion),
       takeEvery(UPDATE_URL, updateUrl),
+      takeEvery(REFRESH_STATUS, refreshStatus),
     ]);
     expect(saga.next().done).toBe(true);
   });
