@@ -1,6 +1,11 @@
-/* Delivery Dashboard custom styles */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
 body {
   background-color: #ececec;
+  margin-bottom: 30px;
 }
 
 header {
@@ -19,34 +24,15 @@ header {
   padding: 24px;
 }
 
-footer {
-  background-color: #fff;
-}
-
 /* List of check results for a given release */
 .dashboard {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(30%, 1fr));
   grid-gap: 20px;
 }
-.dashboard .panel {
-  text-align: center;
-}
 
-/* Firefox releases menu */
-.firefox-releases-menu button {
-  padding: 0;
-}
-
-/* Sticky footer */
-html {
-  position: relative;
-  min-height: 100%;
-}
-body {
-  margin-bottom: 30px;
-}
 footer {
+  background-color: #fff;
   bottom: 0;
   height: 30px;
   line-height: 30px;
