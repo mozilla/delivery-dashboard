@@ -23,31 +23,6 @@ footer {
   background-color: #fff;
 }
 
-/* Search form */
-.search-form .form-group {
-  margin-bottom: 0;
-}
-
-.clearable-text {
-  width: 100%;
-}
-.clearable-text input {
-  width: 100%;
-  padding-right: 18px;
-}
-
-.text-clear-btn {
-  position: absolute;
-  right: 5px;
-  top: 0;
-  bottom: 0;
-  height: 14px;
-  margin: auto;
-  font-size: 14px;
-  cursor: pointer;
-  color: #ccc;
-}
-
 /* List of check results for a given release */
 .dashboard {
   display: grid;
