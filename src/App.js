@@ -1,6 +1,6 @@
 // @flow
 import * as React from 'react';
-import {Form, Icon, Input, Layout, Menu, Spin} from 'antd';
+import {Card, Form, Icon, Input, Layout, Menu, Spin} from 'antd';
 import './App.css';
 import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
@@ -318,20 +318,22 @@ export function Dashboard({
 
 export function DisplayCheckResult(title: string, checkResult: ?CheckResult) {
   return (
-    <div className="panel panel-default" key={title}>
-      <div className="panel-body">
-        <h2>{title}</h2>
-        {checkResult ? (
-          <DisplayStatus
-            status={checkResult.status}
-            message={checkResult.message}
-            url={checkResult.link}
-          />
-        ) : (
-          <Spin />
-        )}
-      </div>
-    </div>
+    <Card
+      title={title}
+      key={title}
+      noHovering={true}
+      style={{textAlign: 'center'}}
+    >
+      {checkResult ? (
+        <DisplayStatus
+          status={checkResult.status}
+          message={checkResult.message}
+          url={checkResult.link}
+        />
+      ) : (
+        <Spin />
+      )}
+    </Card>
   );
 }
 
