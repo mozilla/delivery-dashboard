@@ -1,6 +1,6 @@
 // @flow
 import * as React from 'react';
-import {Card, Form, Icon, Input, Layout, Menu, Spin} from 'antd';
+import {Alert, Card, Form, Icon, Input, Layout, Menu, Spin} from 'antd';
 import './App.css';
 import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
@@ -347,18 +347,14 @@ export function DisplayStatus({
   url: string,
 }) {
   const statusToLabelClass = {
-    error: 'label-warning',
-    exists: 'label-success',
-    incomplete: 'label-info',
-    missing: 'label-danger',
+    error: 'error',
+    exists: 'success',
+    incomplete: 'info',
+    missing: 'warning',
   };
   return (
-    <a
-      className={'label ' + statusToLabelClass[status]}
-      title={message}
-      href={url}
-    >
-      {status}
+    <a title={message} href={url}>
+      <Alert message={status} type={statusToLabelClass[status]} showIcon />
     </a>
   );
 }
