@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react';
-import {ButtonGroup, Panel} from 'react-bootstrap';
-import {Layout} from 'antd';
+import {ButtonGroup} from 'react-bootstrap';
+import {Layout, Menu} from 'antd';
 import './App.css';
 import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
@@ -126,15 +126,18 @@ export class App extends React.Component<AppProps, void> {
           </h1>
         </header>
         <Layout className="mainContent">
-          <Layout.Content style={{marginRight: 20}}>
+          <Layout.Sider
+            width={350}
+            style={{backgroundColor: '#fff', borderRight: 'none'}}
+          >
+            <SideBar />
+          </Layout.Sider>
+          <Layout.Content
+            style={{paddingLeft: 20, borderLeft: '1px solid #e9e9e9'}}
+          >
             <VersionInput />
             <CurrentRelease />
           </Layout.Content>
-          <Layout.Sider width={350}>
-            <Panel header={<strong>Firefox Releases</strong>}>
-              <SideBar />
-            </Panel>
-          </Layout.Sider>
         </Layout>
         <footer>
           <p className="text-muted">
@@ -249,23 +252,30 @@ function ReleasesMenu({versions}: {versions: OngoingVersions}) {
   if (versions) {
     const {nightly, beta, release, esr} = versions;
     releasesMenu = (
-      <ul>
-        <ReleaseItem title="Nightly" version={nightly} />
-        <ReleaseItem title="Beta" version={beta} />
-        <ReleaseItem title="Release" version={release} />
-        <ReleaseItem title="ESR" version={esr} />
-      </ul>
+      <Menu
+        mode="inline"
+        selectable={false}
+        defaultOpenKeys={['sub1']}
+        style={{borderRight: 'none'}}
+      >
+        <Menu.SubMenu key="sub1" title="Firefox Releases">
+          <Menu.Item>
+            <a href={localUrlFromVersion(nightly)}>{'Nightly: ' + nightly}</a>
+          </Menu.Item>
+          <Menu.Item>
+            <a href={localUrlFromVersion(beta)}>{'Beta: ' + beta}</a>
+          </Menu.Item>
+          <Menu.Item>
+            <a href={localUrlFromVersion(release)}>{'Release: ' + release}</a>
+          </Menu.Item>
+          <Menu.Item>
+            <a href={localUrlFromVersion(esr)}>{'ESR: ' + esr}</a>
+          </Menu.Item>
+        </Menu.SubMenu>
+      </Menu>
     );
   }
   return releasesMenu;
-}
-
-function ReleaseItem({title, version}: {title: string, version: string}) {
-  return (
-    <li key={title}>
-      <a href={localUrlFromVersion(version)}>{title + ': ' + version}</a>
-    </li>
-  );
 }
 
 const currentReleaseMapStateToProps: MapStateToProps<*, *, *> = (
