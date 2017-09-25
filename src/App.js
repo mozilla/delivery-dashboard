@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react';
 import {ButtonGroup} from 'react-bootstrap';
-import {Layout, Menu} from 'antd';
+import {Layout, Menu, Spin} from 'antd';
 import './App.css';
 import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
@@ -238,17 +238,13 @@ function ClearableTextInput({
   );
 }
 
-export function Spinner() {
-  return <div className="loader" />;
-}
-
 const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) => ({
   versions: state.latestChannelVersions,
 });
 const SideBar = connect(sideBarMapStateToProps)(ReleasesMenu);
 
 function ReleasesMenu({versions}: {versions: OngoingVersions}) {
-  let releasesMenu = <Spinner />;
+  let releasesMenu = <Spin />;
   if (versions) {
     const {nightly, beta, release, esr} = versions;
     releasesMenu = (
@@ -306,7 +302,7 @@ export function Dashboard({
       </p>
     );
   } else if (!releaseInfo) {
-    return <Spinner />;
+    return <Spin />;
   } else {
     return (
       <div>
@@ -334,7 +330,7 @@ export function DisplayCheckResult(title: string, checkResult: ?CheckResult) {
             url={checkResult.link}
           />
         ) : (
-          <Spinner />
+          <Spin />
         )}
       </div>
     </div>
