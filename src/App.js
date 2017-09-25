@@ -1,7 +1,6 @@
 // @flow
 import * as React from 'react';
-import {ButtonGroup} from 'react-bootstrap';
-import {Layout, Menu, Spin} from 'antd';
+import {Form, Icon, Input, Layout, Menu, Spin} from 'antd';
 import './App.css';
 import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
@@ -201,13 +200,15 @@ export function SearchForm({
   value,
 }: SearchFormProps) {
   return (
-    <form className="search-form well" onSubmit={onSubmit}>
-      <ClearableTextInput
-        onChange={handleSearchBoxChange}
-        onClick={handleDismissSearchBoxVersion}
-        value={value}
-      />
-    </form>
+    <Form onSubmit={onSubmit}>
+      <Form.Item>
+        <ClearableTextInput
+          onChange={handleSearchBoxChange}
+          onClick={handleDismissSearchBoxVersion}
+          value={value}
+        />
+      </Form.Item>
+    </Form>
   );
 }
 
@@ -223,18 +224,15 @@ function ClearableTextInput({
   value,
 }: ClearableTextInputProps) {
   return (
-    <ButtonGroup className="clearable-text">
-      <input
-        className="form-control"
-        onChange={onChange}
-        placeholder={'Firefox version, eg. "57.0"'}
-        type="search"
-        value={value}
-      />
-      <span className="text-clear-btn" onClick={onClick}>
-        <i className="glyphicon glyphicon-remove" />
-      </span>
-    </ButtonGroup>
+    <Input
+      addonAfter={
+        <Icon type="close" onClick={onClick} style={{cursor: 'pointer'}} />
+      }
+      onChange={onChange}
+      placeholder={'Firefox version, eg. "57.0"'}
+      type="search"
+      value={value}
+    />
   );
 }
 
