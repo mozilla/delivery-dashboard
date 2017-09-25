@@ -1,6 +1,7 @@
 // @flow
 import * as React from 'react';
-import {ButtonGroup, Col, Grid, Navbar, Panel, Row} from 'react-bootstrap';
+import {ButtonGroup, Panel} from 'react-bootstrap';
+import {Layout} from 'antd';
 import './App.css';
 import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
@@ -119,26 +120,22 @@ export class App extends React.Component<AppProps, void> {
   render() {
     return (
       <div>
-        <Navbar collapseOnSelect fluid>
-          <Navbar.Header>
-            <Navbar.Brand>
-              <a href=".">Delivery Dashboard</a>
-            </Navbar.Brand>
-          </Navbar.Header>
-        </Navbar>
-        <Grid fluid>
-          <Row>
-            <Col sm={9}>
-              <VersionInput />
-              <CurrentRelease />
-            </Col>
-            <Col sm={3} className="firefox-releases-menu">
-              <Panel header={<strong>Firefox Releases</strong>}>
-                <SideBar />
-              </Panel>
-            </Col>
-          </Row>
-        </Grid>
+        <header>
+          <h1>
+            <a href=".">Delivery Dashboard</a>
+          </h1>
+        </header>
+        <Layout className="mainContent">
+          <Layout.Content style={{marginRight: 20}}>
+            <VersionInput />
+            <CurrentRelease />
+          </Layout.Content>
+          <Layout.Sider width={350}>
+            <Panel header={<strong>Firefox Releases</strong>}>
+              <SideBar />
+            </Panel>
+          </Layout.Sider>
+        </Layout>
         <footer>
           <p className="text-muted">
             Delivery dashboard version:{' '}
