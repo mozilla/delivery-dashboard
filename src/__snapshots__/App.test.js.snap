@@ -112,19 +112,15 @@ exports[`<App /> renders without crashing 1`] = `
     </div>
   </div>
   <footer>
-    <p
-      className="text-muted"
+    Delivery dashboard version:
+     
+    <a
+      href="https://github.com/mozilla/delivery-dashboard/commit/commit-hash"
     >
-      Delivery dashboard version:
-       
-      <a
-        href="https://github.com/mozilla/delivery-dashboard/commit/commit-hash"
-      >
-        version-number
-      </a>
-       -- Pollbot version:
-       
-    </p>
+      version-number
+    </a>
+     -- Pollbot version:
+     
   </footer>
 </div>
 `;

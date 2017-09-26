@@ -1,11 +1,13 @@
 html {
-  position: relative;
+  height: inherit;
   min-height: 100%;
+  position: relative;
+  width: inherit;
 }
 
 body {
   background-color: #ececec;
-  margin-bottom: 30px;
+  margin-bottom: 54px;
 }
 
 header {

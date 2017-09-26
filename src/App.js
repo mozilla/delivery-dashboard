@@ -139,12 +139,10 @@ export class App extends React.Component<AppProps, void> {
           </Layout.Content>
         </Layout>
         <footer>
-          <p className="text-muted">
-            Delivery dashboard version:{' '}
-            <VersionLink versionData={deliveryDashboardVersionData} />
-            &nbsp;--&nbsp;Pollbot version:{' '}
-            <VersionLink versionData={this.props.pollbotVersion} />
-          </p>
+          Delivery dashboard version:{' '}
+          <VersionLink versionData={deliveryDashboardVersionData} />
+          &nbsp;--&nbsp;Pollbot version:{' '}
+          <VersionLink versionData={this.props.pollbotVersion} />
         </footer>
       </div>
     );

@@ -1,5 +1,4 @@
 // @flow
-import './index.css';
 import ConnectedApp from './App';
 import React from 'react';
 import ReactDOM from 'react-dom';
