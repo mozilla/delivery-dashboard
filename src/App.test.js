@@ -9,9 +9,9 @@ import {
   DisplayStatus,
   parseUrl,
   SearchForm,
-  Spinner,
   versionInputDispatchProps,
 } from './App';
+import {Alert, Spin} from 'antd';
 import createStore from './create-store';
 import {SERVER} from './PollbotAPI';
 
@@ -201,7 +201,7 @@ describe('<SearchForm />', () => {
         handleDismissSearchBoxVersion={handleDismissSearchBoxVersion}
       />,
     );
-    wrapper.find('.text-clear-btn').simulate('click');
+    wrapper.find('.ant-input-group-addon i').simulate('click');
     expect(global.window.location.hash).toBe('');
     expect(module.setVersion).toHaveBeenCalledWith('');
   });
@@ -225,7 +225,7 @@ describe('<Dashboard />', () => {
   });
   it('displays a spinner when a version is selected', () => {
     const wrapper = shallow(<Dashboard version="50.0" />);
-    expect(wrapper.find(Spinner).length).toBe(1);
+    expect(wrapper.find(Spin).length).toBe(1);
   });
   it('displays a list of check results when a release info is present', () => {
     const releaseInfo = {
@@ -256,20 +256,21 @@ describe('<Dashboard />', () => {
         checkResults={checkResults}
       />,
     );
-    expect(wrapper.find(Spinner).length).toBe(0);
+    expect(wrapper.find(Spin).length).toBe(0);
     expect(wrapper.find(DisplayStatus).length).toBe(2);
   });
 });
 
 describe('<DisplayStatus />', () => {
   const checkDisplayStatus = (status, label) => {
-    const wrapper = shallow(
+    const wrapper = mount(
       <DisplayStatus status={status} message="check message" url="check url" />,
     );
     const link = wrapper.find('a');
-    expect(link.prop('className')).toContain(`label-${label}`);
-    expect(link.prop('title')).toEqual('check message');
     expect(link.prop('href')).toEqual('check url');
+    expect(link.prop('title')).toEqual('check message');
+    const alert = wrapper.find(Alert);
+    expect(alert.prop('type')).toBe(label);
     expect(link.text()).toEqual(status);
   };
   it('displays the status when the status is exists', () => {
@@ -279,9 +280,9 @@ describe('<DisplayStatus />', () => {
     checkDisplayStatus('incomplete', 'info');
   });
   it('displays the status when the status is missing', () => {
-    checkDisplayStatus('missing', 'danger');
+    checkDisplayStatus('missing', 'warning');
   });
   it('displays the error message when there an error', () => {
-    checkDisplayStatus('error', 'warning');
+    checkDisplayStatus('error', 'error');
   });
 });

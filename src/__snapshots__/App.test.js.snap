@@ -2,105 +2,125 @@
 
 exports[`<App /> renders without crashing 1`] = `
 <div>
-  <nav
-    className="navbar navbar-default"
-  >
-    <div
-      className="container-fluid"
-    >
-      <div
-        className="navbar-header"
+  <header>
+    <h1>
+      <a
+        href="."
       >
-        <a
-          className="navbar-brand"
-          href="."
-        >
-          Delivery Dashboard
-        </a>
-      </div>
-    </div>
-  </nav>
+        Delivery Dashboard
+      </a>
+    </h1>
+  </header>
   <div
-    className="container-fluid"
+    className="mainContent ant-layout ant-layout-has-sider"
   >
     <div
-      className="row"
+      className="ant-layout-sider"
+      style={
+        Object {
+          "backgroundColor": "#fff",
+          "borderRight": "none",
+          "flex": "0 0 350px",
+          "maxWidth": "350px",
+          "minWidth": "350px",
+          "width": "350px",
+        }
+      }
     >
       <div
-        className="col-sm-9"
-      >
-        <form
-          className="search-form well"
-          onSubmit={[Function]}
-        >
-          <div
-            className="clearable-text btn-group"
-          >
-            <input
-              className="form-control"
-              onChange={[Function]}
-              placeholder="Firefox version, eg. \\"57.0\\""
-              type="search"
-              value=""
-            />
-            <span
-              className="text-clear-btn"
-              onClick={[Function]}
-            >
-              <i
-                className="glyphicon glyphicon-remove"
-              />
-            </span>
-          </div>
-        </form>
-        <p>
-          Learn more about a specific version.
-          <strong>
-             Select or enter your version number.
-          </strong>
-        </p>
-      </div>
-      <div
-        className="firefox-releases-menu col-sm-3"
+        className="ant-layout-sider-children"
       >
         <div
-          className="panel panel-default"
-          id={undefined}
+          className="ant-spin ant-spin-spinning ant-spin-show-text"
         >
-          <div
-            className="panel-heading"
+          <span
+            className="ant-spin-dot"
           >
-            <strong
-              className="panel-title"
-            >
-              Firefox Releases
-            </strong>
-          </div>
-          <div
-            className="panel-body"
-          >
-            <div
-              className="loader"
-            />
-          </div>
+            <i />
+            <i />
+            <i />
+            <i />
+          </span>
         </div>
       </div>
     </div>
+    <div
+      className="ant-layout-content"
+      style={
+        Object {
+          "borderLeft": "1px solid #e9e9e9",
+          "paddingLeft": 20,
+        }
+      }
+    >
+      <form
+        className="ant-form ant-form-horizontal"
+        onSubmit={[Function]}
+      >
+        <div
+          className="ant-row ant-form-item"
+          style={undefined}
+        >
+          <div
+            className="ant-form-item-control-wrapper"
+          >
+            <div
+              className="ant-form-item-control "
+            >
+              <span
+                className="ant-input-group-wrapper"
+                style={undefined}
+              >
+                <span
+                  className="ant-input-wrapper ant-input-group"
+                >
+                  <input
+                    className="ant-input"
+                    disabled={false}
+                    onChange={[Function]}
+                    onKeyDown={[Function]}
+                    placeholder="Firefox version, eg. \\"57.0\\""
+                    style={null}
+                    type="search"
+                    value=""
+                  />
+                  <span
+                    className="ant-input-group-addon"
+                  >
+                    <i
+                      className="anticon anticon-close"
+                      onClick={[Function]}
+                      style={
+                        Object {
+                          "cursor": "pointer",
+                        }
+                      }
+                    />
+                  </span>
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </form>
+      <p>
+        Learn more about a specific version.
+        <strong>
+           Select or enter your version number.
+        </strong>
+      </p>
+    </div>
   </div>
   <footer>
-    <p
-      className="text-muted"
+    Delivery dashboard version:
+     
+    <a
+      href="https://github.com/mozilla/delivery-dashboard/commit/commit-hash"
     >
-      Delivery dashboard version:
-       
-      <a
-        href="https://github.com/mozilla/delivery-dashboard/commit/commit-hash"
-      >
-        version-number
-      </a>
-       -- Pollbot version:
-       
-    </p>
+      version-number
+    </a>
+     -- Pollbot version:
+     
   </footer>
 </div>
 `;

@@ -1,6 +1,6 @@
 // @flow
 import * as React from 'react';
-import {ButtonGroup, Col, Grid, Navbar, Panel, Row} from 'react-bootstrap';
+import {Alert, Card, Form, Icon, Input, Layout, Menu, Spin} from 'antd';
 import './App.css';
 import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
@@ -119,33 +119,30 @@ export class App extends React.Component<AppProps, void> {
   render() {
     return (
       <div>
-        <Navbar collapseOnSelect fluid>
-          <Navbar.Header>
-            <Navbar.Brand>
-              <a href=".">Delivery Dashboard</a>
-            </Navbar.Brand>
-          </Navbar.Header>
-        </Navbar>
-        <Grid fluid>
-          <Row>
-            <Col sm={9}>
-              <VersionInput />
-              <CurrentRelease />
-            </Col>
-            <Col sm={3} className="firefox-releases-menu">
-              <Panel header={<strong>Firefox Releases</strong>}>
-                <SideBar />
-              </Panel>
-            </Col>
-          </Row>
-        </Grid>
+        <header>
+          <h1>
+            <a href=".">Delivery Dashboard</a>
+          </h1>
+        </header>
+        <Layout className="mainContent">
+          <Layout.Sider
+            width={350}
+            style={{backgroundColor: '#fff', borderRight: 'none'}}
+          >
+            <SideBar />
+          </Layout.Sider>
+          <Layout.Content
+            style={{paddingLeft: 20, borderLeft: '1px solid #e9e9e9'}}
+          >
+            <VersionInput />
+            <CurrentRelease />
+          </Layout.Content>
+        </Layout>
         <footer>
-          <p className="text-muted">
-            Delivery dashboard version:{' '}
-            <VersionLink versionData={deliveryDashboardVersionData} />
-            &nbsp;--&nbsp;Pollbot version:{' '}
-            <VersionLink versionData={this.props.pollbotVersion} />
-          </p>
+          Delivery dashboard version:{' '}
+          <VersionLink versionData={deliveryDashboardVersionData} />
+          &nbsp;--&nbsp;Pollbot version:{' '}
+          <VersionLink versionData={this.props.pollbotVersion} />
         </footer>
       </div>
     );
@@ -201,13 +198,15 @@ export function SearchForm({
   value,
 }: SearchFormProps) {
   return (
-    <form className="search-form well" onSubmit={onSubmit}>
-      <ClearableTextInput
-        onChange={handleSearchBoxChange}
-        onClick={handleDismissSearchBoxVersion}
-        value={value}
-      />
-    </form>
+    <Form onSubmit={onSubmit}>
+      <Form.Item>
+        <ClearableTextInput
+          onChange={handleSearchBoxChange}
+          onClick={handleDismissSearchBoxVersion}
+          value={value}
+        />
+      </Form.Item>
+    </Form>
   );
 }
 
@@ -223,23 +222,16 @@ function ClearableTextInput({
   value,
 }: ClearableTextInputProps) {
   return (
-    <ButtonGroup className="clearable-text">
-      <input
-        className="form-control"
-        onChange={onChange}
-        placeholder={'Firefox version, eg. "57.0"'}
-        type="search"
-        value={value}
-      />
-      <span className="text-clear-btn" onClick={onClick}>
-        <i className="glyphicon glyphicon-remove" />
-      </span>
-    </ButtonGroup>
+    <Input
+      addonAfter={
+        <Icon type="close" onClick={onClick} style={{cursor: 'pointer'}} />
+      }
+      onChange={onChange}
+      placeholder={'Firefox version, eg. "57.0"'}
+      type="search"
+      value={value}
+    />
   );
-}
-
-export function Spinner() {
-  return <div className="loader" />;
 }
 
 const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) => ({
@@ -248,27 +240,34 @@ const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) => ({
 const SideBar = connect(sideBarMapStateToProps)(ReleasesMenu);
 
 function ReleasesMenu({versions}: {versions: OngoingVersions}) {
-  let releasesMenu = <Spinner />;
+  let releasesMenu = <Spin />;
   if (versions) {
     const {nightly, beta, release, esr} = versions;
     releasesMenu = (
-      <ul>
-        <ReleaseItem title="Nightly" version={nightly} />
-        <ReleaseItem title="Beta" version={beta} />
-        <ReleaseItem title="Release" version={release} />
-        <ReleaseItem title="ESR" version={esr} />
-      </ul>
+      <Menu
+        mode="inline"
+        selectable={false}
+        defaultOpenKeys={['sub1']}
+        style={{borderRight: 'none'}}
+      >
+        <Menu.SubMenu key="sub1" title="Firefox Releases">
+          <Menu.Item>
+            <a href={localUrlFromVersion(nightly)}>{'Nightly: ' + nightly}</a>
+          </Menu.Item>
+          <Menu.Item>
+            <a href={localUrlFromVersion(beta)}>{'Beta: ' + beta}</a>
+          </Menu.Item>
+          <Menu.Item>
+            <a href={localUrlFromVersion(release)}>{'Release: ' + release}</a>
+          </Menu.Item>
+          <Menu.Item>
+            <a href={localUrlFromVersion(esr)}>{'ESR: ' + esr}</a>
+          </Menu.Item>
+        </Menu.SubMenu>
+      </Menu>
     );
   }
   return releasesMenu;
-}
-
-function ReleaseItem({title, version}: {title: string, version: string}) {
-  return (
-    <li key={title}>
-      <a href={localUrlFromVersion(version)}>{title + ': ' + version}</a>
-    </li>
-  );
 }
 
 const currentReleaseMapStateToProps: MapStateToProps<*, *, *> = (
@@ -299,7 +298,7 @@ export function Dashboard({
       </p>
     );
   } else if (!releaseInfo) {
-    return <Spinner />;
+    return <Spin />;
   } else {
     return (
       <div>
@@ -317,20 +316,22 @@ export function Dashboard({
 
 export function DisplayCheckResult(title: string, checkResult: ?CheckResult) {
   return (
-    <div className="panel panel-default" key={title}>
-      <div className="panel-body">
-        <h2>{title}</h2>
-        {checkResult ? (
-          <DisplayStatus
-            status={checkResult.status}
-            message={checkResult.message}
-            url={checkResult.link}
-          />
-        ) : (
-          <Spinner />
-        )}
-      </div>
-    </div>
+    <Card
+      title={title}
+      key={title}
+      noHovering={true}
+      style={{textAlign: 'center'}}
+    >
+      {checkResult ? (
+        <DisplayStatus
+          status={checkResult.status}
+          message={checkResult.message}
+          url={checkResult.link}
+        />
+      ) : (
+        <Spin />
+      )}
+    </Card>
   );
 }
 
@@ -344,18 +345,14 @@ export function DisplayStatus({
   url: string,
 }) {
   const statusToLabelClass = {
-    error: 'label-warning',
-    exists: 'label-success',
-    incomplete: 'label-info',
-    missing: 'label-danger',
+    error: 'error',
+    exists: 'success',
+    incomplete: 'info',
+    missing: 'warning',
   };
   return (
-    <a
-      className={'label ' + statusToLabelClass[status]}
-      title={message}
-      href={url}
-    >
-      {status}
+    <a title={message} href={url}>
+      <Alert message={status} type={statusToLabelClass[status]} showIcon />
     </a>
   );
 }
