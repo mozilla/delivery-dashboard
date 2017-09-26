@@ -21,6 +21,8 @@ import {
   UPDATE_URL,
 } from './types';
 import {
+  checkResultAndUpdate,
+  checkResultAndUpdateAndNotify,
   fetchOngoingVersions,
   fetchPollbotVersion,
   refreshStatus,
@@ -97,13 +99,60 @@ describe('sagas', () => {
     expect(window.location.hash).toEqual('#pollbot/firefox/50.0');
   });
 
-  it('handles refreshStatus', () => {
-    const data = {};
-    data.saga = cloneableGenerator(refreshStatus)();
-
+  it('notifies using checkResultAndUpdateAndNotify', () => {
     // Mock the Notification API call.
     global.Notification = jest.fn();
     global.Notification.permission = 'granted';
+
+    const checkResult = {
+      status: 'exists',
+      message: 'check succesful',
+      link: 'some link',
+    };
+    const checkResultFailing = {
+      status: 'incomplete',
+      message: 'check incomplete',
+      link: 'some link',
+    };
+
+    const data = {};
+    data.saga = cloneableGenerator(checkResultAndUpdateAndNotify)(
+      'some test',
+      'some url',
+      checkResultFailing,
+    );
+
+    expect(data.saga.next().value).toEqual(
+      call(checkResultAndUpdate, 'some test', 'some url'),
+    );
+    expect(data.saga.next().value).toEqual(select());
+
+    // Clone to test the branch where there's no change in the result.
+    data.sagaResultUnchanged = data.saga.clone();
+
+    // No notification if the result hasn't changed.
+    expect(
+      data.sagaResultUnchanged.next({
+        checkResults: {'some test': checkResultFailing},
+      }).done,
+    ).toBe(true);
+    expect(global.Notification).toHaveBeenCalledTimes(0);
+
+    // Notify if the result has changed.
+    expect(
+      data.saga.next({
+        checkResults: {'some test': checkResult},
+      }).done,
+    ).toBe(true);
+    expect(global.Notification).toHaveBeenCalledTimes(1);
+    expect(global.Notification).toHaveBeenCalledWith(
+      'some test: status changed (exists).',
+    );
+  });
+
+  it('handles refreshStatus', () => {
+    const data = {};
+    data.saga = cloneableGenerator(refreshStatus)();
 
     const releaseInfo = {
       channel: 'release',
@@ -154,43 +203,20 @@ describe('sagas', () => {
       }).value,
     ).toEqual(put(setVersion('50.0')));
 
-    expect(data.saga.next().value).toEqual(
-      all({
-        'some test': call(checkStatus, 'some url'),
-        'some other test': call(checkStatus, 'some other url'),
-      }),
-    );
-
-    // Clone to test success and failure of checkStatus.
-    data.sagaThrow = data.saga.clone();
-
-    // checkStatus throws an error.
-    console.error = jest.fn();
-    data.sagaThrow.throw('error');
-    expect(console.error).toHaveBeenCalledWith(
-      'Failed getting check results for 50.0',
-      'error',
-    );
-    expect(data.sagaThrow.next().done).toBe(true);
-
-    // checkStatus completes correctly.
-    expect(
-      data.saga.next({
-        'some test': checkResult,
-        'some other test': checkResult,
-      }).value,
-    ).toEqual(
-      all([
-        put(addCheckResult('some test', checkResult)),
-        put(addCheckResult('some other test', checkResult)),
-      ]),
-    );
+    expect(data.saga.next().value).toEqual([
+      call(checkResultAndUpdateAndNotify, 'some test', 'some url', checkResult),
+      call(
+        checkResultAndUpdateAndNotify,
+        'some other test',
+        'some other url',
+        checkResultFailing,
+      ),
+    ]);
     expect(data.saga.next().done).toBe(true);
-    // The notification has been sent for the previously failing test.
-    expect(global.Notification).toHaveBeenCalledTimes(1);
-    expect(global.Notification).toHaveBeenCalledWith(
-      'some other test: status changed (exists).',
-    );
+  });
+
+  it('checks result and updates state using checkResultAndUpdate', () => {
+    expect('not implemented yet').toBe(false);
   });
 
   it('handles requestStatus', () => {
@@ -212,48 +238,30 @@ describe('sagas', () => {
         },
       ],
     };
-    const checkResult = {
-      status: 'exists',
-      message: 'check succesful',
-      link: 'some link',
-    };
 
     expect(data.saga.next().value).toEqual(put(setVersion('50.0')));
     expect(data.saga.next().value).toEqual(call(getReleaseInfo, '50.0'));
-    expect(data.saga.next(releaseInfo).value).toEqual(
-      put(updateReleaseInfo(releaseInfo)),
-    );
-    expect(data.saga.next().value).toEqual(
-      all({
-        'some test': call(checkStatus, 'some url'),
-        'some other test': call(checkStatus, 'some other url'),
-      }),
-    );
 
-    // Clone to test success and failure of checkStatus.
+    // Clone to test success and failure of getReleaseInfo.
     data.sagaThrow = data.saga.clone();
 
-    // checkStatus throws an error.
+    // getReleaseInfo throws an error.
     console.error = jest.fn();
     data.sagaThrow.throw('error');
     expect(console.error).toHaveBeenCalledWith(
-      'Failed getting check results for 50.0',
+      'Failed getting the release info for 50.0',
       'error',
     );
     expect(data.sagaThrow.next().done).toBe(true);
 
-    // checkStatus completes correctly.
-    expect(
-      data.saga.next({
-        'some test': checkResult,
-        'some other test': checkResult,
-      }).value,
-    ).toEqual(
-      all([
-        put(addCheckResult('some test', checkResult)),
-        put(addCheckResult('some other test', checkResult)),
-      ]),
+    // getReleaseInfo completes correctly.
+    expect(data.saga.next(releaseInfo).value).toEqual(
+      put(updateReleaseInfo(releaseInfo)),
     );
+    expect(data.saga.next().value).toEqual([
+      call(checkResultAndUpdate, 'some test', 'some url'),
+      call(checkResultAndUpdate, 'some other test', 'some other url'),
+    ]);
     expect(data.saga.next().done).toBe(true);
   });
 });
