@@ -3,6 +3,7 @@ import * as React from 'react';
 import {ButtonGroup, Col, Grid, Navbar, Panel, Row} from 'react-bootstrap';
 import './App.css';
 import {connect} from 'react-redux';
+import type {MapStateToProps} from 'react-redux';
 import {
   localUrlFromVersion,
   requestOngoingVersions,
@@ -150,15 +151,15 @@ export class App extends React.Component<AppProps, void> {
     );
   }
 }
+const connectedAppMapStateToProps: MapStateToProps<*, *, *> = (
+  state: State,
+) => ({
+  checkResults: state.checkResults,
+  pollbotVersion: state.pollbotVersion,
+  shouldRefresh: state.shouldRefresh,
+});
 export const ConnectedApp = connect(
-  // mapStateToProps
-  (state: State) => ({
-    checkResults: state.checkResults,
-    pollbotVersion: state.pollbotVersion,
-    shouldRefresh: state.shouldRefresh,
-  }),
-  // mapDispatchToProps
-  // Need the following line because of https://github.com/flowtype/flow-typed/issues/1269
+  connectedAppMapStateToProps,
   (dispatch: Dispatch) => ({dispatch: dispatch}),
 )(App);
 
@@ -241,15 +242,10 @@ export function Spinner() {
   return <div className="loader" />;
 }
 
-const SideBar = connect(
-  // mapStateToProps
-  (state: State) => ({
-    versions: state.latestChannelVersions,
-  }),
-  // mapDispatchToProps
-  // Need the following line because of https://github.com/flowtype/flow-typed/issues/1269
-  (dispatch: Dispatch) => ({dispatch: dispatch}),
-)(ReleasesMenu);
+const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) => ({
+  versions: state.latestChannelVersions,
+});
+const SideBar = connect(sideBarMapStateToProps)(ReleasesMenu);
 
 function ReleasesMenu({versions}: {versions: OngoingVersions}) {
   let releasesMenu = <Spinner />;
@@ -275,17 +271,14 @@ function ReleaseItem({title, version}: {title: string, version: string}) {
   );
 }
 
-const CurrentRelease = connect(
-  // mapStateToProps
-  (state: State) => ({
-    checkResults: state.checkResults,
-    releaseInfo: state.releaseInfo,
-    version: state.version,
-  }),
-  // mapDispatchToProps
-  // Need the following line because of https://github.com/flowtype/flow-typed/issues/1269
-  (dispatch: Dispatch) => ({dispatch: dispatch}),
-)(Dashboard);
+const currentReleaseMapStateToProps: MapStateToProps<*, *, *> = (
+  state: State,
+) => ({
+  checkResults: state.checkResults,
+  releaseInfo: state.releaseInfo,
+  version: state.version,
+});
+const CurrentRelease = connect(currentReleaseMapStateToProps)(Dashboard);
 
 type DashboardPropType = {
   checkResults: CheckResults,
