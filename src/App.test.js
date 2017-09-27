@@ -14,6 +14,10 @@ import {
 import {Alert, Spin} from 'antd';
 import createStore from './create-store';
 import {SERVER} from './PollbotAPI';
+import Enzyme from 'enzyme';
+import Adapter from 'enzyme-adapter-react-15';
+
+Enzyme.configure({adapter: new Adapter()});
 
 // Mock the Notification API.
 global.Notification = {
@@ -108,39 +112,44 @@ describe('<App />', () => {
     const app = wrapper.instance();
     app.stopAutoRefresh = jest.fn();
 
+    // Called once, on mounting the component.
+    jest.runOnlyPendingTimers();
+    const numCalledRequestStatus = module.requestStatus.mock.calls.length;
+
     // Shouldn't auto-refresh => stop auto refresh.
+    expect(app.stopAutoRefresh).toHaveBeenCalledTimes(0);
     wrapper.setProps({shouldRefresh: false});
-    expect(app.refreshIntervalId).toBeNull();
-    app.setUpAutoRefresh();
     expect(app.stopAutoRefresh).toHaveBeenCalledTimes(1);
     expect(app.refreshIntervalId).toBeNull();
+    app.setUpAutoRefresh();
+    expect(app.stopAutoRefresh).toHaveBeenCalledTimes(2);
+    expect(app.refreshIntervalId).toBeNull();
     jest.runOnlyPendingTimers();
-    // Called once, on mounting the component.
-    expect(module.requestStatus).toHaveBeenCalledTimes(1);
+    expect(module.requestStatus).toHaveBeenCalledTimes(numCalledRequestStatus);
     expect(module.refreshStatus).toHaveBeenCalledTimes(0);
 
     // Should auto-refresh => start auto refresh.
-    wrapper.setProps({shouldRefresh: true});
     expect(app.refreshIntervalId).toBeNull();
+    wrapper.setProps({shouldRefresh: true});
     app.setUpAutoRefresh();
-    expect(app.stopAutoRefresh).toHaveBeenCalledTimes(1); // Not called again.
+    expect(app.stopAutoRefresh).toHaveBeenCalledTimes(2); // Not called again.
     expect(setInterval).toHaveBeenCalledTimes(1);
     expect(app.refreshIntervalId).toBeTruthy();
     jest.runOnlyPendingTimers();
-    expect(module.requestStatus).toHaveBeenCalledTimes(1);
+    expect(module.requestStatus).toHaveBeenCalledTimes(numCalledRequestStatus);
     expect(module.refreshStatus).toHaveBeenCalledTimes(1);
 
     // Should auto-refresh, but already set up => don't start auto refresh.
     wrapper.setProps({shouldRefresh: true});
     app.setUpAutoRefresh();
-    expect(app.stopAutoRefresh).toHaveBeenCalledTimes(1); // Not called again.
+    expect(app.stopAutoRefresh).toHaveBeenCalledTimes(2); // Not called again.
     expect(setInterval).toHaveBeenCalledTimes(1); // Not called again.
     expect(app.refreshIntervalId).toBeTruthy();
-    expect(module.requestStatus).toHaveBeenCalledTimes(1);
+    expect(module.requestStatus).toHaveBeenCalledTimes(numCalledRequestStatus);
     expect(module.refreshStatus).toHaveBeenCalledTimes(1); // Not called again.
   });
   it('stops auto-refresh', () => {
-    const app = shallow(<App />).instance();
+    const app = shallow(<App dispatch={jest.fn()} />).instance();
 
     // Shouldn't call clearInterval if not needed.
     expect(app.refreshIntervalId).toBeNull();
@@ -153,7 +162,7 @@ describe('<App />', () => {
     expect(app.refreshIntervalId).toBeNull();
   });
   it('stops the auto-refresh on unmount', () => {
-    const wrapper = shallow(<App />);
+    const wrapper = shallow(<App dispatch={jest.fn()} />);
     const app = wrapper.instance();
     app.stopAutoRefresh = jest.fn();
     wrapper.unmount();
@@ -185,7 +194,7 @@ describe('<SearchForm />', () => {
       <SearchForm handleSearchBoxChange={handleSearchBoxChange} />,
     );
     const input = wrapper.find('input');
-    input.node.value = 'foobar'; // Workaround for https://github.com/airbnb/enzyme/issues/218
+    input.instance().value = 'foobar'; // Workaround for https://github.com/airbnb/enzyme/issues/218
     input.simulate('change', input);
     expect(module.updateVersionInput).toHaveBeenCalledWith('foobar');
   });
