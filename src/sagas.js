@@ -9,7 +9,7 @@ import {
 } from './types';
 import type {
   APIVersionData,
-  CheckResults,
+  CheckResult,
   OngoingVersions,
   ReleaseInfo,
   RequestStatus,
@@ -59,59 +59,59 @@ export function* updateUrl(): Saga {
   window.location.hash = localUrlFromVersion(state.version);
 }
 
-// Refreshing a status for the current version.
-export function* refreshStatus(): Saga {
+export function* checkResultAndUpdateAndNotify(
+  title: string,
+  url: string,
+  prevResult: CheckResult,
+): Saga {
   const notifyChanges = (checkTitle, status) => {
     if (Notification.permission === 'granted') {
       new Notification(`${checkTitle}: status changed (${status}).`);
     }
   };
 
+  yield call(checkResultAndUpdate, title, url);
+  const state: State = yield select();
+  const result: CheckResult = state.checkResults && state.checkResults[title];
+  if (prevResult && result && prevResult.status !== result.status) {
+    notifyChanges(title, result.status);
+  }
+}
+
+// Refreshing a status for the current version.
+export function* refreshStatus(): Saga {
   const state: State = yield select();
   // Save previous results so we can check if something changed.
   const prevResults = state.checkResults;
   yield put(setVersion(state.version));
-  if (state.releaseInfo) {
-    let checks = {};
-    state.releaseInfo.checks.map(
-      ({url, title}) => (checks[title] = call(checkStatus, url)),
+  if (state.releaseInfo && state.releaseInfo.checks) {
+    yield state.releaseInfo.checks.map(({url, title}) =>
+      call(checkResultAndUpdateAndNotify, title, url, prevResults[title]),
     );
-    try {
-      const checkResults: CheckResults = yield all(checks);
-      const addResults = Object.keys(checkResults).map(title => {
-        const result = checkResults[title];
-        const prevResult = prevResults[title];
-        if (prevResult && prevResult.status !== result.status) {
-          notifyChanges(title, result.status);
-        }
-        return put(addCheckResult(title, result));
-      });
-      yield all(addResults);
-    } catch (err) {
-      console.error(`Failed getting check results for ${state.version}`, err);
-    }
+  }
+}
+
+export function* checkResultAndUpdate(title: string, url: string): Saga {
+  try {
+    const result = yield call(checkStatus, url);
+    yield put(addCheckResult(title, result));
+  } catch (err) {
+    console.error(`Failed getting ${title} check result`, err);
   }
 }
 
 // Requesting a status for a new version.
 export function* requestStatus(action: RequestStatus): Saga {
   const version = action.version;
-  yield put(setVersion(version));
-  const releaseInfo: ReleaseInfo = yield call(getReleaseInfo, version);
-  yield put(updateReleaseInfo(releaseInfo));
-  let checks = {};
-  releaseInfo.checks.map(
-    ({url, title}) => (checks[title] = call(checkStatus, url)),
-  );
   try {
-    const checkResults: CheckResults = yield all(checks);
-    const addResults = Object.keys(checkResults).map(title => {
-      const result = checkResults[title];
-      return put(addCheckResult(title, result));
-    });
-    yield all(addResults);
+    yield put(setVersion(version));
+    const releaseInfo: ReleaseInfo = yield call(getReleaseInfo, version);
+    yield put(updateReleaseInfo(releaseInfo));
+    yield releaseInfo.checks.map(({url, title}) =>
+      call(checkResultAndUpdate, title, url),
+    );
   } catch (err) {
-    console.error(`Failed getting check results for ${version}`, err);
+    console.error(`Failed getting the release info for ${version}`, err);
   }
 }
 
