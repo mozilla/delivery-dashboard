@@ -216,7 +216,36 @@ describe('sagas', () => {
   });
 
   it('checks result and updates state using checkResultAndUpdate', () => {
-    expect('not implemented yet').toBe(false);
+    const data = {};
+    data.saga = cloneableGenerator(checkResultAndUpdate)(
+      'some test',
+      'some url',
+    );
+
+    const checkResult = {
+      status: 'exists',
+      message: 'check succesful',
+      link: 'some link',
+    };
+
+    expect(data.saga.next().value).toEqual(call(checkStatus, 'some url'));
+
+    // Clone to test success and failure of checkStatus.
+    data.sagaThrow = data.saga.clone();
+
+    // checkStatus throws an error.
+    console.error = jest.fn();
+    data.sagaThrow.throw('error');
+    expect(console.error).toHaveBeenCalledWith(
+      'Failed getting some test check result',
+      'error',
+    );
+    expect(data.sagaThrow.next().done).toBe(true);
+
+    // checkStatus completes correctly.
+    expect(data.saga.next(checkResult).value).toEqual(
+      put(addCheckResult('some test', checkResult)),
+    );
   });
 
   it('handles requestStatus', () => {
