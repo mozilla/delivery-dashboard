@@ -241,8 +241,7 @@ const SideBar = connect(sideBarMapStateToProps)(ReleasesMenu);
 
 function ReleasesMenu({versions}: {versions: OngoingVersions}) {
   let releasesMenu = <Spin />;
-  if (versions) {
-    const {nightly, beta, release, esr} = versions;
+  if (versions.length) {
     releasesMenu = (
       <Menu
         mode="inline"
@@ -251,18 +250,13 @@ function ReleasesMenu({versions}: {versions: OngoingVersions}) {
         style={{borderRight: 'none'}}
       >
         <Menu.SubMenu key="sub1" title="Firefox Releases">
-          <Menu.Item>
-            <a href={localUrlFromVersion(nightly)}>{'Nightly: ' + nightly}</a>
-          </Menu.Item>
-          <Menu.Item>
-            <a href={localUrlFromVersion(beta)}>{'Beta: ' + beta}</a>
-          </Menu.Item>
-          <Menu.Item>
-            <a href={localUrlFromVersion(release)}>{'Release: ' + release}</a>
-          </Menu.Item>
-          <Menu.Item>
-            <a href={localUrlFromVersion(esr)}>{'ESR: ' + esr}</a>
-          </Menu.Item>
+          {versions.map(([channel: string, version: string]) => (
+            <Menu.Item key={channel}>
+              <a
+                href={localUrlFromVersion(version)}
+              >{`${channel}: ${version}`}</a>
+            </Menu.Item>
+          ))}
         </Menu.SubMenu>
       </Menu>
     );

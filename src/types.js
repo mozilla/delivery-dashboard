@@ -9,15 +9,10 @@ import type {
 /*
  * state types
  */
-export type OngoingVersions = ?{
-  +nightly: string,
-  +beta: string,
-  +release: string,
-  +esr: string,
-};
+export type OngoingVersion = [string, string];
+export type OngoingVersions = OngoingVersion[];
 
 export type Product = 'firefox';
-export type Channel = 'nightly' | 'beta' | 'release' | 'esr';
 export type Status = 'missing' | 'exists' | 'incomplete' | 'error';
 export type Check =
   | 'archive'
@@ -32,7 +27,7 @@ export type CheckInfo = {
 };
 
 export type ReleaseInfo = {
-  +channel: Channel,
+  +channel: string,
   +product: Product,
   +version: string,
   +checks: CheckInfo[],
@@ -58,7 +53,7 @@ export type APIVersionData = {
 export type State = {
   +version: string,
   +versionInput: string,
-  +latestChannelVersions: ?OngoingVersions,
+  +latestChannelVersions: OngoingVersions,
   +releaseInfo: ?ReleaseInfo,
   +checkResults: CheckResults,
   +pollbotVersion: ?APIVersionData,

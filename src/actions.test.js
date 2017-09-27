@@ -49,7 +49,12 @@ describe('action creators', () => {
     };
     expect(updateLatestChannelVersions(ongoingVersions)).toEqual({
       type: UPDATE_LATEST_CHANNEL_VERSIONS,
-      versions: ongoingVersions,
+      versions: [
+        ['nightly', '57.0a1'],
+        ['beta', '56.0b12'],
+        ['release', '55.0.3'],
+        ['esr', '52.3.0esr'],
+      ],
     });
   });
   it('returns a UPDATE_POLLBOT_VERSION action for updatePollbotVersion', () => {
