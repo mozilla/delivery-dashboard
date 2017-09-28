@@ -18,12 +18,10 @@ exports[`<App /> renders without crashing 1`] = `
       className="ant-layout-sider"
       style={
         Object {
-          "backgroundColor": "#fff",
-          "borderRight": "none",
-          "flex": "0 0 350px",
-          "maxWidth": "350px",
-          "minWidth": "350px",
-          "width": "350px",
+          "flex": "0 0 200px",
+          "maxWidth": "200px",
+          "minWidth": "200px",
+          "width": "200px",
         }
       }
     >
@@ -46,12 +44,6 @@ exports[`<App /> renders without crashing 1`] = `
     </div>
     <div
       className="ant-layout-content"
-      style={
-        Object {
-          "borderLeft": "1px solid #e9e9e9",
-          "paddingLeft": 20,
-        }
-      }
     >
       <form
         className="ant-form ant-form-horizontal"

@@ -1,6 +1,6 @@
 // @flow
 import * as React from 'react';
-import {Alert, Card, Form, Icon, Input, Layout, Menu, Spin} from 'antd';
+import {Alert, Card, Form, Icon, Input, Layout, Spin} from 'antd';
 import './App.css';
 import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
@@ -125,15 +125,10 @@ export class App extends React.Component<AppProps, void> {
           </h1>
         </header>
         <Layout className="mainContent">
-          <Layout.Sider
-            width={350}
-            style={{backgroundColor: '#fff', borderRight: 'none'}}
-          >
+          <Layout.Sider breakpoint="md" collapsedWidth={0}>
             <SideBar />
           </Layout.Sider>
-          <Layout.Content
-            style={{paddingLeft: 20, borderLeft: '1px solid #e9e9e9'}}
-          >
+          <Layout.Content>
             <VersionInput />
             <CurrentRelease />
           </Layout.Content>
@@ -243,22 +238,18 @@ function ReleasesMenu({versions}: {versions: OngoingVersions}) {
   let releasesMenu = <Spin />;
   if (versions.length) {
     releasesMenu = (
-      <Menu
-        mode="inline"
-        selectable={false}
-        defaultOpenKeys={['sub1']}
-        style={{borderRight: 'none'}}
-      >
-        <Menu.SubMenu key="sub1" title="Firefox Releases">
+      <div className="menu">
+        <h2>Firefox Releases</h2>
+        <ul key="sub1">
           {versions.map(([channel: string, version: string]) => (
-            <Menu.Item key={channel}>
+            <li key={channel}>
               <a
                 href={localUrlFromVersion(version)}
               >{`${channel}: ${version}`}</a>
-            </Menu.Item>
+            </li>
           ))}
-        </Menu.SubMenu>
-      </Menu>
+        </ul>
+      </div>
     );
   }
   return releasesMenu;
