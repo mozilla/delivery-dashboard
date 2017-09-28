@@ -14,11 +14,13 @@ import {
 } from './types';
 import {
   addCheckResult,
+  capitalizeChannel,
   requestOngoingVersions,
   requestPollbotVersion,
   refreshStatus,
   requestStatus,
   setVersion,
+  sortByVersion,
   submitVersion,
   updateLatestChannelVersions,
   updatePollbotVersion,
@@ -45,11 +47,18 @@ describe('action creators', () => {
       nightly: '57.0a1',
       beta: '56.0b12',
       release: '55.0.3',
+      devedition: '56.0b12',
       esr: '52.3.0esr',
     };
     expect(updateLatestChannelVersions(ongoingVersions)).toEqual({
       type: UPDATE_LATEST_CHANNEL_VERSIONS,
-      versions: ongoingVersions,
+      versions: [
+        ['Nightly', '57.0a1'],
+        ['Beta', '56.0b12'],
+        ['Devedition', '56.0b12'],
+        ['Release', '55.0.3'],
+        ['Esr', '52.3.0esr'],
+      ],
     });
   });
   it('returns a UPDATE_POLLBOT_VERSION action for updatePollbotVersion', () => {
@@ -146,5 +155,43 @@ describe('sagas action creator', () => {
       type: REQUEST_STATUS,
       version: '50.0',
     });
+  });
+});
+
+describe('sortByVersion helper', () => {
+  it('sorts bogus versions', () => {
+    expect(sortByVersion('0', '56.0')).toEqual(1);
+  });
+  it('sorts equal versions', () => {
+    expect(sortByVersion('56.0', '56.0')).toEqual(0);
+  });
+  it('sorts similar versions', () => {
+    expect(sortByVersion('56.0', '56.0.1')).toEqual(1);
+  });
+  it('sorts release versions', () => {
+    expect(sortByVersion('56.0', '57.0')).toEqual(1);
+    expect(sortByVersion('56.0.1', '56.0.2')).toEqual(1);
+  });
+  it('sorts release and beta versions', () => {
+    expect(sortByVersion('56.0b1', '56.0')).toEqual(1);
+    expect(sortByVersion('56.0', '56.0b1')).toEqual(-1);
+  });
+  it('sorts alpha and beta versions', () => {
+    expect(sortByVersion('56.0a1', '56.0b1')).toEqual(1);
+  });
+  it('sorts beta versions', () => {
+    expect(sortByVersion('56.0b1', '56.0b2')).toEqual(1);
+  });
+  it('sorts bogus sub versions', () => {
+    expect(sortByVersion('56.0', '56.a')).toEqual(1);
+  });
+  it('sorts random versions', () => {
+    expect(sortByVersion('55.0.3', '57.0b3')).toBeGreaterThan(0);
+  });
+});
+
+describe('capitalizeChannel helper', () => {
+  it('uppercases the first letter of the channel', () => {
+    expect(capitalizeChannel(['foo', 'bar'])).toEqual(['Foo', 'bar']);
   });
 });

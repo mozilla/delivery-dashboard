@@ -14,7 +14,7 @@ import type {Action, State} from './types';
 export const initialState: State = {
   version: '',
   versionInput: '',
-  latestChannelVersions: null,
+  latestChannelVersions: [],
   releaseInfo: null,
   checkResults: {},
   pollbotVersion: null,

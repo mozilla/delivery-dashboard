@@ -53,10 +53,62 @@ export function submitVersion(): SubmitVersion {
   return {type: SUBMIT_VERSION};
 }
 
+export const sortByVersion = (a: string, b: string) => {
+  const partsA = a.split('.');
+  const partsB = b.split('.');
+  if (partsA.length < 2 || partsB.length < 2) {
+    // Bogus version, list it last.
+    return 1;
+  }
+  let i = 0;
+  while (partsA[i] === partsB[i] && i <= partsA.length) {
+    // Skip all the parts that are equal.
+    i++;
+  }
+  if (!partsA[i] || !partsB[i]) {
+    // Both versions have the same first parts, but one may have more parts, eg
+    // 56.0 and 56.0.1.
+    return partsB.length - partsA.length;
+  }
+  // We have been through all the similar parts, we now have to deal with the
+  // first part which is different.
+  const subPartRegex = /^(\d+)([a-zA-Z]+)?(\d+)?([a-zA-Z]+)?/; // Eg: 0b12pre
+  const subPartA = partsA[i].match(subPartRegex); // Eg: ["0b1pre", "0", "b", "12", "pre"]
+  const subPartB = partsB[i].match(subPartRegex);
+  if (!subPartA || !subPartB) {
+    // Bogus version, list it last.
+    return 1;
+  }
+  if (subPartA[1] !== subPartB[1]) {
+    return parseInt(subPartB[1], 10) - parseInt(subPartA[1], 10);
+  }
+  if (subPartA[2] !== subPartB[2]) {
+    // Suffix like 'a' or 'b'.
+    if (subPartA[2] && !subPartB[2]) {
+      return 1;
+    }
+    if (subPartB[2] && !subPartA[2]) {
+      return -1;
+    }
+    return subPartB[2].localeCompare(subPartA[2]);
+  }
+  return parseInt(subPartB[3], 10) - parseInt(subPartA[3], 10);
+};
+
+export const capitalizeChannel = ([channel, version]: [string, string]) => [
+  channel.charAt(0).toUpperCase() + channel.slice(1),
+  version,
+];
+
 export function updateLatestChannelVersions(
   versions: OngoingVersions,
 ): UpdateLatestChannelVersions {
-  return {type: UPDATE_LATEST_CHANNEL_VERSIONS, versions};
+  let versionsArray = Object.entries(versions).map(([channel, version]) => {
+    return [channel, (typeof version === 'string' && version) || ''];
+  });
+  versionsArray.sort((a, b) => sortByVersion(a[1], b[1]));
+  const capitalized = versionsArray.map(capitalizeChannel);
+  return {type: UPDATE_LATEST_CHANNEL_VERSIONS, versions: capitalized};
 }
 
 export function updatePollbotVersion(
