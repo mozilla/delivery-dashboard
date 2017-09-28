@@ -47,6 +47,7 @@ describe('action creators', () => {
       nightly: '57.0a1',
       beta: '56.0b12',
       release: '55.0.3',
+      devedition: '56.0b12',
       esr: '52.3.0esr',
     };
     expect(updateLatestChannelVersions(ongoingVersions)).toEqual({
@@ -54,6 +55,7 @@ describe('action creators', () => {
       versions: [
         ['Nightly', '57.0a1'],
         ['Beta', '56.0b12'],
+        ['Devedition', '56.0b12'],
         ['Release', '55.0.3'],
         ['Esr', '52.3.0esr'],
       ],
@@ -182,6 +184,9 @@ describe('sortByVersion helper', () => {
   });
   it('sorts bogus sub versions', () => {
     expect(sortByVersion('56.0', '56.a')).toEqual(1);
+  });
+  it('sorts random versions', () => {
+    expect(sortByVersion('55.0.3', '57.0b3')).toBeGreaterThan(0);
   });
 });
 

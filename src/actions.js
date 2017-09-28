@@ -66,9 +66,12 @@ export const sortByVersion = (a: string, b: string) => {
     i++;
   }
   if (!partsA[i] || !partsB[i]) {
-    // Both versions have the same parts, but one has more parts, eg 56.0 and 56.0.1.
+    // Both versions have the same first parts, but one may have more parts, eg
+    // 56.0 and 56.0.1.
     return partsB.length - partsA.length;
   }
+  // We have been through all the similar parts, we now have to deal with the
+  // first part which is different.
   const subPartRegex = /^(\d+)([a-zA-Z]+)?(\d+)?([a-zA-Z]+)?/; // Eg: 0b12pre
   const subPartA = partsA[i].match(subPartRegex); // Eg: ["0b1pre", "0", "b", "12", "pre"]
   const subPartB = partsB[i].match(subPartRegex);
@@ -80,6 +83,7 @@ export const sortByVersion = (a: string, b: string) => {
     return parseInt(subPartB[1], 10) - parseInt(subPartA[1], 10);
   }
   if (subPartA[2] !== subPartB[2]) {
+    // Suffix like 'a' or 'b'.
     if (subPartA[2] && !subPartB[2]) {
       return 1;
     }
@@ -102,7 +106,7 @@ export function updateLatestChannelVersions(
   let versionsArray = Object.entries(versions).map(([channel, version]) => {
     return [channel, (typeof version === 'string' && version) || ''];
   });
-  versionsArray.sort(([a, b]) => sortByVersion(a[1], b[1])).reverse();
+  versionsArray.sort((a, b) => sortByVersion(a[1], b[1]));
   const capitalized = versionsArray.map(capitalizeChannel);
   return {type: UPDATE_LATEST_CHANNEL_VERSIONS, versions: capitalized};
 }
