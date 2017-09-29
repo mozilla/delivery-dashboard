@@ -337,7 +337,7 @@ export function DisplayStatus({
   };
   return (
     <a title={message} href={url}>
-      <Alert message={status} type={statusToLabelClass[status]} showIcon />
+      <Alert message={message} type={statusToLabelClass[status]} showIcon />
     </a>
   );
 }
