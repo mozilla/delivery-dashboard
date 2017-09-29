@@ -85,8 +85,10 @@ export function* refreshStatus(): Saga {
   const prevResults = state.checkResults;
   yield put(setVersion(state.version));
   if (state.releaseInfo && state.releaseInfo.checks) {
-    yield state.releaseInfo.checks.map(({url, title}) =>
-      call(checkResultAndUpdateAndNotify, title, url, prevResults[title]),
+    yield all(
+      state.releaseInfo.checks.map(({url, title}) =>
+        call(checkResultAndUpdateAndNotify, title, url, prevResults[title]),
+      ),
     );
   }
 }
@@ -107,8 +109,10 @@ export function* requestStatus(action: RequestStatus): Saga {
     yield put(setVersion(version));
     const releaseInfo: ReleaseInfo = yield call(getReleaseInfo, version);
     yield put(updateReleaseInfo(releaseInfo));
-    yield releaseInfo.checks.map(({url, title}) =>
-      call(checkResultAndUpdate, title, url),
+    yield all(
+      releaseInfo.checks.map(({url, title}) =>
+        call(checkResultAndUpdate, title, url),
+      ),
     );
   } catch (err) {
     console.error(`Failed getting the release info for ${version}`, err);

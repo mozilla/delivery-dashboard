@@ -203,15 +203,22 @@ describe('sagas', () => {
       }).value,
     ).toEqual(put(setVersion('50.0')));
 
-    expect(data.saga.next().value).toEqual([
-      call(checkResultAndUpdateAndNotify, 'some test', 'some url', checkResult),
-      call(
-        checkResultAndUpdateAndNotify,
-        'some other test',
-        'some other url',
-        checkResultFailing,
-      ),
-    ]);
+    expect(data.saga.next().value).toEqual(
+      all([
+        call(
+          checkResultAndUpdateAndNotify,
+          'some test',
+          'some url',
+          checkResult,
+        ),
+        call(
+          checkResultAndUpdateAndNotify,
+          'some other test',
+          'some other url',
+          checkResultFailing,
+        ),
+      ]),
+    );
     expect(data.saga.next().done).toBe(true);
   });
 
@@ -287,10 +294,12 @@ describe('sagas', () => {
     expect(data.saga.next(releaseInfo).value).toEqual(
       put(updateReleaseInfo(releaseInfo)),
     );
-    expect(data.saga.next().value).toEqual([
-      call(checkResultAndUpdate, 'some test', 'some url'),
-      call(checkResultAndUpdate, 'some other test', 'some other url'),
-    ]);
+    expect(data.saga.next().value).toEqual(
+      all([
+        call(checkResultAndUpdate, 'some test', 'some url'),
+        call(checkResultAndUpdate, 'some other test', 'some other url'),
+      ]),
+    );
     expect(data.saga.next().done).toBe(true);
   });
 });
