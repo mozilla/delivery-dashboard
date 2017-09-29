@@ -280,7 +280,7 @@ describe('<DisplayStatus />', () => {
     expect(link.prop('title')).toEqual('check message');
     const alert = wrapper.find(Alert);
     expect(alert.prop('type')).toBe(label);
-    expect(link.text()).toEqual(status);
+    expect(link.text()).toEqual('check message');
   };
   it('displays the status when the status is exists', () => {
     checkDisplayStatus('exists', 'success');
