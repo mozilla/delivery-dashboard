@@ -261,6 +261,7 @@ const currentReleaseMapStateToProps: MapStateToProps<*, *, *> = (
   checkResults: state.checkResults,
   releaseInfo: state.releaseInfo,
   version: state.version,
+  shouldRefresh: state.shouldRefresh,
 });
 const CurrentRelease = connect(currentReleaseMapStateToProps)(Dashboard);
 
@@ -268,12 +269,14 @@ type DashboardPropType = {
   checkResults: CheckResults,
   releaseInfo: ?ReleaseInfo,
   version: string,
+  shouldRefresh: boolean,
 };
 
 export function Dashboard({
   releaseInfo,
   checkResults,
   version,
+  shouldRefresh,
 }: DashboardPropType) {
   if (version === '') {
     return (
@@ -287,7 +290,15 @@ export function Dashboard({
   } else {
     return (
       <div>
-        <h2>Channel: {releaseInfo.channel}</h2>
+        <h2 style={{marginBottom: '1em'}}>
+          Channel: {releaseInfo.channel}{' '}
+          <Alert
+            message={shouldRefresh ? 'incomplete' : 'complete'}
+            type={shouldRefresh ? 'error' : 'success'}
+            showIcon
+            style={{display: 'inline'}}
+          />
+        </h2>
         <div className="dashboard">
           {releaseInfo.checks.map(check =>
             // Map on the checklist to display the results in the same order.

@@ -228,6 +228,27 @@ describe('<SearchForm />', () => {
 });
 
 describe('<Dashboard />', () => {
+  const releaseInfo = {
+    channel: 'nightly',
+    product: 'firefox',
+    version: '50.0',
+    checks: [
+      {url: 'some-url', title: 'some title'},
+      {url: 'some-url-2', title: 'some title 2'},
+    ],
+  };
+  const checkResults = {
+    'some title': {
+      status: 'exists',
+      message: 'check is successful',
+      link: 'some link',
+    },
+    'some title 2': {
+      status: 'exists',
+      message: 'check is successful',
+      link: 'some link',
+    },
+  };
   it('displays a help text when no version is selected', () => {
     const wrapper = shallow(<Dashboard version="" />);
     expect(wrapper.text()).toContain('enter your version number');
@@ -237,27 +258,6 @@ describe('<Dashboard />', () => {
     expect(wrapper.find(Spin).length).toBe(1);
   });
   it('displays a list of check results when a release info is present', () => {
-    const releaseInfo = {
-      channel: 'nightly',
-      product: 'firefox',
-      version: '50.0',
-      checks: [
-        {url: 'some-url', title: 'some title'},
-        {url: 'some-url-2', title: 'some title 2'},
-      ],
-    };
-    const checkResults = {
-      'some title': {
-        status: 'exists',
-        message: 'check is successful',
-        link: 'some link',
-      },
-      'some title 2': {
-        status: 'exists',
-        message: 'check is successful',
-        link: 'some link',
-      },
-    };
     const wrapper = shallow(
       <Dashboard
         version="50.0"
@@ -267,6 +267,32 @@ describe('<Dashboard />', () => {
     );
     expect(wrapper.find(Spin).length).toBe(0);
     expect(wrapper.find(DisplayStatus).length).toBe(2);
+  });
+  it('displays a "complete" label when all the results are successful', () => {
+    const wrapper = shallow(
+      <Dashboard
+        version="50.0"
+        releaseInfo={releaseInfo}
+        checkResults={checkResults}
+        shouldRefresh={false}
+      />,
+    );
+    const status = wrapper.find(Alert);
+    expect(status.prop('message')).toEqual('complete');
+    expect(status.prop('type')).toEqual('success');
+  });
+  it('displays an "incomplete" label if some results are unsuccessful', () => {
+    const wrapper = shallow(
+      <Dashboard
+        version="50.0"
+        releaseInfo={releaseInfo}
+        checkResults={checkResults}
+        shouldRefresh={true}
+      />,
+    );
+    const status = wrapper.find(Alert);
+    expect(status.prop('message')).toEqual('incomplete');
+    expect(status.prop('type')).toEqual('error');
   });
 });
 
