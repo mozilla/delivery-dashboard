@@ -10,6 +10,22 @@ exports[`<App /> renders without crashing 1`] = `
         Delivery Dashboard
       </a>
     </h1>
+    <div
+      className="user"
+    >
+      <button
+        className="ant-btn"
+        onClick={[Function]}
+        type="button"
+      >
+        <i
+          className="anticon anticon-login"
+        />
+        <span>
+          Login
+        </span>
+      </button>
+    </div>
   </header>
   <div
     className="mainContent ant-layout ant-layout-has-sider"

@@ -1,6 +1,6 @@
 // @flow
 import * as React from 'react';
-import {Alert, Card, Form, Icon, Input, Layout, Spin} from 'antd';
+import {Alert, Button, Card, Form, Icon, Input, Layout, Spin} from 'antd';
 import './App.css';
 import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
@@ -123,6 +123,9 @@ export class App extends React.Component<AppProps, void> {
           <h1>
             <a href=".">Delivery Dashboard</a>
           </h1>
+          <div className="user">
+            <Button icon="login">Login</Button>
+          </div>
         </header>
         <Layout className="mainContent">
           <Layout.Sider breakpoint="md" collapsedWidth={0}>
