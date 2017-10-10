@@ -50,6 +50,11 @@ export type APIVersionData = {
   commit: string,
 };
 
+export type Login = 'LOGGED_OUT' | 'LOGIN_REQUESTED' | 'LOGGED_IN';
+export const LOGGED_OUT = 'LOGGED_OUT';
+export const LOGIN_REQUESTED = 'LOGIN_REQUESTED';
+export const LOGGED_IN = 'LOGGED_IN';
+
 export type State = {
   +version: string,
   +versionInput: string,
@@ -58,6 +63,7 @@ export type State = {
   +checkResults: CheckResults,
   +pollbotVersion: ?APIVersionData,
   +shouldRefresh: boolean,
+  +login: Login,
 };
 
 /*
@@ -99,6 +105,15 @@ export type UpdatePollbotVersion = {|
   type: 'UPDATE_POLLBOT_VERSION',
   version: APIVersionData,
 |};
+export type LoggedIn = {|
+  type: 'LOGGED_IN',
+|};
+export type LoggedOut = {|
+  type: 'LOGGED_OUT',
+|};
+export type LoginRequested = {|
+  type: 'LOGIN_REQUESTED',
+|};
 
 /*
  * saga types
@@ -108,6 +123,8 @@ export const REQUEST_POLLBOT_VERSION = 'REQUEST_POLLBOT_VERSION';
 export const UPDATE_URL = 'UPDATE_URL';
 export const REFRESH_STATUS = 'REFRESH_STATUS';
 export const REQUEST_STATUS = 'REQUEST_STATUS';
+export const REQUEST_LOGIN = 'REQUEST_LOGIN';
+export const REQUEST_LOGOUT = 'REQUEST_LOGOUT';
 
 export type RequestOngoingVersions = {|
   type: 'REQUEST_ONGOING_VERSIONS',
@@ -130,9 +147,22 @@ export type RequestStatus = {|
   version: string,
 |};
 
+export type RequestLogin = {|
+  type: 'REQUEST_LOGIN',
+|};
+
+export type RequestLogout = {|
+  type: 'REQUEST_LOGOUT',
+|};
+
 export type Action =
   | AddCheckResult
+  | LoggedIn
+  | LoggedOut
+  | LoginRequested
   | RefreshStatus
+  | RequestLogin
+  | RequestLogout
   | RequestOngoingVersions
   | RequestPollbotVersion
   | RequestStatus

@@ -11,13 +11,23 @@ import {
   UPDATE_URL,
   REFRESH_STATUS,
   REQUEST_STATUS,
+  LOGGED_IN,
+  LOGGED_OUT,
+  LOGIN_REQUESTED,
+  REQUEST_LOGIN,
+  REQUEST_LOGOUT,
 } from './types';
 import {
   addCheckResult,
   capitalizeChannel,
+  loggedIn,
+  loggedOut,
+  loginRequested,
   requestOngoingVersions,
   requestPollbotVersion,
   refreshStatus,
+  requestLogin,
+  requestLogout,
   requestStatus,
   setVersion,
   sortByVersion,
@@ -127,34 +137,41 @@ describe('action creators', () => {
       result: checkResult,
     });
   });
+  it('returns a LOGGED_IN action for loggedIn', () => {
+    expect(loggedIn()).toEqual({type: LOGGED_IN});
+  });
+  it('returns a LOGGED_OUT action for loggedOut', () => {
+    expect(loggedOut()).toEqual({type: LOGGED_OUT});
+  });
+  it('returns a LOGIN_REQUESTED action for loginRequested', () => {
+    expect(loginRequested()).toEqual({type: LOGIN_REQUESTED});
+  });
 });
 
 describe('sagas action creator', () => {
   it('handles a REQUEST_ONGOING_VERSIONS action for requestOngoingVersions', () => {
-    expect(requestOngoingVersions()).toEqual({
-      type: REQUEST_ONGOING_VERSIONS,
-    });
+    expect(requestOngoingVersions()).toEqual({type: REQUEST_ONGOING_VERSIONS});
   });
   it('handles a REQUEST_POLLBOT_VERSION action for requestPollbotVersion', () => {
-    expect(requestPollbotVersion()).toEqual({
-      type: REQUEST_POLLBOT_VERSION,
-    });
+    expect(requestPollbotVersion()).toEqual({type: REQUEST_POLLBOT_VERSION});
   });
   it('handles a UPDATE_URL action for updateUrl', () => {
-    expect(updateUrl()).toEqual({
-      type: UPDATE_URL,
-    });
+    expect(updateUrl()).toEqual({type: UPDATE_URL});
   });
   it('handles a REFRESH_STATUS action for refreshStatus', () => {
-    expect(refreshStatus()).toEqual({
-      type: REFRESH_STATUS,
-    });
+    expect(refreshStatus()).toEqual({type: REFRESH_STATUS});
   });
   it('handles a REQUEST_STATUS action for requestStatus', () => {
     expect(requestStatus('50.0')).toEqual({
       type: REQUEST_STATUS,
       version: '50.0',
     });
+  });
+  it('handles a REQUEST_LOGIN action for requestLogin', () => {
+    expect(requestLogin()).toEqual({type: REQUEST_LOGIN});
+  });
+  it('handles a REQUEST_LOGOUT action for requestLogout', () => {
+    expect(requestLogout()).toEqual({type: REQUEST_LOGOUT});
   });
 });
 

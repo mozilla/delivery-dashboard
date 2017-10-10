@@ -9,6 +9,8 @@ import {
   requestOngoingVersions,
   requestPollbotVersion,
   refreshStatus,
+  requestLogin,
+  requestLogout,
   requestStatus,
   setVersion,
   submitVersion,
@@ -20,11 +22,13 @@ import type {
   CheckResult,
   CheckResults,
   Dispatch,
+  Login,
   OngoingVersions,
   ReleaseInfo,
   State,
   Status,
 } from './types';
+import {LOGGED_IN, LOGGED_OUT, LOGIN_REQUESTED} from './types';
 
 const deliveryDashboardVersionData: APIVersionData = require('./version.json');
 
@@ -58,6 +62,7 @@ type AppProps = {
   dispatch: Dispatch,
   pollbotVersion: APIVersionData,
   shouldRefresh: boolean,
+  login: Login,
 };
 export class App extends React.Component<AppProps, void> {
   refreshIntervalId: ?number;
@@ -116,6 +121,14 @@ export class App extends React.Component<AppProps, void> {
     }
   };
 
+  onLoginRequested = (): void => {
+    this.props.dispatch(requestLogin());
+  };
+
+  onLogoutRequested = (): void => {
+    this.props.dispatch(requestLogout());
+  };
+
   render() {
     return (
       <div>
@@ -124,7 +137,11 @@ export class App extends React.Component<AppProps, void> {
             <a href=".">Delivery Dashboard</a>
           </h1>
           <div className="user">
-            <Button icon="login">Login</Button>
+            <LoginButton
+              loginState={this.props.login}
+              onLoginRequested={this.onLoginRequested}
+              onLogoutRequested={this.onLogoutRequested}
+            />
           </div>
         </header>
         <Layout className="mainContent">
@@ -152,11 +169,46 @@ const connectedAppMapStateToProps: MapStateToProps<*, *, *> = (
   checkResults: state.checkResults,
   pollbotVersion: state.pollbotVersion,
   shouldRefresh: state.shouldRefresh,
+  login: state.login,
 });
 export const ConnectedApp = connect(
   connectedAppMapStateToProps,
   (dispatch: Dispatch) => ({dispatch: dispatch}),
 )(App);
+
+type LoginButtonProps = {
+  onLoginRequested: () => void,
+  onLogoutRequested: () => void,
+  loginState: Login,
+};
+
+export function LoginButton({
+  onLoginRequested,
+  onLogoutRequested,
+  loginState,
+}: LoginButtonProps) {
+  switch (loginState) {
+    case LOGGED_IN:
+      return (
+        <Button icon="logout" onClick={onLogoutRequested}>
+          logout
+        </Button>
+      );
+    case LOGIN_REQUESTED:
+      return (
+        <Button icon="login" loading={true}>
+          login
+        </Button>
+      );
+    case LOGGED_OUT:
+    default:
+      return (
+        <Button icon="login" onClick={onLoginRequested}>
+          login
+        </Button>
+      );
+  }
+}
 
 export const versionInputDispatchProps = (dispatch: Dispatch) => ({
   onSubmit: (e: SyntheticEvent<HTMLInputElement>): void => {

@@ -7,6 +7,7 @@ import {
   ConnectedApp,
   Dashboard,
   DisplayStatus,
+  LoginButton,
   parseUrl,
   SearchForm,
   versionInputDispatchProps,
@@ -16,6 +17,7 @@ import createStore from './create-store';
 import {SERVER} from './PollbotAPI';
 import Enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
+import {LOGGED_IN, LOGGED_OUT, LOGIN_REQUESTED} from './types';
 
 Enzyme.configure({adapter: new Adapter()});
 
@@ -319,5 +321,57 @@ describe('<DisplayStatus />', () => {
   });
   it('displays the error message when there an error', () => {
     checkDisplayStatus('error', 'error');
+  });
+});
+
+describe('<Login Button />', () => {
+  const onLoginRequested = jest.fn();
+  const onLogoutRequested = jest.fn();
+  it('displays a login icon and text when logged off', () => {
+    const wrapper = mount(
+      <LoginButton
+        onLoginRequested={onLoginRequested}
+        onLogoutRequested={onLogoutRequested}
+        loginState={LOGGED_OUT}
+      />,
+    );
+    const button = wrapper.find('button');
+    expect(button.text()).toEqual('login');
+    const icon = wrapper.find('i');
+    expect(icon.prop('className')).toContain('login');
+
+    expect(onLoginRequested).toHaveBeenCalledTimes(0);
+    button.simulate('click');
+    expect(onLoginRequested).toHaveBeenCalledTimes(1);
+  });
+  it('displays a logout icon and text when logged in', () => {
+    const wrapper = mount(
+      <LoginButton
+        onLoginRequested={onLoginRequested}
+        onLogoutRequested={onLogoutRequested}
+        loginState={LOGGED_IN}
+      />,
+    );
+    const button = wrapper.find('button');
+    expect(button.text()).toEqual('logout');
+    const icon = wrapper.find('i');
+    expect(icon.prop('className')).toContain('logout');
+
+    expect(onLogoutRequested).toHaveBeenCalledTimes(0);
+    button.simulate('click');
+    expect(onLogoutRequested).toHaveBeenCalledTimes(1);
+  });
+  it('displays a loading icon when login in', () => {
+    const wrapper = mount(
+      <LoginButton
+        onLoginRequested={onLoginRequested}
+        onLogoutRequested={onLogoutRequested}
+        loginState={LOGIN_REQUESTED}
+      />,
+    );
+    const button = wrapper.find('button');
+    expect(button.text()).toEqual('login');
+    const icon = wrapper.find('i');
+    expect(icon.prop('className')).toContain('loading');
   });
 });

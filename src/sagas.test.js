@@ -15,6 +15,8 @@ import {
 } from './actions';
 import {
   REFRESH_STATUS,
+  REQUEST_LOGIN,
+  REQUEST_LOGOUT,
   REQUEST_ONGOING_VERSIONS,
   REQUEST_POLLBOT_VERSION,
   REQUEST_STATUS,
@@ -26,6 +28,8 @@ import {
   fetchOngoingVersions,
   fetchPollbotVersion,
   refreshStatus,
+  requestLogin,
+  requestLogout,
   requestStatus,
   rootSaga,
   updateUrl,
@@ -314,6 +318,8 @@ describe('rootSaga', () => {
         takeEvery(UPDATE_URL, updateUrl),
         takeEvery(REFRESH_STATUS, refreshStatus),
         takeEvery(REQUEST_STATUS, requestStatus),
+        takeEvery(REQUEST_LOGIN, requestLogin),
+        takeEvery(REQUEST_LOGOUT, requestLogout),
       ]),
     );
     expect(saga.next().done).toBe(true);
