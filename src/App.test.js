@@ -26,6 +26,23 @@ global.Notification = {
   requestPermission: jest.fn(),
 };
 
+// Mock the localStorage API.
+global.localStorage = (function() {
+  var store = {};
+
+  return {
+    getItem: function(key) {
+      return store[key] || null;
+    },
+    setItem: function(key, value) {
+      store[key] = value.toString();
+    },
+    clear: function() {
+      store = {};
+    },
+  };
+})();
+
 // Mock the Pollbot version (version won't be visible in the rendered
 // component, as it's only visible after the state has been updated, not on
 // first render.
