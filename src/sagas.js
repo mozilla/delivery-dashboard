@@ -27,7 +27,6 @@ import {
 import {
   addCheckResult,
   localUrlFromVersion,
-  loggedIn,
   loggedOut,
   loginRequested,
   setVersion,
@@ -35,6 +34,7 @@ import {
   updatePollbotVersion,
   updateReleaseInfo,
 } from './actions';
+import {initWebAuth, logout} from './auth0';
 
 type Saga = Generator<*, void, *>;
 
@@ -128,7 +128,8 @@ export function* requestStatus(action: RequestStatus): Saga {
 export function* requestLogin(): Saga {
   try {
     yield put(loginRequested());
-    yield put(loggedIn());
+    const webAuth = initWebAuth();
+    webAuth.authorize();
   } catch (err) {
     console.error('Login failed', err);
     yield put(loggedOut());
@@ -138,6 +139,7 @@ export function* requestLogin(): Saga {
 // Requesting a logout.
 export function* requestLogout(): Saga {
   try {
+    logout();
     yield put(loggedOut());
   } catch (err) {
     console.error('Logout failed', err);

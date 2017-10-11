@@ -6,6 +6,8 @@ import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
 import {
   localUrlFromVersion,
+  loggedIn,
+  loggedOut,
   requestOngoingVersions,
   requestPollbotVersion,
   refreshStatus,
@@ -29,6 +31,7 @@ import type {
   Status,
 } from './types';
 import {LOGGED_IN, LOGGED_OUT, LOGIN_REQUESTED} from './types';
+import {initWebAuth, isAuthenticated, webAuthHandler} from './auth0';
 
 const deliveryDashboardVersionData: APIVersionData = require('./version.json');
 
@@ -103,6 +106,21 @@ export class App extends React.Component<AppProps, void> {
     window.onhashchange = this.versionFromHash;
     // Check if we have a version in the url.
     this.versionFromHash();
+    // If we came back from an auth0 login, we should have the needed info in
+    // the hash.
+    try {
+      const webAuth = initWebAuth();
+      const bindedWebAuthHandler = webAuthHandler.bind(null, () =>
+        this.props.dispatch(loggedIn()),
+      );
+      webAuth.parseHash(bindedWebAuthHandler);
+    } catch (err) {
+      console.error('Login failed', err);
+      this.props.dispatch(loggedOut());
+    }
+    if (isAuthenticated()) {
+      this.props.dispatch(loggedIn());
+    }
   }
 
   componentDidUpdate(): void {
