@@ -64,6 +64,7 @@ export type State = {
   +pollbotVersion: ?APIVersionData,
   +shouldRefresh: boolean,
   +login: Login,
+  +userInfo: any,
 };
 
 /*
@@ -76,6 +77,7 @@ export const SUBMIT_VERSION = 'SUBMIT_VERSION';
 export const UPDATE_LATEST_CHANNEL_VERSIONS = 'UPDATE_LATEST_CHANNEL_VERSIONS';
 export const UPDATE_RELEASE_INFO = 'UPDATE_RELEASE_INFO';
 export const UPDATE_POLLBOT_VERSION = 'UPDATE_POLLBOT_VERSION';
+export const UPDATE_USER_INFO = 'UPDATE_USER_INFO';
 
 export type AddCheckResult = {|
   type: 'ADD_CHECK_RESULT',
@@ -113,6 +115,10 @@ export type LoggedOut = {|
 |};
 export type LoginRequested = {|
   type: 'LOGIN_REQUESTED',
+|};
+export type UpdateUserInfo = {|
+  type: 'UPDATE_USER_INFO',
+  userInfo: any,
 |};
 
 /*
@@ -172,6 +178,7 @@ export type Action =
   | UpdatePollbotVersion
   | UpdateReleaseInfo
   | UpdateUrl
+  | UpdateUserInfo
   | UpdateVersionInput;
 
 /*

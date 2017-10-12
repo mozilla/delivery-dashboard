@@ -18,6 +18,7 @@ import {
   LOGGED_IN,
   LOGGED_OUT,
   LOGIN_REQUESTED,
+  UPDATE_USER_INFO,
 } from './types';
 import type {
   AddCheckResult,
@@ -40,6 +41,7 @@ import type {
   UpdatePollbotVersion,
   UpdateReleaseInfo,
   UpdateUrl,
+  UpdateUserInfo,
   UpdateVersionInput,
 } from './types';
 
@@ -177,4 +179,8 @@ export function requestLogin(): RequestLogin {
 
 export function requestLogout(): RequestLogout {
   return {type: REQUEST_LOGOUT};
+}
+
+export function updateUserInfo(userInfo: any): UpdateUserInfo {
+  return {type: UPDATE_USER_INFO, userInfo};
 }

@@ -16,6 +16,7 @@ import {
   setVersion,
   submitVersion,
   updateUrl,
+  updateUserInfo,
   updateVersionInput,
 } from './actions';
 import type {
@@ -30,7 +31,7 @@ import type {
   Status,
 } from './types';
 import {LOGGED_IN, LOGGED_OUT, LOGIN_REQUESTED} from './types';
-import {checkLogin, isAuthenticated} from './auth0';
+import {checkLogin, fetchUserInfo, isAuthenticated} from './auth0';
 
 const deliveryDashboardVersionData: APIVersionData = require('./version.json');
 
@@ -107,7 +108,12 @@ export class App extends React.Component<AppProps, void> {
     this.versionFromHash();
     // If we just came back from an auth0 login, we should have the needed info
     // in the hash.
-    checkLogin(() => this.props.dispatch(loggedIn()));
+    checkLogin(() => {
+      this.props.dispatch(loggedIn());
+      fetchUserInfo(userInfo => {
+        this.props.dispatch(updateUserInfo(userInfo));
+      });
+    });
     // Maybe we were already logged in.
     if (isAuthenticated()) {
       this.props.dispatch(loggedIn());

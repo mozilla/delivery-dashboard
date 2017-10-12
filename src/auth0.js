@@ -14,7 +14,9 @@ export function webAuthHandler(callback: () => any, err: any, authResult: any) {
     window.location.hash = '';
     console.log('AuthResult', authResult);
     setSession(authResult);
-    callback();
+    if (callback) {
+      callback();
+    }
   }
 }
 
@@ -64,4 +66,24 @@ export function isAuthenticated() {
   // Check whether the current time is past the access token's expiry time.
   const expiresAt = JSON.parse(localStorage.getItem('expires_at') || '0');
   return new Date().getTime() < expiresAt;
+}
+
+export function fetchUserInfo(callback: any) {
+  const session = localStorage.getItem('session');
+  if (!session) {
+    return;
+  }
+  const auth = JSON.parse(session);
+  if (!auth.accessToken) {
+    return;
+  }
+  const webAuth = initWebAuth();
+  webAuth.client.userInfo(auth.accessToken, (err, profile) => {
+    if (err) {
+      throw err;
+    }
+    if (callback) {
+      callback(profile);
+    }
+  });
 }
