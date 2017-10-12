@@ -6,7 +6,7 @@ const AUTH0_CLIENT_ID = 'WYRYpJyS5DnDyxLTRVGCQGCWGo2KNQLN';
 const AUTH0_DOMAIN = 'minimal-demo-iam.auth0.com';
 const AUTH0_CALLBACK_URL = window.location.href;
 
-export function webAuthHandler(callback: any, err: any, authResult: any) {
+export function webAuthHandler(callback: () => any, err: any, authResult: any) {
   if (err) {
     throw err;
   }
@@ -39,10 +39,25 @@ function setSession(authResult) {
   localStorage.setItem('expires_at', expiresAt);
 }
 
+export function login() {
+  const webAuth = initWebAuth();
+  webAuth.authorize();
+}
+
 export function logout() {
   // Remove tokens and expiry time from localStorage.
   localStorage.removeItem('session');
   localStorage.removeItem('expires_at');
+}
+
+// Check if the user has logged in.
+export function checkLogin(onLoggedIn: () => any) {
+  try {
+    const webAuth = initWebAuth();
+    webAuth.parseHash(webAuthHandler.bind(null, onLoggedIn));
+  } catch (err) {
+    console.error('Login failed', err);
+  }
 }
 
 export function isAuthenticated() {
