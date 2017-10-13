@@ -16,6 +16,7 @@ import {
   LOGIN_REQUESTED,
   REQUEST_LOGIN,
   REQUEST_LOGOUT,
+  UPDATE_USER_INFO,
 } from './types';
 import {
   addCheckResult,
@@ -36,6 +37,7 @@ import {
   updatePollbotVersion,
   updateReleaseInfo,
   updateUrl,
+  updateUserInfo,
   updateVersionInput,
 } from './actions';
 
@@ -172,6 +174,9 @@ describe('sagas action creator', () => {
   });
   it('handles a REQUEST_LOGOUT action for requestLogout', () => {
     expect(requestLogout()).toEqual({type: REQUEST_LOGOUT});
+  });
+  it('handles a UPDATE_USER_INFO action for updateUserInfo', () => {
+    expect(updateUserInfo()).toEqual({type: UPDATE_USER_INFO});
   });
 });
 
