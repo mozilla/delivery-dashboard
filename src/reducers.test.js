@@ -9,6 +9,7 @@ import {
   UPDATE_POLLBOT_VERSION,
   UPDATE_VERSION_INPUT,
   UPDATE_RELEASE_INFO,
+  UPDATE_USER_INFO,
 } from './types';
 import {deliveryDashboard, initialState} from './reducers';
 
@@ -262,5 +263,24 @@ describe('deliveryDashboard reducer', () => {
         },
       ),
     ).toEqual(stateWith({login: LOGIN_REQUESTED}));
+  });
+  it('handles UPDATE_USER_INFO', () => {
+    expect(
+      deliveryDashboard(undefined, {
+        type: UPDATE_USER_INFO,
+        userInfo: 'foo',
+      }),
+    ).toEqual(stateWith({userInfo: 'foo'}));
+    expect(
+      deliveryDashboard(
+        stateWith({
+          userInfo: 'foo',
+        }),
+        {
+          type: UPDATE_USER_INFO,
+          userInfo: 'bar',
+        },
+      ),
+    ).toEqual(stateWith({userInfo: 'bar'}));
   });
 });
