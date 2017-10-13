@@ -97,6 +97,15 @@ export class App extends React.Component<AppProps, void> {
     }
   }
 
+  onUserInfo = (userInfo: any): void => {
+    this.props.dispatch(updateUserInfo(userInfo));
+  };
+
+  onLoggedIn = (): void => {
+    this.props.dispatch(loggedIn());
+    fetchUserInfo(this.onUserInfo);
+  };
+
   componentDidMount(): void {
     this.props.dispatch(requestPollbotVersion());
     this.props.dispatch(requestOngoingVersions());
@@ -108,12 +117,7 @@ export class App extends React.Component<AppProps, void> {
     this.versionFromHash();
     // If we just came back from an auth0 login, we should have the needed info
     // in the hash.
-    checkLogin(() => {
-      this.props.dispatch(loggedIn());
-      fetchUserInfo(userInfo => {
-        this.props.dispatch(updateUserInfo(userInfo));
-      });
-    });
+    checkLogin(this.onLoggedIn);
     // Maybe we were already logged in.
     if (isAuthenticated()) {
       this.props.dispatch(loggedIn());

@@ -100,6 +100,64 @@ describe('<App />', () => {
     );
     expect(global.fetch).toHaveBeenCalledWith(`${SERVER}/__version__`);
   });
+  it('checks if the user just logged in', () => {
+    const module = require('./auth0');
+    module.checkLogin = jest.fn();
+
+    const app = shallow(<App dispatch={jest.fn()} />).instance();
+    expect(module.checkLogin).toHaveBeenCalledWith(app.onLoggedIn);
+  });
+  it('checks if the user is logged in', () => {
+    const auth0Module = require('./auth0');
+    auth0Module.isAuthenticated = jest.fn();
+    const actionsModule = require('./actions');
+    actionsModule.loggedIn = jest.fn();
+
+    shallow(<App dispatch={jest.fn()} />);
+    expect(auth0Module.isAuthenticated).toHaveBeenCalledTimes(1);
+    expect(actionsModule.loggedIn).toHaveBeenCalledTimes(0);
+
+    auth0Module.isAuthenticated = jest.fn(() => true);
+    shallow(<App dispatch={jest.fn()} />);
+    expect(auth0Module.isAuthenticated).toHaveBeenCalledTimes(1);
+    expect(actionsModule.loggedIn).toHaveBeenCalledTimes(1);
+  });
+  it('dispatches loggedIn and requests user info', () => {
+    const auth0Module = require('./auth0');
+    auth0Module.fetchUserInfo = jest.fn();
+    const actionsModule = require('./actions');
+    actionsModule.loggedIn = jest.fn();
+
+    const app = shallow(<App dispatch={jest.fn()} />).instance();
+    const numCalls = actionsModule.loggedIn.mock.calls.length;
+    app.onLoggedIn();
+    expect(actionsModule.loggedIn).toHaveBeenCalledTimes(numCalls + 1);
+    expect(auth0Module.fetchUserInfo).toHaveBeenCalledWith(app.onUserInfo);
+  });
+  it('dispatches userInfo', () => {
+    const module = require('./actions');
+    module.updateUserInfo = jest.fn();
+
+    const app = shallow(<App dispatch={jest.fn()} />).instance();
+    app.onUserInfo('foo');
+    expect(module.updateUserInfo).toHaveBeenCalledWith('foo');
+  });
+  it('dispatches requestLogin', () => {
+    const module = require('./actions');
+    module.requestLogin = jest.fn();
+
+    const app = shallow(<App dispatch={jest.fn()} />).instance();
+    app.onLoginRequested();
+    expect(module.requestLogin).toHaveBeenCalledTimes(1);
+  });
+  it('dispatches requestLogout', () => {
+    const module = require('./actions');
+    module.requestLogout = jest.fn();
+
+    const app = shallow(<App dispatch={jest.fn()} />).instance();
+    app.onLogoutRequested();
+    expect(module.requestLogout).toHaveBeenCalledTimes(1);
+  });
   it('calls requestStatus(version) with the version from the hash', () => {
     global.window.location.hash = '#pollbot/firefox/123.0';
 
@@ -123,11 +181,7 @@ describe('<App />', () => {
     module.requestStatus = jest.fn();
     module.refreshStatus = jest.fn();
 
-    // We also need to mock the dispatch function, as it doesn't like to be
-    // called with a mock.
-    const dispatch = jest.fn();
-
-    const wrapper = shallow(<App dispatch={dispatch} />);
+    const wrapper = shallow(<App dispatch={jest.fn()} />);
     const app = wrapper.instance();
     app.stopAutoRefresh = jest.fn();
 
