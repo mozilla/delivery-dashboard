@@ -128,7 +128,7 @@ export function* requestStatus(action: RequestStatus): Saga {
 export function* requestLogin(): Saga {
   try {
     yield put(loginRequested());
-    login();
+    yield call(login);
   } catch (err) {
     console.error('Login failed', err);
     yield put(loggedOut());
@@ -138,7 +138,7 @@ export function* requestLogin(): Saga {
 // Requesting a logout.
 export function* requestLogout(): Saga {
   try {
-    logout();
+    yield call(logout);
     yield put(loggedOut());
   } catch (err) {
     console.error('Logout failed', err);

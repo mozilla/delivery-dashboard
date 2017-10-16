@@ -120,7 +120,7 @@ export class App extends React.Component<AppProps, void> {
     checkLogin(this.onLoggedIn);
     // Maybe we were already logged in.
     if (isAuthenticated()) {
-      this.props.dispatch(loggedIn());
+      this.onLoggedIn();
     }
   }
 

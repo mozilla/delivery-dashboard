@@ -110,6 +110,7 @@ describe('<App />', () => {
   it('checks if the user is logged in', () => {
     const auth0Module = require('./auth0');
     auth0Module.isAuthenticated = jest.fn();
+    auth0Module.fetchUserInfo = jest.fn();
     const actionsModule = require('./actions');
     actionsModule.loggedIn = jest.fn();
 
@@ -118,9 +119,10 @@ describe('<App />', () => {
     expect(actionsModule.loggedIn).toHaveBeenCalledTimes(0);
 
     auth0Module.isAuthenticated = jest.fn(() => true);
-    shallow(<App dispatch={jest.fn()} />);
+    const app = shallow(<App dispatch={jest.fn()} />).instance();
     expect(auth0Module.isAuthenticated).toHaveBeenCalledTimes(1);
     expect(actionsModule.loggedIn).toHaveBeenCalledTimes(1);
+    expect(auth0Module.fetchUserInfo).toHaveBeenCalledWith(app.onUserInfo);
   });
   it('dispatches loggedIn and requests user info', () => {
     const auth0Module = require('./auth0');
