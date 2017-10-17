@@ -10,6 +10,7 @@ displaying information from those in a centralized place.
 
 ## Table of Contents
 
+  - [Cloning and getting into the Project Dir](#cloning-and-getting-into-the-project-dir)
   - [Setting up the development environment](#setting-up-the-development-environment)
   - [Starting the dev server](#starting-the-dev-server)
      - [Building](#building)
@@ -22,11 +23,11 @@ displaying information from those in a centralized place.
 
   To clone this repository simply type
 
-    $ cd ~ && mkdir workspace && cd workspace && git clone https://github.com/mozilla/delivery-dashboard && cd delivery-dashboard
+    $ cd ~ && mkdir workspace && cd workspace && git clone https://github.com/mozilla/delivery-dashboard && cd delivery-dashboard
     
    If you already have a workspace directory, be careful not to delete it by typing:
 
-    $ cd ~ && cd workspace && git clone https://github.com/mozilla/delivery-dashboard && cd delivery-dashboard
+    $ cd ~ && cd workspace && git clone https://github.com/mozilla/delivery-dashboard && cd delivery-dashboard
 
 ## Setting up the development environment
 
