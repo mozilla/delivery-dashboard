@@ -8,14 +8,16 @@ The Product Delivery team is implementing various Microservices such as
 [PollBot](https://github.com/mozilla/PollBot), and this dashboard aims at
 displaying information from those in a centralized place.
 
-Table of Contents (ToC)
-=======================
+## Table of Contents
 
-* [Setting up the development environment](#setting-up-the-development-environment)
-* [Starting the dev server](#starting-the-dev-server)
-* [Building](#building)
-* [Deploying to gh-pages](#deploying-to-gh-pages)
-* [Launching testsuite](#launching-testsuite)
+  - [Setting up the development environment](#setting-up-the-development-environment)
+  - [Starting the dev server](#starting-the-dev-server)
+     - [Building](#building)
+     - [Deploying to gh-pages](#deploying-to-gh-pages)
+  - [Launching testsuite](#launching-testsuite)
+
+---
+
 
 ## Setting up the development environment
 
