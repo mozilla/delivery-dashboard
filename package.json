@@ -20,6 +20,7 @@
     "start": "react-app-rewired start",
     "prestart": "yarn run version-file",
     "build": "react-app-rewired build",
+    "build:readme": "./node_modules/.bin/toctoc -w -d 2 README.md",
     "prebuild": "yarn run version-file",
     "test": "NODE_ENV=test react-app-rewired test --env=jsdom --silent",
     "test-coverage": "yarn test --coverage --collectCoverageFrom=src/**/*js --collectCoverageFrom=!src/index.js --collectCoverageFrom=!src/registerServiceWorker.js",
