@@ -6,10 +6,28 @@ export const AUTH0_CLIENT_ID = 'WYRYpJyS5DnDyxLTRVGCQGCWGo2KNQLN';
 export const AUTH0_DOMAIN = 'minimal-demo-iam.auth0.com';
 export const AUTH0_CALLBACK_URL = window.location.href;
 
+export type AuthResult = {
+  accessToken: string,
+  idToken: string,
+  expiresIn: number,
+};
+
+export type HashParser = (() => void, string, AuthResult) => void;
+
+export type WebAuth = {
+  parseHash: ((string, AuthResult) => void) => void,
+  authorize: () => void,
+  client: {
+    userInfo: (string, (string, AuthResult) => void) => void,
+  },
+};
+
+export type UserInfo = any;
+
 export function webAuthHandler(
-  callback: any => any,
-  err: any,
-  authResult: any,
+  callback: AuthResult => void,
+  err: string,
+  authResult: AuthResult,
 ) {
   if (err) {
     throw err;
@@ -35,7 +53,7 @@ export function initWebAuth() {
   return webAuth;
 }
 
-export function setSession(authResult: any) {
+export function setSession(authResult: AuthResult) {
   // Set the time that the access token will expire at.
   const expiresAt = JSON.stringify(
     authResult.expiresIn * 1000 + new Date().getTime(),
@@ -44,7 +62,7 @@ export function setSession(authResult: any) {
   localStorage.setItem('expires_at', expiresAt);
 }
 
-export function login(initFunc: () => any = initWebAuth) {
+export function login(initFunc: () => WebAuth = initWebAuth) {
   const webAuth = initFunc();
   webAuth.authorize();
 }
@@ -57,13 +75,17 @@ export function logout() {
 
 // Check if the user has logged in.
 export function checkLogin(
-  onLoggedIn: any => any,
-  initFunc: () => any = initWebAuth,
-  handler: ((any) => any) => any = webAuthHandler,
+  onLoggedIn: () => void,
+  initFunc: () => WebAuth = initWebAuth,
+  handler: HashParser = webAuthHandler,
 ) {
   try {
+    if (!handler) {
+      throw 'Must provide a hash parser handler';
+    }
     const webAuth = initFunc();
-    webAuth.parseHash(handler.bind(null, onLoggedIn));
+    const boundHandler = handler.bind(null, onLoggedIn);
+    webAuth.parseHash(boundHandler);
   } catch (err) {
     console.error('Login failed', err);
   }
@@ -79,7 +101,11 @@ export function isAuthenticated() {
   return new Date().getTime() < expiresAt;
 }
 
-export function handleUserInfo(onUserInfo: any => any, err: any, profile: any) {
+export function handleUserInfo(
+  onUserInfo: UserInfo => void,
+  err: string,
+  profile: UserInfo,
+) {
   if (err) {
     throw err;
   }
@@ -89,8 +115,8 @@ export function handleUserInfo(onUserInfo: any => any, err: any, profile: any) {
 }
 
 export function fetchUserInfo(
-  callback: any,
-  initFunc: () => any = initWebAuth,
+  callback: UserInfo => void,
+  initFunc: () => WebAuth = initWebAuth,
 ) {
   const session = localStorage.getItem('session');
   if (!session) {
