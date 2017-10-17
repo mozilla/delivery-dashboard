@@ -6,6 +6,8 @@ import {
   UPDATE_URL,
   REFRESH_STATUS,
   REQUEST_STATUS,
+  REQUEST_LOGIN,
+  REQUEST_LOGOUT,
 } from './types';
 import type {
   APIVersionData,
@@ -25,11 +27,14 @@ import {
 import {
   addCheckResult,
   localUrlFromVersion,
+  loggedOut,
+  loginRequested,
   setVersion,
   updateLatestChannelVersions,
   updatePollbotVersion,
   updateReleaseInfo,
 } from './actions';
+import {login, logout} from './auth0';
 
 type Saga = Generator<*, void, *>;
 
@@ -119,6 +124,28 @@ export function* requestStatus(action: RequestStatus): Saga {
   }
 }
 
+// Requesting a auth0 login.
+export function* requestLogin(): Saga {
+  try {
+    yield put(loginRequested());
+    yield call(login);
+  } catch (err) {
+    console.error('Login failed', err);
+    yield put(loggedOut());
+  }
+}
+
+// Requesting a logout.
+export function* requestLogout(): Saga {
+  try {
+    yield call(logout);
+    yield put(loggedOut());
+  } catch (err) {
+    console.error('Logout failed', err);
+  }
+}
+
+// Root saga.
 export function* rootSaga(): Saga {
   yield all([
     takeEvery(REQUEST_ONGOING_VERSIONS, fetchOngoingVersions),
@@ -126,5 +153,7 @@ export function* rootSaga(): Saga {
     takeEvery(UPDATE_URL, updateUrl),
     takeEvery(REFRESH_STATUS, refreshStatus),
     takeEvery(REQUEST_STATUS, requestStatus),
+    takeEvery(REQUEST_LOGIN, requestLogin),
+    takeEvery(REQUEST_LOGOUT, requestLogout),
   ]);
 }

@@ -8,6 +8,8 @@ import {
 } from './PollbotAPI';
 import {
   addCheckResult,
+  loggedOut,
+  loginRequested,
   setVersion,
   updateLatestChannelVersions,
   updatePollbotVersion,
@@ -15,6 +17,8 @@ import {
 } from './actions';
 import {
   REFRESH_STATUS,
+  REQUEST_LOGIN,
+  REQUEST_LOGOUT,
   REQUEST_ONGOING_VERSIONS,
   REQUEST_POLLBOT_VERSION,
   REQUEST_STATUS,
@@ -26,10 +30,13 @@ import {
   fetchOngoingVersions,
   fetchPollbotVersion,
   refreshStatus,
+  requestLogin,
+  requestLogout,
   requestStatus,
   rootSaga,
   updateUrl,
 } from './sagas';
+import {login, logout} from './auth0';
 
 describe('sagas', () => {
   it('handles fetchPollbotVersion', () => {
@@ -302,6 +309,45 @@ describe('sagas', () => {
     );
     expect(data.saga.next().done).toBe(true);
   });
+
+  it('handles requestLogin', () => {
+    const data = {};
+    data.saga = cloneableGenerator(requestLogin)();
+
+    expect(data.saga.next().value).toEqual(put(loginRequested()));
+    expect(data.saga.next().value).toEqual(call(login));
+
+    // Clone to test success and failure of getReleaseInfo.
+    data.sagaThrow = data.saga.clone();
+
+    // login throws an error.
+    console.error = jest.fn();
+    expect(data.sagaThrow.throw('error').value).toEqual(put(loggedOut()));
+    expect(console.error).toHaveBeenCalledWith('Login failed', 'error');
+    expect(data.sagaThrow.next().done).toBe(true);
+
+    // login completes correctly.
+    expect(data.saga.next().done).toBe(true);
+  });
+
+  it('handles requestLogout', () => {
+    const data = {};
+    data.saga = cloneableGenerator(requestLogout)();
+
+    expect(data.saga.next().value).toEqual(call(logout));
+    expect(data.saga.next().value).toEqual(put(loggedOut()));
+
+    // Clone to test success and failure of getReleaseInfo.
+    data.sagaThrow = data.saga.clone();
+
+    // login throws an error.
+    console.error = jest.fn();
+    expect(data.sagaThrow.throw('error').done).toBe(true);
+    expect(console.error).toHaveBeenCalledWith('Logout failed', 'error');
+
+    // login completes correctly.
+    expect(data.saga.next().done).toBe(true);
+  });
 });
 
 describe('rootSaga', () => {
@@ -314,6 +360,8 @@ describe('rootSaga', () => {
         takeEvery(UPDATE_URL, updateUrl),
         takeEvery(REFRESH_STATUS, refreshStatus),
         takeEvery(REQUEST_STATUS, requestStatus),
+        takeEvery(REQUEST_LOGIN, requestLogin),
+        takeEvery(REQUEST_LOGOUT, requestLogout),
       ]),
     );
     expect(saga.next().done).toBe(true);

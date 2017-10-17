@@ -8,6 +8,10 @@ import {
   UPDATE_POLLBOT_VERSION,
   UPDATE_VERSION_INPUT,
   UPDATE_RELEASE_INFO,
+  LOGGED_IN,
+  LOGGED_OUT,
+  LOGIN_REQUESTED,
+  UPDATE_USER_INFO,
 } from './types';
 import type {Action, State} from './types';
 
@@ -19,6 +23,8 @@ export const initialState: State = {
   checkResults: {},
   pollbotVersion: null,
   shouldRefresh: false,
+  login: LOGGED_OUT,
+  userInfo: null,
 };
 
 export function deliveryDashboard(
@@ -60,6 +66,23 @@ export function deliveryDashboard(
     case UPDATE_POLLBOT_VERSION:
       return Object.assign({}, state, {
         pollbotVersion: action.version,
+      });
+    case LOGGED_IN:
+      return Object.assign({}, state, {
+        login: LOGGED_IN,
+      });
+    case LOGGED_OUT:
+      return Object.assign({}, state, {
+        login: LOGGED_OUT,
+        userInfo: null,
+      });
+    case LOGIN_REQUESTED:
+      return Object.assign({}, state, {
+        login: LOGIN_REQUESTED,
+      });
+    case UPDATE_USER_INFO:
+      return Object.assign({}, state, {
+        userInfo: action.userInfo,
       });
     default:
       return state;

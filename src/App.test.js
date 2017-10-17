@@ -7,6 +7,7 @@ import {
   ConnectedApp,
   Dashboard,
   DisplayStatus,
+  LoginButton,
   parseUrl,
   SearchForm,
   versionInputDispatchProps,
@@ -16,6 +17,7 @@ import createStore from './create-store';
 import {SERVER} from './PollbotAPI';
 import Enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
+import {LOGGED_IN, LOGGED_OUT, LOGIN_REQUESTED} from './types';
 
 Enzyme.configure({adapter: new Adapter()});
 
@@ -23,6 +25,23 @@ Enzyme.configure({adapter: new Adapter()});
 global.Notification = {
   requestPermission: jest.fn(),
 };
+
+// Mock the localStorage API.
+global.localStorage = (function() {
+  var store = {};
+
+  return {
+    getItem: function(key) {
+      return store[key] || null;
+    },
+    setItem: function(key, value) {
+      store[key] = value.toString();
+    },
+    clear: function() {
+      store = {};
+    },
+  };
+})();
 
 // Mock the Pollbot version (version won't be visible in the rendered
 // component, as it's only visible after the state has been updated, not on
@@ -81,6 +100,66 @@ describe('<App />', () => {
     );
     expect(global.fetch).toHaveBeenCalledWith(`${SERVER}/__version__`);
   });
+  it('checks if the user just logged in', () => {
+    const module = require('./auth0');
+    module.checkLogin = jest.fn();
+
+    const app = shallow(<App dispatch={jest.fn()} />).instance();
+    expect(module.checkLogin).toHaveBeenCalledWith(app.onLoggedIn);
+  });
+  it('checks if the user is logged in', () => {
+    const auth0Module = require('./auth0');
+    auth0Module.isAuthenticated = jest.fn();
+    auth0Module.fetchUserInfo = jest.fn();
+    const actionsModule = require('./actions');
+    actionsModule.loggedIn = jest.fn();
+
+    shallow(<App dispatch={jest.fn()} />);
+    expect(auth0Module.isAuthenticated).toHaveBeenCalledTimes(1);
+    expect(actionsModule.loggedIn).toHaveBeenCalledTimes(0);
+
+    auth0Module.isAuthenticated = jest.fn(() => true);
+    const app = shallow(<App dispatch={jest.fn()} />).instance();
+    expect(auth0Module.isAuthenticated).toHaveBeenCalledTimes(1);
+    expect(actionsModule.loggedIn).toHaveBeenCalledTimes(1);
+    expect(auth0Module.fetchUserInfo).toHaveBeenCalledWith(app.onUserInfo);
+  });
+  it('dispatches loggedIn and requests user info', () => {
+    const auth0Module = require('./auth0');
+    auth0Module.fetchUserInfo = jest.fn();
+    const actionsModule = require('./actions');
+    actionsModule.loggedIn = jest.fn();
+
+    const app = shallow(<App dispatch={jest.fn()} />).instance();
+    const numCalls = actionsModule.loggedIn.mock.calls.length;
+    app.onLoggedIn();
+    expect(actionsModule.loggedIn).toHaveBeenCalledTimes(numCalls + 1);
+    expect(auth0Module.fetchUserInfo).toHaveBeenCalledWith(app.onUserInfo);
+  });
+  it('dispatches userInfo', () => {
+    const module = require('./actions');
+    module.updateUserInfo = jest.fn();
+
+    const app = shallow(<App dispatch={jest.fn()} />).instance();
+    app.onUserInfo('foo');
+    expect(module.updateUserInfo).toHaveBeenCalledWith('foo');
+  });
+  it('dispatches requestLogin', () => {
+    const module = require('./actions');
+    module.requestLogin = jest.fn();
+
+    const app = shallow(<App dispatch={jest.fn()} />).instance();
+    app.onLoginRequested();
+    expect(module.requestLogin).toHaveBeenCalledTimes(1);
+  });
+  it('dispatches requestLogout', () => {
+    const module = require('./actions');
+    module.requestLogout = jest.fn();
+
+    const app = shallow(<App dispatch={jest.fn()} />).instance();
+    app.onLogoutRequested();
+    expect(module.requestLogout).toHaveBeenCalledTimes(1);
+  });
   it('calls requestStatus(version) with the version from the hash', () => {
     global.window.location.hash = '#pollbot/firefox/123.0';
 
@@ -104,11 +183,7 @@ describe('<App />', () => {
     module.requestStatus = jest.fn();
     module.refreshStatus = jest.fn();
 
-    // We also need to mock the dispatch function, as it doesn't like to be
-    // called with a mock.
-    const dispatch = jest.fn();
-
-    const wrapper = shallow(<App dispatch={dispatch} />);
+    const wrapper = shallow(<App dispatch={jest.fn()} />);
     const app = wrapper.instance();
     app.stopAutoRefresh = jest.fn();
 
@@ -319,5 +394,57 @@ describe('<DisplayStatus />', () => {
   });
   it('displays the error message when there an error', () => {
     checkDisplayStatus('error', 'error');
+  });
+});
+
+describe('<Login Button />', () => {
+  const onLoginRequested = jest.fn();
+  const onLogoutRequested = jest.fn();
+  it('displays a login icon and text when logged off', () => {
+    const wrapper = mount(
+      <LoginButton
+        onLoginRequested={onLoginRequested}
+        onLogoutRequested={onLogoutRequested}
+        loginState={LOGGED_OUT}
+      />,
+    );
+    const button = wrapper.find('button');
+    expect(button.text()).toEqual('login');
+    const icon = wrapper.find('i');
+    expect(icon.prop('className')).toContain('login');
+
+    expect(onLoginRequested).toHaveBeenCalledTimes(0);
+    button.simulate('click');
+    expect(onLoginRequested).toHaveBeenCalledTimes(1);
+  });
+  it('displays a logout icon and text when logged in', () => {
+    const wrapper = mount(
+      <LoginButton
+        onLoginRequested={onLoginRequested}
+        onLogoutRequested={onLogoutRequested}
+        loginState={LOGGED_IN}
+      />,
+    );
+    const button = wrapper.find('button');
+    expect(button.text()).toEqual('logout');
+    const icon = wrapper.find('i');
+    expect(icon.prop('className')).toContain('logout');
+
+    expect(onLogoutRequested).toHaveBeenCalledTimes(0);
+    button.simulate('click');
+    expect(onLogoutRequested).toHaveBeenCalledTimes(1);
+  });
+  it('displays a loading icon when login in', () => {
+    const wrapper = mount(
+      <LoginButton
+        onLoginRequested={onLoginRequested}
+        onLogoutRequested={onLogoutRequested}
+        loginState={LOGIN_REQUESTED}
+      />,
+    );
+    const button = wrapper.find('button');
+    expect(button.text()).toEqual('login');
+    const icon = wrapper.find('i');
+    expect(icon.prop('className')).toContain('loading');
   });
 });
