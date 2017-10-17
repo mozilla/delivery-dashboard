@@ -18,6 +18,15 @@ displaying information from those in a centralized place.
 
 ---
 
+## Cloning and getting into the Project Dir
+
+  To clone this repository simply type
+
+    $ cd ~ && mkdir workspace && cd workspace && git clone https://github.com/mozilla/delivery-dashboard && cd delivery-dashboard
+    
+   If you already have a workspace directory, be careful not to delete it by typing:
+
+    $ cd ~ && cd workspace && git clone https://github.com/mozilla/delivery-dashboard && cd delivery-dashboard
 
 ## Setting up the development environment
 
@@ -31,9 +40,13 @@ You can then use `yarn` to install the project dependencies:
 
 ## Starting the dev server
 
+  To get this app starting the dev server type the following command
+
     $ yarn start
 
 ### Building
+
+  To build this app, simply type the below command:
 
     $ yarn build
 
@@ -45,5 +58,7 @@ The app should be deployed to
 https://[your-github-username].github.io/delivery-dashboard/
 
 ## Launching testsuite
+
+To launch testsuite, simply type:
 
     $ yarn test
