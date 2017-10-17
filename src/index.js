@@ -6,10 +6,14 @@ import registerServiceWorker from './registerServiceWorker';
 import {Provider} from 'react-redux';
 import createStore from './create-store';
 
-ReactDOM.render(
-  <Provider store={createStore()}>
-    <ConnectedApp />
-  </Provider>,
-  document.getElementById('root'),
-);
-registerServiceWorker();
+const root = document && document.getElementById('root');
+
+if (root) {
+  ReactDOM.render(
+    <Provider store={createStore()}>
+      <ConnectedApp />
+    </Provider>,
+    root,
+  );
+  registerServiceWorker();
+}
