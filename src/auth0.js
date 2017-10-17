@@ -30,7 +30,7 @@ export function webAuthHandler(
   authResult: AuthResult,
 ) {
   if (err) {
-    throw err;
+    throw new Error(err);
   }
   if (authResult && authResult.accessToken && authResult.idToken) {
     window.location.hash = '';
@@ -81,7 +81,7 @@ export function checkLogin(
 ) {
   try {
     if (!handler) {
-      throw 'Must provide a hash parser handler';
+      throw new Error('Must provide a hash parser handler');
     }
     const webAuth = initFunc();
     const boundHandler = handler.bind(null, onLoggedIn);
@@ -107,7 +107,7 @@ export function handleUserInfo(
   profile: UserInfo,
 ) {
   if (err) {
-    throw err;
+    throw new Error(err);
   }
   if (onUserInfo) {
     onUserInfo(profile);

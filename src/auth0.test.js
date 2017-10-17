@@ -136,17 +136,16 @@ describe('checkLogin', () => {
   it('logs a message in the console if the login failed', () => {
     const onLoggedIn = jest.fn();
     const parseHash = jest.fn(() => {
-      throw 'foo';
+      throw new Error('foo');
     });
     const handler = jest.fn();
     const initWebAuth = jest.fn(() => ({parseHash: parseHash}));
     global.console.error = jest.fn();
-    try {
-      checkLogin(onLoggedIn, initWebAuth, handler);
-      expect('We should not reach this line').toEqual('');
-    } catch (err) {
-      expect(global.console.error).toHaveBeenCalledWith('Login failed', 'foo');
-    }
+    checkLogin(onLoggedIn, initWebAuth, handler);
+    expect(global.console.error).toHaveBeenCalledWith(
+      'Login failed',
+      new Error('foo'),
+    );
   });
 });
 
@@ -182,12 +181,9 @@ describe('handleUserInfo', () => {
   });
   it('throws if there was an error', () => {
     const onUserInfo = jest.fn();
-    try {
-      handleUserInfo(onUserInfo, 'some error');
-      expect('We should not reach this line').toEqual('');
-    } catch (err) {
-      expect(err).toEqual('some error');
-    }
+    expect(() => handleUserInfo(onUserInfo, 'some error')).toThrow(
+      'some error',
+    );
   });
 });
 
