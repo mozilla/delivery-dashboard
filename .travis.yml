@@ -8,4 +8,6 @@ cache:
 script:
   - yarn run check
   - yarn run flow-coverage
+  - NODE_ENV=test react-app-rewired test --env=jsdom --silent --coverage --collectCoverageFrom=src/**/*js --collectCoverageFrom=!src/index.js --collectCoverageFrom=!src/registerServiceWorker.js,
+  - ls -la coverage
   - yarn run test-coverage && ls -la coverage && ls-la coverage/lcov-report/ && codecov
