@@ -8,4 +8,4 @@ cache:
 script:
   - yarn run check
   - yarn run flow-coverage
-  - yarn run test-coverage && ls -la coverage && ls -la coverage/lcov-report/ && codecov
+  - yarn run test-coverage && codecov
