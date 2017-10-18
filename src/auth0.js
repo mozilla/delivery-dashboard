@@ -80,9 +80,6 @@ export function checkLogin(
   handler: HashParser = webAuthHandler,
 ) {
   try {
-    if (!handler) {
-      throw new Error('Must provide a hash parser handler');
-    }
     const webAuth = initFunc();
     const boundHandler = handler.bind(null, onLoggedIn);
     webAuth.parseHash(boundHandler);
