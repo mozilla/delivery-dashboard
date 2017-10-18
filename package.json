@@ -13,7 +13,8 @@
     "redux": "^3.7.2",
     "redux-logger": "^3.0.6",
     "redux-saga": "^0.16.0",
-    "redux-thunk": "^2.2.0"
+    "redux-thunk": "^2.2.0",
+    "yarn": "^1.2.1"
   },
   "homepage": "https://mozilla.github.io/delivery-dashboard/",
   "scripts": {
@@ -23,7 +24,7 @@
     "build:readme": "toctoc -w -d 2 README.md",
     "prebuild": "yarn run version-file",
     "test": "NODE_ENV=test react-app-rewired test --env=jsdom --silent",
-    "test-coverage": "yarn test --coverage --collectCoverageFrom=src/**/*js --collectCoverageFrom=!src/index.js --collectCoverageFrom=!src/registerServiceWorker.js",
+    "test-coverage": "yarn run test --coverage --collectCoverageFrom=src/**/*js --collectCoverageFrom=!src/index.js --collectCoverageFrom=!src/registerServiceWorker.js",
     "eject": "react-app-rewired eject",
     "deploy": "npm run build && gh-pages --add --dist build/",
     "lint": "eslint *.js src",
