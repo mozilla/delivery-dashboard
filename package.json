@@ -17,6 +17,7 @@
     "yarn": "^1.2.1"
   },
   "homepage": "https://mozilla.github.io/delivery-dashboard/",
+  "homepage_dev": "https://mozilla.github.io/delivery-dashboard/dev/",
   "scripts": {
     "start": "react-app-rewired start",
     "prestart": "yarn run version-file",
@@ -26,7 +27,8 @@
     "test": "NODE_ENV=test react-app-rewired test --env=jsdom --silent",
     "test-coverage": "yarn run test --coverage --collectCoverageFrom=src/**/*js --collectCoverageFrom=!src/index.js --collectCoverageFrom=!src/registerServiceWorker.js",
     "eject": "react-app-rewired eject",
-    "deploy": "npm run build && gh-pages --add --dist build/",
+    "deploy": "yarn run build && gh-pages --add --dist build/",
+    "deploy-dev": "PUBLIC_URL=$npm_package_homepage_dev yarn run deploy --dest dev/",
     "lint": "eslint *.js src",
     "lint-fix": "yarn lint --fix",
     "flow": "flow",
