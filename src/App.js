@@ -1,4 +1,5 @@
 // @flow
+import 'photon-ant';
 import * as React from 'react';
 import {Alert, Button, Card, Form, Icon, Input, Layout, Spin} from 'antd';
 import './App.css';
