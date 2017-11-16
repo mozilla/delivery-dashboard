@@ -5,9 +5,9 @@
   "dependencies": {
     "eslint-plugin-react": "^7.3.0",
     "gh-pages": "^1.0.0",
-    "photon-ant": "^0.1.0",
+    "photon-ant": "0.1.1",
     "react": "^16.0.0",
-    "react-app-rewire-less": "^2.0.7",
+    "react-app-rewire-less": "^2.1.0",
     "react-dom": "^16.0.0",
     "react-redux": "^5.0.6",
     "react-scripts": "1.0.17",

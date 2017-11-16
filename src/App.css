@@ -11,18 +11,17 @@ body {
 }
 
 header {
+  align-items: center;
   background-color: #fff;
+  display: flex;
   height: 80px;
-  line-height: 80px;
+  justify-content: space-between;
   margin-bottom: 24px;
   padding: 0 48px;
-  position: relative;
 }
 
-.user {
-  position: absolute;
-  right: 48px;
-  top: 0;
+header h1 {
+  margin: 0;
 }
 
 .ant-layout-sider {

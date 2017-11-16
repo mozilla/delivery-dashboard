@@ -365,13 +365,13 @@ export function Dashboard({
   } else {
     return (
       <div>
-        <h2 style={{marginBottom: '1em'}}>
+        <h2 style={{marginBottom: '1em', display: 'flex', flexWrap: 'wrap'}}>
           Channel: {releaseInfo.channel}{' '}
           <Alert
-            message={shouldRefresh ? 'incomplete' : 'complete'}
+            message={shouldRefresh ? 'Incomplete' : 'Complete'}
             type={shouldRefresh ? 'error' : 'success'}
             showIcon
-            style={{display: 'inline'}}
+            style={{marginLeft: '1em'}}
           />
         </h2>
         <div className="dashboard">

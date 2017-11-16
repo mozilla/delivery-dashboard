@@ -343,7 +343,7 @@ describe('<Dashboard />', () => {
     expect(wrapper.find(Spin).length).toBe(0);
     expect(wrapper.find(DisplayStatus).length).toBe(2);
   });
-  it('displays a "complete" label when all the results are successful', () => {
+  it('displays a "Complete" label when all the results are successful', () => {
     const wrapper = shallow(
       <Dashboard
         version="50.0"
@@ -353,10 +353,10 @@ describe('<Dashboard />', () => {
       />,
     );
     const status = wrapper.find(Alert);
-    expect(status.prop('message')).toEqual('complete');
+    expect(status.prop('message')).toEqual('Complete');
     expect(status.prop('type')).toEqual('success');
   });
-  it('displays an "incomplete" label if some results are unsuccessful', () => {
+  it('displays an "Incomplete" label if some results are unsuccessful', () => {
     const wrapper = shallow(
       <Dashboard
         version="50.0"
@@ -366,7 +366,7 @@ describe('<Dashboard />', () => {
       />,
     );
     const status = wrapper.find(Alert);
-    expect(status.prop('message')).toEqual('incomplete');
+    expect(status.prop('message')).toEqual('Incomplete');
     expect(status.prop('type')).toEqual('error');
   });
 });
