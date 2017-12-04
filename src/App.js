@@ -363,16 +363,26 @@ export function Dashboard({
   } else if (!releaseInfo) {
     return <Spin />;
   } else {
+    let checksStatus = releaseInfo.checks.map(
+      check => checkResults[check.title],
+    );
+    let allChecksCompleted = !checksStatus.some(
+      result => typeof result === 'undefined',
+    );
     return (
       <div>
         <h2 style={{marginBottom: '1em', display: 'flex', flexWrap: 'wrap'}}>
           Channel: {releaseInfo.channel}{' '}
-          <Alert
-            message={shouldRefresh ? 'Incomplete' : 'Complete'}
-            type={shouldRefresh ? 'error' : 'success'}
-            showIcon
-            style={{marginLeft: '1em'}}
-          />
+          {allChecksCompleted ? (
+            <Alert
+              message={shouldRefresh ? 'Incomplete' : 'Complete'}
+              type={shouldRefresh ? 'error' : 'success'}
+              showIcon
+              style={{marginLeft: '1em'}}
+            />
+          ) : (
+            <Spin />
+          )}
         </h2>
         <div className="dashboard">
           {releaseInfo.checks.map(check =>
