@@ -312,6 +312,13 @@ describe('<Dashboard />', () => {
       {url: 'some-url-2', title: 'some title 2'},
     ],
   };
+  const incompleteCheckResults = {
+    'some title': {
+      status: 'exists',
+      message: 'check is successful',
+      link: 'some link',
+    },
+  };
   const checkResults = {
     'some title': {
       status: 'exists',
@@ -368,6 +375,17 @@ describe('<Dashboard />', () => {
     const status = wrapper.find(Alert);
     expect(status.prop('message')).toEqual('Incomplete');
     expect(status.prop('type')).toEqual('error');
+  });
+  it('displays a spinner for the overall status until all the checks results are received', () => {
+    const wrapper = shallow(
+      <Dashboard
+        version="50.0"
+        releaseInfo={releaseInfo}
+        checkResults={incompleteCheckResults}
+      />,
+    );
+    expect(wrapper.find(Spin).length).toBe(2); // The overall status and the missing check status.
+    expect(wrapper.find(DisplayStatus).length).toBe(1);
   });
 });
 
