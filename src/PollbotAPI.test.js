@@ -25,12 +25,7 @@ describe('getReleaseInfo', () => {
     const releaseInfo = await getReleaseInfo('50.0');
     expect(releaseInfo).toMatchObject({
       channel: expect.stringMatching(/nightly|beta|release|esr/),
-      checks: expect.arrayContaining([
-        {
-          title: expect.any(String),
-          url: expect.any(String),
-        },
-      ]),
+      checks: expect.any(Array),
       product: 'firefox',
       version: '50.0',
     });
