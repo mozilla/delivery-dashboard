@@ -4,5 +4,5 @@
 // defining this module here prevents `flow` from throwing errors when running.
 
 declare module 'photon-ant' {
-  declare var exports: any
+  declare module.exports: any;
 }

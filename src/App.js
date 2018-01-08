@@ -69,7 +69,7 @@ type AppProps = {
   login: Login,
 };
 export class App extends React.Component<AppProps, void> {
-  refreshIntervalId: ?number;
+  refreshIntervalId: ?IntervalID;
 
   constructor(props: AppProps): void {
     super(props);
