@@ -50,6 +50,9 @@ export type APIVersionData = {
   commit: string,
 };
 
+/* Error: [title, errorMessage] */
+export type Error = [string, string];
+
 export type Login = 'LOGGED_OUT' | 'LOGIN_REQUESTED' | 'LOGGED_IN';
 export const LOGGED_OUT = 'LOGGED_OUT';
 export const LOGIN_REQUESTED = 'LOGIN_REQUESTED';
@@ -65,12 +68,14 @@ export type State = {
   +shouldRefresh: boolean,
   +login: Login,
   +userInfo: any,
+  +errors: Error[],
 };
 
 /*
  * action types
  */
 export const ADD_CHECK_RESULT = 'ADD_CHECK_RESULT';
+export const ADD_SERVER_ERROR = 'ADD_SERVER_ERROR';
 export const SET_VERSION = 'SET_VERSION';
 export const UPDATE_VERSION_INPUT = 'UPDATE_VERSION_INPUT';
 export const SUBMIT_VERSION = 'SUBMIT_VERSION';
@@ -83,6 +88,11 @@ export type AddCheckResult = {|
   type: 'ADD_CHECK_RESULT',
   title: string,
   result: CheckResult,
+|};
+export type AddServerError = {|
+  type: 'ADD_SERVER_ERROR',
+  title: string,
+  err: string,
 |};
 export type SetVersion = {|
   type: 'SET_VERSION',
@@ -163,6 +173,7 @@ export type RequestLogout = {|
 
 export type Action =
   | AddCheckResult
+  | AddServerError
   | LoggedIn
   | LoggedOut
   | LoginRequested

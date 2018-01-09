@@ -2,6 +2,7 @@
 
 import {
   ADD_CHECK_RESULT,
+  ADD_SERVER_ERROR,
   SET_VERSION,
   SUBMIT_VERSION,
   UPDATE_LATEST_CHANNEL_VERSIONS,
@@ -25,7 +26,10 @@ export const initialState: State = {
   shouldRefresh: false,
   login: LOGGED_OUT,
   userInfo: null,
+  errors: [],
 };
+
+let errors;
 
 export function deliveryDashboard(
   state: State = initialState,
@@ -40,12 +44,20 @@ export function deliveryDashboard(
         shouldRefresh:
           action.result.status !== 'exists' ? true : state.shouldRefresh,
       });
+    case ADD_SERVER_ERROR:
+      errors = state.errors.slice();
+      errors.push([action.title, action.err]);
+      return Object.assign({}, state, {
+        errors: errors,
+        shouldRefresh: true,
+      });
     case SET_VERSION:
       return Object.assign({}, state, {
         version: action.version,
         versionInput: action.version,
         checkResults: {},
         shouldRefresh: false,
+        errors: [],
       });
     case UPDATE_VERSION_INPUT:
       return Object.assign({}, state, {

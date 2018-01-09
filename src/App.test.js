@@ -7,6 +7,7 @@ import {
   ConnectedApp,
   Dashboard,
   DisplayStatus,
+  Errors,
   LoginButton,
   parseUrl,
   SearchForm,
@@ -299,6 +300,19 @@ describe('<SearchForm />', () => {
     wrapper.simulate('submit');
     expect(module.submitVersion).toHaveBeenCalled();
     expect(module.updateUrl).toHaveBeenCalled();
+  });
+});
+
+describe('<Errors />', () => {
+  it('displays a list of errors', () => {
+    const wrapper = mount(<Errors errors={[['foo', 'bar']]} />);
+    expect(wrapper.text()).toContain(
+      "Failed getting check result for 'foo': bar",
+    );
+  });
+  it("doesn't return anything if there's no errors", () => {
+    const wrapper = mount(<Errors errors={[]} />);
+    expect(wrapper.text()).toBe('');
   });
 });
 

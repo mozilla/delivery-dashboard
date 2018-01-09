@@ -1,5 +1,6 @@
 import {
   ADD_CHECK_RESULT,
+  ADD_SERVER_ERROR,
   LOGGED_IN,
   LOGGED_OUT,
   LOGIN_REQUESTED,
@@ -92,6 +93,37 @@ describe('deliveryDashboard reducer', () => {
           'some test': checkResult,
           'some other test': failingCheckResult,
         },
+        shouldRefresh: true,
+      }),
+    );
+  });
+  it('handles ADD_SERVER_ERROR', () => {
+    expect(
+      deliveryDashboard(undefined, {
+        type: ADD_SERVER_ERROR,
+        title: 'some check',
+        err: 'some error',
+      }),
+    ).toEqual(
+      stateWith({errors: [['some check', 'some error']], shouldRefresh: true}),
+    );
+    expect(
+      deliveryDashboard(
+        stateWith({
+          errors: [['some check', 'some error']],
+        }),
+        {
+          type: ADD_SERVER_ERROR,
+          title: 'some other check',
+          err: 'some other error',
+        },
+      ),
+    ).toEqual(
+      stateWith({
+        errors: [
+          ['some check', 'some error'],
+          ['some other check', 'some other error'],
+        ],
         shouldRefresh: true,
       }),
     );

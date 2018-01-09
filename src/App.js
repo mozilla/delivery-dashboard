@@ -25,6 +25,7 @@ import type {
   CheckResult,
   CheckResults,
   Dispatch,
+  Error,
   Login,
   OngoingVersions,
   ReleaseInfo,
@@ -67,6 +68,7 @@ type AppProps = {
   pollbotVersion: APIVersionData,
   shouldRefresh: boolean,
   login: Login,
+  errors: Error[],
 };
 export class App extends React.Component<AppProps, void> {
   refreshIntervalId: ?IntervalID;
@@ -164,6 +166,7 @@ export class App extends React.Component<AppProps, void> {
             />
           </div>
         </header>
+        <Errors errors={this.props.errors} />
         <Layout className="mainContent">
           <Layout.Sider breakpoint="md" collapsedWidth={0}>
             <SideBar />
@@ -190,6 +193,7 @@ const connectedAppMapStateToProps: MapStateToProps<*, *, *> = (
   pollbotVersion: state.pollbotVersion,
   shouldRefresh: state.shouldRefresh,
   login: state.login,
+  errors: state.errors,
 });
 export const ConnectedApp = connect(
   connectedAppMapStateToProps,
@@ -339,6 +343,32 @@ const currentReleaseMapStateToProps: MapStateToProps<*, *, *> = (
   shouldRefresh: state.shouldRefresh,
 });
 const CurrentRelease = connect(currentReleaseMapStateToProps)(Dashboard);
+
+type ErrorsPropType = {
+  errors: Error[],
+};
+
+export function Errors({errors}: ErrorsPropType) {
+  if (!errors) {
+    return;
+  }
+  return (
+    <div className="errors">
+      {errors.map(error => {
+        const [title, err] = error;
+        return (
+          <Alert
+            key={title}
+            message={"Failed getting check result for '" + title + "': " + err}
+            type="error"
+            banner
+          />
+        );
+      })}
+      <br />
+    </div>
+  );
+}
 
 type DashboardPropType = {
   checkResults: CheckResults,
