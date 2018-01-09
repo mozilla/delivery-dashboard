@@ -405,7 +405,7 @@ describe('<DisplayStatus />', () => {
     checkDisplayStatus('exists', 'success');
   });
   it('displays the status when the status is incomplete', () => {
-    checkDisplayStatus('incomplete', 'info');
+    checkDisplayStatus('incomplete', 'warning');
   });
   it('displays the status when the status is missing', () => {
     checkDisplayStatus('missing', 'warning');

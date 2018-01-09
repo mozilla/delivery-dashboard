@@ -428,7 +428,7 @@ export function DisplayStatus({
   const statusToLabelClass = {
     error: 'error',
     exists: 'success',
-    incomplete: 'info',
+    incomplete: 'warning',
     missing: 'warning',
   };
   return (
