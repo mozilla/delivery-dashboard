@@ -312,7 +312,7 @@ describe('<Errors />', () => {
   });
   it("doesn't return anything if there's no errors", () => {
     const wrapper = mount(<Errors errors={[]} />);
-    expect(wrapper.text()).toBe('');
+    expect(wrapper.instance()).toBeNull();
   });
 });
 

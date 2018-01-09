@@ -349,8 +349,8 @@ type ErrorsPropType = {
 };
 
 export function Errors({errors}: ErrorsPropType) {
-  if (!errors) {
-    return;
+  if (!errors || errors.length === 0) {
+    return null;
   }
   return (
     <div className="errors">

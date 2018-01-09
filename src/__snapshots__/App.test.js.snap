@@ -28,11 +28,6 @@ exports[`<App /> renders without crashing 1`] = `
     </div>
   </header>
   <div
-    className="errors"
-  >
-    <br />
-  </div>
-  <div
     className="mainContent ant-layout ant-layout-has-sider"
   >
     <div
