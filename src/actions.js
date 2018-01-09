@@ -2,6 +2,7 @@
 
 import {
   ADD_CHECK_RESULT,
+  ADD_SERVER_ERROR,
   SET_VERSION,
   UPDATE_VERSION_INPUT,
   SUBMIT_VERSION,
@@ -22,6 +23,7 @@ import {
 } from './types';
 import type {
   AddCheckResult,
+  AddServerError,
   APIVersionData,
   CheckResult,
   LoginRequested,
@@ -138,6 +140,10 @@ export function addCheckResult(
   result: CheckResult,
 ): AddCheckResult {
   return {type: ADD_CHECK_RESULT, title, result};
+}
+
+export function addServerError(title: string, err: string): AddServerError {
+  return {type: ADD_SERVER_ERROR, title, err};
 }
 
 export function loggedIn(): LoggedIn {

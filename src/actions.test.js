@@ -1,5 +1,6 @@
 import {
   ADD_CHECK_RESULT,
+  ADD_SERVER_ERROR,
   SET_VERSION,
   UPDATE_VERSION_INPUT,
   SUBMIT_VERSION,
@@ -20,6 +21,7 @@ import {
 } from './types';
 import {
   addCheckResult,
+  addServerError,
   capitalizeChannel,
   loggedIn,
   loggedOut,
@@ -139,6 +141,13 @@ describe('action creators', () => {
       result: checkResult,
     });
   });
+  it('returns a ADD_SERVER_ERROR action for addServerError', () => {
+    expect(addServerError('some check', 'some error')).toEqual({
+      type: ADD_SERVER_ERROR,
+      title: 'some check',
+      err: 'some error',
+    });
+  });
   it('returns a LOGGED_IN action for loggedIn', () => {
     expect(loggedIn()).toEqual({type: LOGGED_IN});
   });
@@ -152,7 +161,9 @@ describe('action creators', () => {
 
 describe('sagas action creator', () => {
   it('handles a REQUEST_ONGOING_VERSIONS action for requestOngoingVersions', () => {
-    expect(requestOngoingVersions()).toEqual({type: REQUEST_ONGOING_VERSIONS});
+    expect(requestOngoingVersions()).toEqual({
+      type: REQUEST_ONGOING_VERSIONS,
+    });
   });
   it('handles a REQUEST_POLLBOT_VERSION action for requestPollbotVersion', () => {
     expect(requestPollbotVersion()).toEqual({type: REQUEST_POLLBOT_VERSION});

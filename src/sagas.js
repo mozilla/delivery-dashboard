@@ -26,6 +26,7 @@ import {
 } from './PollbotAPI';
 import {
   addCheckResult,
+  addServerError,
   localUrlFromVersion,
   loggedOut,
   loginRequested,
@@ -104,6 +105,7 @@ export function* checkResultAndUpdate(title: string, url: string): Saga {
     yield put(addCheckResult(title, result));
   } catch (err) {
     console.error(`Failed getting ${title} check result`, err);
+    yield put(addServerError(title, err));
   }
 }
 

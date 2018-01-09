@@ -8,6 +8,7 @@ import {
 } from './PollbotAPI';
 import {
   addCheckResult,
+  addServerError,
   loggedOut,
   loginRequested,
   setVersion,
@@ -249,7 +250,9 @@ describe('sagas', () => {
 
     // checkStatus throws an error.
     console.error = jest.fn();
-    data.sagaThrow.throw('error');
+    expect(data.sagaThrow.throw('error').value).toEqual(
+      put(addServerError('some test', 'error')),
+    );
     expect(console.error).toHaveBeenCalledWith(
       'Failed getting some test check result',
       'error',

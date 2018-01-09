@@ -7,6 +7,7 @@ import {
   ConnectedApp,
   Dashboard,
   DisplayStatus,
+  Errors,
   LoginButton,
   parseUrl,
   SearchForm,
@@ -302,6 +303,19 @@ describe('<SearchForm />', () => {
   });
 });
 
+describe('<Errors />', () => {
+  it('displays a list of errors', () => {
+    const wrapper = mount(<Errors errors={[['foo', 'bar']]} />);
+    expect(wrapper.text()).toContain(
+      "Failed getting check result for 'foo': bar",
+    );
+  });
+  it("doesn't return anything if there's no errors", () => {
+    const wrapper = mount(<Errors errors={[]} />);
+    expect(wrapper.instance()).toBeNull();
+  });
+});
+
 describe('<Dashboard />', () => {
   const releaseInfo = {
     channel: 'nightly',
@@ -405,7 +419,7 @@ describe('<DisplayStatus />', () => {
     checkDisplayStatus('exists', 'success');
   });
   it('displays the status when the status is incomplete', () => {
-    checkDisplayStatus('incomplete', 'info');
+    checkDisplayStatus('incomplete', 'warning');
   });
   it('displays the status when the status is missing', () => {
     checkDisplayStatus('missing', 'warning');
