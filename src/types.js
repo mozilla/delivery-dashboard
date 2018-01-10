@@ -24,6 +24,7 @@ export type Check =
 export type CheckInfo = {
   +url: string,
   +title: string,
+  +actionable: boolean,
 };
 
 export type ReleaseInfo = {

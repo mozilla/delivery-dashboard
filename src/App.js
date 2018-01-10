@@ -1,7 +1,17 @@
 // @flow
 import 'photon-ant';
 import * as React from 'react';
-import {Alert, Button, Card, Form, Icon, Input, Layout, Spin} from 'antd';
+import {
+  Alert,
+  Button,
+  Card,
+  Form,
+  Icon,
+  Input,
+  Layout,
+  Spin,
+  Tooltip,
+} from 'antd';
 import './App.css';
 import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
@@ -417,7 +427,11 @@ export function Dashboard({
         <div className="dashboard">
           {releaseInfo.checks.map(check =>
             // Map on the checklist to display the results in the same order.
-            DisplayCheckResult(check.title, checkResults[check.title]),
+            DisplayCheckResult(
+              check.title,
+              check.actionable,
+              checkResults[check.title],
+            ),
           )}
         </div>
       </div>
@@ -425,10 +439,24 @@ export function Dashboard({
   }
 }
 
-export function DisplayCheckResult(title: string, checkResult: ?CheckResult) {
+export function DisplayCheckResult(
+  title: string,
+  actionable: boolean,
+  checkResult: ?CheckResult,
+) {
+  let titleContent = title;
+  if (!actionable) {
+    titleContent = (
+      <div>
+        <Tooltip title="This check is not actionable">
+          <Icon type="dashboard" /> {title}
+        </Tooltip>
+      </div>
+    );
+  }
   return (
     <Card
-      title={title}
+      title={titleContent}
       key={title}
       noHovering={true}
       style={{textAlign: 'center'}}

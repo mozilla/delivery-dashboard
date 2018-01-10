@@ -13,7 +13,7 @@ import {
   SearchForm,
   versionInputDispatchProps,
 } from './App';
-import {Alert, Spin} from 'antd';
+import {Alert, Spin, Tooltip} from 'antd';
 import createStore from './create-store';
 import {SERVER} from './PollbotAPI';
 import Enzyme from 'enzyme';
@@ -322,8 +322,8 @@ describe('<Dashboard />', () => {
     product: 'firefox',
     version: '50.0',
     checks: [
-      {url: 'some-url', title: 'some title'},
-      {url: 'some-url-2', title: 'some title 2'},
+      {url: 'some-url', title: 'some title', actionable: true},
+      {url: 'some-url-2', title: 'some title 2', actionable: false},
     ],
   };
   const incompleteCheckResults = {
@@ -363,6 +363,19 @@ describe('<Dashboard />', () => {
     );
     expect(wrapper.find(Spin).length).toBe(0);
     expect(wrapper.find(DisplayStatus).length).toBe(2);
+  });
+  it("displays an extra icon and tooltip on the checks that aren't actionable", () => {
+    const wrapper = mount(
+      <Dashboard
+        version="50.0"
+        releaseInfo={releaseInfo}
+        checkResults={checkResults}
+      />,
+    );
+    const tooltip = wrapper.find(Tooltip);
+    expect(tooltip.length).toBe(1);
+    expect(tooltip.text()).toEqual(' some title 2');
+    expect(tooltip.prop('title')).toEqual('This check is not actionable');
   });
   it('displays a "Complete" label when all the results are successful', () => {
     const wrapper = shallow(
