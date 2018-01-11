@@ -350,7 +350,6 @@ const currentReleaseMapStateToProps: MapStateToProps<*, *, *> = (
   checkResults: state.checkResults,
   releaseInfo: state.releaseInfo,
   version: state.version,
-  shouldRefresh: state.shouldRefresh,
 });
 const CurrentRelease = connect(currentReleaseMapStateToProps)(Dashboard);
 
@@ -384,14 +383,12 @@ type DashboardPropType = {
   checkResults: CheckResults,
   releaseInfo: ?ReleaseInfo,
   version: string,
-  shouldRefresh: boolean,
 };
 
 export function Dashboard({
   releaseInfo,
   checkResults,
   version,
-  shouldRefresh,
 }: DashboardPropType) {
   if (version === '') {
     return (
@@ -403,26 +400,14 @@ export function Dashboard({
   } else if (!releaseInfo) {
     return <Spin />;
   } else {
-    let checksStatus = releaseInfo.checks.map(
-      check => checkResults[check.title],
-    );
-    let allChecksCompleted = !checksStatus.some(
-      result => typeof result === 'undefined',
-    );
     return (
       <div>
         <h2 style={{marginBottom: '1em', display: 'flex', flexWrap: 'wrap'}}>
           Channel: {releaseInfo.channel}{' '}
-          {allChecksCompleted ? (
-            <Alert
-              message={shouldRefresh ? 'Incomplete' : 'Complete'}
-              type={shouldRefresh ? 'error' : 'success'}
-              showIcon
-              style={{marginLeft: '1em'}}
-            />
-          ) : (
-            <Spin />
-          )}
+          <OverallStatus
+            releaseInfo={releaseInfo}
+            checkResults={checkResults}
+          />
         </h2>
         <div className="dashboard">
           {releaseInfo.checks.map(check =>
@@ -437,6 +422,54 @@ export function Dashboard({
       </div>
     );
   }
+}
+
+type OverallStatusPropType = {
+  checkResults: CheckResults,
+  releaseInfo: ReleaseInfo,
+};
+
+export function OverallStatus({
+  releaseInfo,
+  checkResults,
+}: OverallStatusPropType) {
+  const checksStatus = releaseInfo.checks.map(
+    check => checkResults[check.title],
+  );
+  const allChecksCompleted = !checksStatus.some(
+    result => typeof result === 'undefined',
+  );
+  if (!allChecksCompleted) {
+    return <Spin />;
+  }
+
+  let actionableChecks = [];
+  let nonActionableChecks = [];
+  releaseInfo.checks.map(check => {
+    if (check.actionable) {
+      actionableChecks.push(checkResults[check.title].status);
+    } else {
+      nonActionableChecks.push(checkResults[check.title].status);
+    }
+  });
+  let type;
+  let message;
+  if (actionableChecks.some(status => status === 'error')) {
+    type = 'error';
+    message = 'Some actionable checks were marked as errors';
+  } else if (actionableChecks.some(status => status !== 'exists')) {
+    type = 'warning';
+    message = 'Some actionable checks were marked as missing or incomplete';
+  } else if (nonActionableChecks.some(status => status !== 'exists')) {
+    type = 'info';
+    message = 'Some non actionable checks were marked as missing or incomplete';
+  } else {
+    type = 'success';
+    message = 'All checks are successful';
+  }
+  return (
+    <Alert message={message} type={type} showIcon style={{marginLeft: '1em'}} />
+  );
 }
 
 export function DisplayCheckResult(

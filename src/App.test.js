@@ -9,6 +9,7 @@ import {
   DisplayStatus,
   Errors,
   LoginButton,
+  OverallStatus,
   parseUrl,
   SearchForm,
   versionInputDispatchProps,
@@ -326,13 +327,6 @@ describe('<Dashboard />', () => {
       {url: 'some-url-2', title: 'some title 2', actionable: false},
     ],
   };
-  const incompleteCheckResults = {
-    'some title': {
-      status: 'exists',
-      message: 'check is successful',
-      link: 'some link',
-    },
-  };
   const checkResults = {
     'some title': {
       status: 'exists',
@@ -377,42 +371,98 @@ describe('<Dashboard />', () => {
     expect(tooltip.text()).toEqual(' some title 2');
     expect(tooltip.prop('title')).toEqual('This check is not actionable');
   });
-  it('displays a "Complete" label when all the results are successful', () => {
-    const wrapper = shallow(
-      <Dashboard
-        version="50.0"
-        releaseInfo={releaseInfo}
-        checkResults={checkResults}
-        shouldRefresh={false}
-      />,
+});
+
+describe('<OverallStatus />', () => {
+  const releaseInfo = {
+    channel: 'nightly',
+    product: 'firefox',
+    version: '50.0',
+    checks: [
+      {url: 'some-url', title: 'some title', actionable: true},
+      {url: 'some-url-2', title: 'some title 2', actionable: false},
+    ],
+  };
+  const incompleteCheckResults = {
+    'some title': {
+      status: 'exists',
+      message: 'check is successful',
+      link: 'some link',
+    },
+  };
+  const checkResults = {
+    'some title': {
+      status: 'exists',
+      message: 'check is successful',
+      link: 'some link',
+    },
+    'some title 2': {
+      status: 'exists',
+      message: 'check is successful',
+      link: 'some link',
+    },
+  };
+  it('displays a "success" label when all the results are successful', () => {
+    const wrapper = mount(
+      <OverallStatus releaseInfo={releaseInfo} checkResults={checkResults} />,
     );
     const status = wrapper.find(Alert);
-    expect(status.prop('message')).toEqual('Complete');
+    expect(status.prop('message')).toEqual('All checks are successful');
     expect(status.prop('type')).toEqual('success');
   });
-  it('displays an "Incomplete" label if some results are unsuccessful', () => {
-    const wrapper = shallow(
-      <Dashboard
-        version="50.0"
-        releaseInfo={releaseInfo}
-        checkResults={checkResults}
-        shouldRefresh={true}
-      />,
+  it('displays an "info" label if some non actionable check results are unsuccessful', () => {
+    const results = Object.assign({}, checkResults, {
+      'some title 2': Object.assign({}, checkResults['some title 2'], {
+        status: 'missing',
+      }),
+    });
+    const wrapper = mount(
+      <OverallStatus releaseInfo={releaseInfo} checkResults={results} />,
     );
     const status = wrapper.find(Alert);
-    expect(status.prop('message')).toEqual('Incomplete');
+    expect(status.prop('message')).toEqual(
+      'Some non actionable checks were marked as missing or incomplete',
+    );
+    expect(status.prop('type')).toEqual('info');
+  });
+  it('displays a "warning" label if some actionable check results are unsuccessful', () => {
+    const results = Object.assign({}, checkResults, {
+      'some title': Object.assign({}, checkResults['some title'], {
+        status: 'missing',
+      }),
+    });
+    const wrapper = mount(
+      <OverallStatus releaseInfo={releaseInfo} checkResults={results} />,
+    );
+    const status = wrapper.find(Alert);
+    expect(status.prop('message')).toEqual(
+      'Some actionable checks were marked as missing or incomplete',
+    );
+    expect(status.prop('type')).toEqual('warning');
+  });
+  it('displays an "error" label if some actionable check results are errored', () => {
+    const results = Object.assign({}, checkResults, {
+      'some title': Object.assign({}, checkResults['some title'], {
+        status: 'error',
+      }),
+    });
+    const wrapper = mount(
+      <OverallStatus releaseInfo={releaseInfo} checkResults={results} />,
+    );
+    const status = wrapper.find(Alert);
+    expect(status.prop('message')).toEqual(
+      'Some actionable checks were marked as errors',
+    );
     expect(status.prop('type')).toEqual('error');
   });
   it('displays a spinner for the overall status until all the checks results are received', () => {
     const wrapper = shallow(
-      <Dashboard
-        version="50.0"
+      <OverallStatus
         releaseInfo={releaseInfo}
         checkResults={incompleteCheckResults}
       />,
     );
-    expect(wrapper.find(Spin).length).toBe(2); // The overall status and the missing check status.
-    expect(wrapper.find(DisplayStatus).length).toBe(1);
+    expect(wrapper.find(Spin).length).toBe(1);
   });
 });
 
