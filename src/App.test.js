@@ -417,9 +417,14 @@ describe('<Dashboard />', () => {
 });
 
 describe('<DisplayStatus />', () => {
-  const checkDisplayStatus = (status, label) => {
+  const checkDisplayStatus = (status, actionable, label) => {
     const wrapper = mount(
-      <DisplayStatus status={status} message="check message" url="check url" />,
+      <DisplayStatus
+        status={status}
+        actionable={actionable}
+        message="check message"
+        url="check url"
+      />,
     );
     const link = wrapper.find('a');
     expect(link.prop('href')).toEqual('check url');
@@ -429,16 +434,28 @@ describe('<DisplayStatus />', () => {
     expect(link.text()).toEqual('check message');
   };
   it('displays the status when the status is exists', () => {
-    checkDisplayStatus('exists', 'success');
+    checkDisplayStatus('exists', true, 'success');
   });
   it('displays the status when the status is incomplete', () => {
-    checkDisplayStatus('incomplete', 'warning');
+    checkDisplayStatus('incomplete', true, 'warning');
   });
   it('displays the status when the status is missing', () => {
-    checkDisplayStatus('missing', 'warning');
+    checkDisplayStatus('missing', true, 'warning');
   });
   it('displays the error message when there an error', () => {
-    checkDisplayStatus('error', 'error');
+    checkDisplayStatus('error', true, 'error');
+  });
+  it('displays the status when the status is exists and the item is not actionable', () => {
+    checkDisplayStatus('exists', false, 'success');
+  });
+  it('displays the status when the status is incomplete and the item is not actionable', () => {
+    checkDisplayStatus('incomplete', false, 'info');
+  });
+  it('displays the status when the status is missing and the item is not actionable', () => {
+    checkDisplayStatus('missing', false, 'info');
+  });
+  it('displays the error message when there an error and the item is not actionable', () => {
+    checkDisplayStatus('error', false, 'error');
   });
 });
 

@@ -466,6 +466,7 @@ export function DisplayCheckResult(
           status={checkResult.status}
           message={checkResult.message}
           url={checkResult.link}
+          actionable={actionable}
         />
       ) : (
         <Spin />
@@ -478,20 +479,32 @@ export function DisplayStatus({
   status,
   message,
   url,
+  actionable,
 }: {
   status: Status,
   message: string,
   url: string,
+  actionable: boolean,
 }) {
-  const statusToLabelClass = {
-    error: 'error',
-    exists: 'success',
-    incomplete: 'warning',
-    missing: 'warning',
+  const getLabelClass = (status, actionable) => {
+    if (status === 'error') {
+      return 'error';
+    }
+    if (status === 'exists') {
+      return 'success';
+    }
+    if (actionable) {
+      return 'warning';
+    }
+    return 'info'; // It's a non actionable item.
   };
   return (
     <a title={message} href={url}>
-      <Alert message={message} type={statusToLabelClass[status]} showIcon />
+      <Alert
+        message={message}
+        type={getLabelClass(status, actionable)}
+        showIcon
+      />
     </a>
   );
 }
