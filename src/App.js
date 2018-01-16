@@ -454,15 +454,12 @@ export function OverallStatus({
   });
   let type;
   let message;
-  if (actionableChecks.some(status => status === 'error')) {
+  if (actionableChecks.some(status => status !== 'exists')) {
     type = 'error';
-    message = 'Some actionable checks were marked as errors';
-  } else if (actionableChecks.some(status => status !== 'exists')) {
-    type = 'warning';
-    message = 'Some actionable checks were marked as missing or incomplete';
+    message = 'Some actionable checks failed';
   } else if (nonActionableChecks.some(status => status !== 'exists')) {
-    type = 'info';
-    message = 'Some non actionable checks were marked as missing or incomplete';
+    type = 'success';
+    message = 'Some non actionable checks failed';
   } else {
     type = 'success';
     message = 'All checks are successful';

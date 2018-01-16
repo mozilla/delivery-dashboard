@@ -410,7 +410,7 @@ describe('<OverallStatus />', () => {
     expect(status.prop('message')).toEqual('All checks are successful');
     expect(status.prop('type')).toEqual('success');
   });
-  it('displays an "info" label if some non actionable check results are unsuccessful', () => {
+  it('displays an "success" label if some non actionable check results are unsuccessful', () => {
     const results = Object.assign({}, checkResults, {
       'some title 2': Object.assign({}, checkResults['some title 2'], {
         status: 'missing',
@@ -420,12 +420,10 @@ describe('<OverallStatus />', () => {
       <OverallStatus releaseInfo={releaseInfo} checkResults={results} />,
     );
     const status = wrapper.find(Alert);
-    expect(status.prop('message')).toEqual(
-      'Some non actionable checks were marked as missing or incomplete',
-    );
-    expect(status.prop('type')).toEqual('info');
+    expect(status.prop('message')).toEqual('Some non actionable checks failed');
+    expect(status.prop('type')).toEqual('success');
   });
-  it('displays a "warning" label if some actionable check results are unsuccessful', () => {
+  it('displays an "error" label if some actionable check results are unsuccessful', () => {
     const results = Object.assign({}, checkResults, {
       'some title': Object.assign({}, checkResults['some title'], {
         status: 'missing',
@@ -435,10 +433,8 @@ describe('<OverallStatus />', () => {
       <OverallStatus releaseInfo={releaseInfo} checkResults={results} />,
     );
     const status = wrapper.find(Alert);
-    expect(status.prop('message')).toEqual(
-      'Some actionable checks were marked as missing or incomplete',
-    );
-    expect(status.prop('type')).toEqual('warning');
+    expect(status.prop('message')).toEqual('Some actionable checks failed');
+    expect(status.prop('type')).toEqual('error');
   });
   it('displays an "error" label if some actionable check results are errored', () => {
     const results = Object.assign({}, checkResults, {
@@ -450,9 +446,7 @@ describe('<OverallStatus />', () => {
       <OverallStatus releaseInfo={releaseInfo} checkResults={results} />,
     );
     const status = wrapper.find(Alert);
-    expect(status.prop('message')).toEqual(
-      'Some actionable checks were marked as errors',
-    );
+    expect(status.prop('message')).toEqual('Some actionable checks failed');
     expect(status.prop('type')).toEqual('error');
   });
   it('displays a spinner for the overall status until all the checks results are received', () => {
