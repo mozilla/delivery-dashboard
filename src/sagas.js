@@ -89,12 +89,14 @@ export function* refreshStatus(): Saga {
   const state: State = yield select();
   // Save previous results so we can check if something changed.
   const prevResults = state.checkResults;
-  yield put(setVersion(state.version));
   if (state.releaseInfo && state.releaseInfo.checks) {
     yield all(
-      state.releaseInfo.checks.map(({url, title}) =>
-        call(checkResultAndUpdateAndNotify, title, url, prevResults[title]),
-      ),
+      state.releaseInfo.checks
+        // only refresh checks that were failing.
+        .filter(({title}) => state.checkResults[title].status !== 'exists')
+        .map(({url, title}) =>
+          call(checkResultAndUpdateAndNotify, title, url, prevResults[title]),
+        ),
     );
   }
 }

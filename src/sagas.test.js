@@ -190,16 +190,6 @@ describe('sagas', () => {
 
     expect(data.saga.next().value).toEqual(select());
 
-    // Clone to test the branch where there's no releaseInfo in the state.
-    data.sagaNoReleaseInfo = data.saga.clone();
-
-    // No releaseInfo in the state.
-    expect(data.sagaNoReleaseInfo.next({version: '50.0'}).value).toEqual(
-      put(setVersion('50.0')),
-    );
-    expect(data.sagaNoReleaseInfo.next().done).toBe(true);
-
-    // releaseInfo in the state.
     expect(
       data.saga.next({
         version: '50.0',
@@ -209,16 +199,8 @@ describe('sagas', () => {
           'some other test': checkResultFailing,
         },
       }).value,
-    ).toEqual(put(setVersion('50.0')));
-
-    expect(data.saga.next().value).toEqual(
+    ).toEqual(
       all([
-        call(
-          checkResultAndUpdateAndNotify,
-          'some test',
-          'some url',
-          checkResult,
-        ),
         call(
           checkResultAndUpdateAndNotify,
           'some other test',

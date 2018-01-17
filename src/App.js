@@ -451,6 +451,7 @@ export function OverallStatus({
     } else {
       nonActionableChecks.push(checkResults[check.title].status);
     }
+    return check;
   });
   let type;
   let message;
