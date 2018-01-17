@@ -1,7 +1,17 @@
 // @flow
 import 'photon-ant';
 import * as React from 'react';
-import {Alert, Button, Card, Form, Icon, Input, Layout, Spin} from 'antd';
+import {
+  Alert,
+  Button,
+  Card,
+  Form,
+  Icon,
+  Input,
+  Layout,
+  Spin,
+  Tooltip,
+} from 'antd';
 import './App.css';
 import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
@@ -340,7 +350,6 @@ const currentReleaseMapStateToProps: MapStateToProps<*, *, *> = (
   checkResults: state.checkResults,
   releaseInfo: state.releaseInfo,
   version: state.version,
-  shouldRefresh: state.shouldRefresh,
 });
 const CurrentRelease = connect(currentReleaseMapStateToProps)(Dashboard);
 
@@ -374,14 +383,12 @@ type DashboardPropType = {
   checkResults: CheckResults,
   releaseInfo: ?ReleaseInfo,
   version: string,
-  shouldRefresh: boolean,
 };
 
 export function Dashboard({
   releaseInfo,
   checkResults,
   version,
-  shouldRefresh,
 }: DashboardPropType) {
   if (version === '') {
     return (
@@ -393,31 +400,23 @@ export function Dashboard({
   } else if (!releaseInfo) {
     return <Spin />;
   } else {
-    let checksStatus = releaseInfo.checks.map(
-      check => checkResults[check.title],
-    );
-    let allChecksCompleted = !checksStatus.some(
-      result => typeof result === 'undefined',
-    );
     return (
       <div>
         <h2 style={{marginBottom: '1em', display: 'flex', flexWrap: 'wrap'}}>
           Channel: {releaseInfo.channel}{' '}
-          {allChecksCompleted ? (
-            <Alert
-              message={shouldRefresh ? 'Incomplete' : 'Complete'}
-              type={shouldRefresh ? 'error' : 'success'}
-              showIcon
-              style={{marginLeft: '1em'}}
-            />
-          ) : (
-            <Spin />
-          )}
+          <OverallStatus
+            releaseInfo={releaseInfo}
+            checkResults={checkResults}
+          />
         </h2>
         <div className="dashboard">
           {releaseInfo.checks.map(check =>
             // Map on the checklist to display the results in the same order.
-            DisplayCheckResult(check.title, checkResults[check.title]),
+            DisplayCheckResult(
+              check.title,
+              check.actionable,
+              checkResults[check.title],
+            ),
           )}
         </div>
       </div>
@@ -425,10 +424,66 @@ export function Dashboard({
   }
 }
 
-export function DisplayCheckResult(title: string, checkResult: ?CheckResult) {
+type OverallStatusPropType = {
+  checkResults: CheckResults,
+  releaseInfo: ReleaseInfo,
+};
+
+export function OverallStatus({
+  releaseInfo,
+  checkResults,
+}: OverallStatusPropType) {
+  const checksStatus = releaseInfo.checks.map(
+    check => checkResults[check.title],
+  );
+  const allChecksCompleted = !checksStatus.some(
+    result => typeof result === 'undefined',
+  );
+  if (!allChecksCompleted) {
+    return <Spin />;
+  }
+
+  let actionableChecks = [];
+  let nonActionableChecks = [];
+  releaseInfo.checks.map(check => {
+    if (check.actionable) {
+      actionableChecks.push(checkResults[check.title].status);
+    } else {
+      nonActionableChecks.push(checkResults[check.title].status);
+    }
+  });
+  let type;
+  let message;
+  if (actionableChecks.some(status => status !== 'exists')) {
+    type = 'error';
+    message = 'Some checks failed';
+  } else {
+    type = 'success';
+    message = 'All checks are successful';
+  }
+  return (
+    <Alert message={message} type={type} showIcon style={{marginLeft: '1em'}} />
+  );
+}
+
+export function DisplayCheckResult(
+  title: string,
+  actionable: boolean,
+  checkResult: ?CheckResult,
+) {
+  let titleContent = title;
+  if (!actionable) {
+    titleContent = (
+      <div>
+        <Tooltip title="This check is not actionable">
+          <Icon type="dashboard" /> {title}
+        </Tooltip>
+      </div>
+    );
+  }
   return (
     <Card
-      title={title}
+      title={titleContent}
       key={title}
       noHovering={true}
       style={{textAlign: 'center'}}
@@ -438,6 +493,7 @@ export function DisplayCheckResult(title: string, checkResult: ?CheckResult) {
           status={checkResult.status}
           message={checkResult.message}
           url={checkResult.link}
+          actionable={actionable}
         />
       ) : (
         <Spin />
@@ -450,20 +506,32 @@ export function DisplayStatus({
   status,
   message,
   url,
+  actionable,
 }: {
   status: Status,
   message: string,
   url: string,
+  actionable: boolean,
 }) {
-  const statusToLabelClass = {
-    error: 'error',
-    exists: 'success',
-    incomplete: 'warning',
-    missing: 'warning',
+  const getLabelClass = (status, actionable) => {
+    if (status === 'error') {
+      return 'error';
+    }
+    if (status === 'exists') {
+      return 'success';
+    }
+    if (actionable) {
+      return 'warning';
+    }
+    return 'info'; // It's a non actionable item.
   };
   return (
     <a title={message} href={url}>
-      <Alert message={message} type={statusToLabelClass[status]} showIcon />
+      <Alert
+        message={message}
+        type={getLabelClass(status, actionable)}
+        showIcon
+      />
     </a>
   );
 }

@@ -9,11 +9,12 @@ import {
   DisplayStatus,
   Errors,
   LoginButton,
+  OverallStatus,
   parseUrl,
   SearchForm,
   versionInputDispatchProps,
 } from './App';
-import {Alert, Spin} from 'antd';
+import {Alert, Spin, Tooltip} from 'antd';
 import createStore from './create-store';
 import {SERVER} from './PollbotAPI';
 import Enzyme from 'enzyme';
@@ -322,16 +323,9 @@ describe('<Dashboard />', () => {
     product: 'firefox',
     version: '50.0',
     checks: [
-      {url: 'some-url', title: 'some title'},
-      {url: 'some-url-2', title: 'some title 2'},
+      {url: 'some-url', title: 'some title', actionable: true},
+      {url: 'some-url-2', title: 'some title 2', actionable: false},
     ],
-  };
-  const incompleteCheckResults = {
-    'some title': {
-      status: 'exists',
-      message: 'check is successful',
-      link: 'some link',
-    },
   };
   const checkResults = {
     'some title': {
@@ -364,49 +358,117 @@ describe('<Dashboard />', () => {
     expect(wrapper.find(Spin).length).toBe(0);
     expect(wrapper.find(DisplayStatus).length).toBe(2);
   });
-  it('displays a "Complete" label when all the results are successful', () => {
-    const wrapper = shallow(
+  it("displays an extra icon and tooltip on the checks that aren't actionable", () => {
+    const wrapper = mount(
       <Dashboard
         version="50.0"
         releaseInfo={releaseInfo}
         checkResults={checkResults}
-        shouldRefresh={false}
       />,
     );
+    const tooltip = wrapper.find(Tooltip);
+    expect(tooltip.length).toBe(1);
+    expect(tooltip.text()).toEqual(' some title 2');
+    expect(tooltip.prop('title')).toEqual('This check is not actionable');
+  });
+});
+
+describe('<OverallStatus />', () => {
+  const releaseInfo = {
+    channel: 'nightly',
+    product: 'firefox',
+    version: '50.0',
+    checks: [
+      {url: 'some-url', title: 'some title', actionable: true},
+      {url: 'some-url-2', title: 'some title 2', actionable: false},
+    ],
+  };
+  const incompleteCheckResults = {
+    'some title': {
+      status: 'exists',
+      message: 'check is successful',
+      link: 'some link',
+    },
+  };
+  const checkResults = {
+    'some title': {
+      status: 'exists',
+      message: 'check is successful',
+      link: 'some link',
+    },
+    'some title 2': {
+      status: 'exists',
+      message: 'check is successful',
+      link: 'some link',
+    },
+  };
+  it('displays a "success" label when all the results are successful', () => {
+    const wrapper = mount(
+      <OverallStatus releaseInfo={releaseInfo} checkResults={checkResults} />,
+    );
     const status = wrapper.find(Alert);
-    expect(status.prop('message')).toEqual('Complete');
+    expect(status.prop('message')).toEqual('All checks are successful');
     expect(status.prop('type')).toEqual('success');
   });
-  it('displays an "Incomplete" label if some results are unsuccessful', () => {
-    const wrapper = shallow(
-      <Dashboard
-        version="50.0"
-        releaseInfo={releaseInfo}
-        checkResults={checkResults}
-        shouldRefresh={true}
-      />,
+  it('displays an "success" label if some non actionable check results are unsuccessful', () => {
+    const results = Object.assign({}, checkResults, {
+      'some title 2': Object.assign({}, checkResults['some title 2'], {
+        status: 'missing',
+      }),
+    });
+    const wrapper = mount(
+      <OverallStatus releaseInfo={releaseInfo} checkResults={results} />,
     );
     const status = wrapper.find(Alert);
-    expect(status.prop('message')).toEqual('Incomplete');
+    expect(status.prop('message')).toEqual('All checks are successful');
+    expect(status.prop('type')).toEqual('success');
+  });
+  it('displays an "error" label if some actionable check results are unsuccessful', () => {
+    const results = Object.assign({}, checkResults, {
+      'some title': Object.assign({}, checkResults['some title'], {
+        status: 'missing',
+      }),
+    });
+    const wrapper = mount(
+      <OverallStatus releaseInfo={releaseInfo} checkResults={results} />,
+    );
+    const status = wrapper.find(Alert);
+    expect(status.prop('message')).toEqual('Some checks failed');
+    expect(status.prop('type')).toEqual('error');
+  });
+  it('displays an "error" label if some actionable check results are errored', () => {
+    const results = Object.assign({}, checkResults, {
+      'some title': Object.assign({}, checkResults['some title'], {
+        status: 'error',
+      }),
+    });
+    const wrapper = mount(
+      <OverallStatus releaseInfo={releaseInfo} checkResults={results} />,
+    );
+    const status = wrapper.find(Alert);
+    expect(status.prop('message')).toEqual('Some checks failed');
     expect(status.prop('type')).toEqual('error');
   });
   it('displays a spinner for the overall status until all the checks results are received', () => {
     const wrapper = shallow(
-      <Dashboard
-        version="50.0"
+      <OverallStatus
         releaseInfo={releaseInfo}
         checkResults={incompleteCheckResults}
       />,
     );
-    expect(wrapper.find(Spin).length).toBe(2); // The overall status and the missing check status.
-    expect(wrapper.find(DisplayStatus).length).toBe(1);
+    expect(wrapper.find(Spin).length).toBe(1);
   });
 });
 
 describe('<DisplayStatus />', () => {
-  const checkDisplayStatus = (status, label) => {
+  const checkDisplayStatus = (status, actionable, label) => {
     const wrapper = mount(
-      <DisplayStatus status={status} message="check message" url="check url" />,
+      <DisplayStatus
+        status={status}
+        actionable={actionable}
+        message="check message"
+        url="check url"
+      />,
     );
     const link = wrapper.find('a');
     expect(link.prop('href')).toEqual('check url');
@@ -416,16 +478,28 @@ describe('<DisplayStatus />', () => {
     expect(link.text()).toEqual('check message');
   };
   it('displays the status when the status is exists', () => {
-    checkDisplayStatus('exists', 'success');
+    checkDisplayStatus('exists', true, 'success');
   });
   it('displays the status when the status is incomplete', () => {
-    checkDisplayStatus('incomplete', 'warning');
+    checkDisplayStatus('incomplete', true, 'warning');
   });
   it('displays the status when the status is missing', () => {
-    checkDisplayStatus('missing', 'warning');
+    checkDisplayStatus('missing', true, 'warning');
   });
   it('displays the error message when there an error', () => {
-    checkDisplayStatus('error', 'error');
+    checkDisplayStatus('error', true, 'error');
+  });
+  it('displays the status when the status is exists and the item is not actionable', () => {
+    checkDisplayStatus('exists', false, 'success');
+  });
+  it('displays the status when the status is incomplete and the item is not actionable', () => {
+    checkDisplayStatus('incomplete', false, 'info');
+  });
+  it('displays the status when the status is missing and the item is not actionable', () => {
+    checkDisplayStatus('missing', false, 'info');
+  });
+  it('displays the error message when there an error and the item is not actionable', () => {
+    checkDisplayStatus('error', false, 'error');
   });
 });
 
