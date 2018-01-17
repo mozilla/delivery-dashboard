@@ -116,9 +116,14 @@ export function* checkResultAndUpdate(title: string, url: string): Saga {
 
 // Requesting a status for a new version.
 export function* requestStatus(action: RequestStatus): Saga {
-  const version = action.version;
+  let {version} = action;
   try {
+    const ongoingVersions: OngoingVersions = yield call(getOngoingVersions);
+    if (ongoingVersions.hasOwnProperty(version)) {
+      version = ongoingVersions[version];
+    }
     yield put(setVersion(version));
+    yield call(updateUrl);
     const releaseInfo: ReleaseInfo = yield call(getReleaseInfo, version);
     yield put(updateReleaseInfo(releaseInfo));
     yield all(
