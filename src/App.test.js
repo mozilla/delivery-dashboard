@@ -420,7 +420,7 @@ describe('<OverallStatus />', () => {
       <OverallStatus releaseInfo={releaseInfo} checkResults={results} />,
     );
     const status = wrapper.find(Alert);
-    expect(status.prop('message')).toEqual('Some non actionable checks failed');
+    expect(status.prop('message')).toEqual('All checks are successful');
     expect(status.prop('type')).toEqual('success');
   });
   it('displays an "error" label if some actionable check results are unsuccessful', () => {
@@ -433,7 +433,7 @@ describe('<OverallStatus />', () => {
       <OverallStatus releaseInfo={releaseInfo} checkResults={results} />,
     );
     const status = wrapper.find(Alert);
-    expect(status.prop('message')).toEqual('Some actionable checks failed');
+    expect(status.prop('message')).toEqual('Some checks failed');
     expect(status.prop('type')).toEqual('error');
   });
   it('displays an "error" label if some actionable check results are errored', () => {
@@ -446,7 +446,7 @@ describe('<OverallStatus />', () => {
       <OverallStatus releaseInfo={releaseInfo} checkResults={results} />,
     );
     const status = wrapper.find(Alert);
-    expect(status.prop('message')).toEqual('Some actionable checks failed');
+    expect(status.prop('message')).toEqual('Some checks failed');
     expect(status.prop('type')).toEqual('error');
   });
   it('displays a spinner for the overall status until all the checks results are received', () => {

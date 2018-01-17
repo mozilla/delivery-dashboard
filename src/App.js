@@ -456,10 +456,7 @@ export function OverallStatus({
   let message;
   if (actionableChecks.some(status => status !== 'exists')) {
     type = 'error';
-    message = 'Some actionable checks failed';
-  } else if (nonActionableChecks.some(status => status !== 'exists')) {
-    type = 'success';
-    message = 'Some non actionable checks failed';
+    message = 'Some checks failed';
   } else {
     type = 'success';
     message = 'All checks are successful';
