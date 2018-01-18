@@ -30,6 +30,7 @@ import {
   localUrlFromVersion,
   loggedOut,
   loginRequested,
+  refreshCheckResult,
   setVersion,
   updateLatestChannelVersions,
   updatePollbotVersion,
@@ -76,6 +77,8 @@ export function* checkResultAndUpdateAndNotify(
     }
   };
 
+  // Make sure the check we're refreshing is shown as being refreshed.
+  yield put(refreshCheckResult(title));
   yield call(checkResultAndUpdate, title, url);
   const state: State = yield select();
   const result: CheckResult = state.checkResults && state.checkResults[title];
@@ -89,12 +92,14 @@ export function* refreshStatus(): Saga {
   const state: State = yield select();
   // Save previous results so we can check if something changed.
   const prevResults = state.checkResults;
-  yield put(setVersion(state.version));
   if (state.releaseInfo && state.releaseInfo.checks) {
     yield all(
-      state.releaseInfo.checks.map(({url, title}) =>
-        call(checkResultAndUpdateAndNotify, title, url, prevResults[title]),
-      ),
+      state.releaseInfo.checks
+        // only refresh checks that were failing.
+        .filter(({title}) => state.checkResults[title].status !== 'exists')
+        .map(({url, title}) =>
+          call(checkResultAndUpdateAndNotify, title, url, prevResults[title]),
+        ),
     );
   }
 }

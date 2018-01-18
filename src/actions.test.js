@@ -1,5 +1,6 @@
 import {
   ADD_CHECK_RESULT,
+  REFRESH_CHECK_RESULT,
   ADD_SERVER_ERROR,
   SET_VERSION,
   UPDATE_VERSION_INPUT,
@@ -28,6 +29,7 @@ import {
   loginRequested,
   requestOngoingVersions,
   requestPollbotVersion,
+  refreshCheckResult,
   refreshStatus,
   requestLogin,
   requestLogout,
@@ -139,6 +141,12 @@ describe('action creators', () => {
       type: ADD_CHECK_RESULT,
       title: 'some check',
       result: checkResult,
+    });
+  });
+  it('returns a REFRESH_CHECK_RESULT action for refreshCheckResult', () => {
+    expect(refreshCheckResult('some check')).toEqual({
+      type: REFRESH_CHECK_RESULT,
+      title: 'some check',
     });
   });
   it('returns a ADD_SERVER_ERROR action for addServerError', () => {

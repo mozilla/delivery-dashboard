@@ -2,6 +2,7 @@
 
 import {
   ADD_CHECK_RESULT,
+  REFRESH_CHECK_RESULT,
   ADD_SERVER_ERROR,
   SET_VERSION,
   UPDATE_VERSION_INPUT,
@@ -30,6 +31,7 @@ import type {
   LoggedIn,
   LoggedOut,
   OngoingVersions,
+  RefreshCheckResult,
   RefreshStatus,
   ReleaseInfo,
   RequestLogin,
@@ -140,6 +142,10 @@ export function addCheckResult(
   result: CheckResult,
 ): AddCheckResult {
   return {type: ADD_CHECK_RESULT, title, result};
+}
+
+export function refreshCheckResult(title: string): RefreshCheckResult {
+  return {type: REFRESH_CHECK_RESULT, title};
 }
 
 export function addServerError(title: string, err: string): AddServerError {

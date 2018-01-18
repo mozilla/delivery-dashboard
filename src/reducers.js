@@ -2,6 +2,7 @@
 
 import {
   ADD_CHECK_RESULT,
+  REFRESH_CHECK_RESULT,
   ADD_SERVER_ERROR,
   SET_VERSION,
   SUBMIT_VERSION,
@@ -29,12 +30,12 @@ export const initialState: State = {
   errors: [],
 };
 
-let errors;
-
 export function deliveryDashboard(
   state: State = initialState,
   action: Action,
 ): State {
+  let errors;
+  let updatedCheckResults;
   switch (action.type) {
     case ADD_CHECK_RESULT:
       return Object.assign({}, state, {
@@ -43,6 +44,12 @@ export function deliveryDashboard(
         }),
         shouldRefresh:
           action.result.status !== 'exists' ? true : state.shouldRefresh,
+      });
+    case REFRESH_CHECK_RESULT:
+      updatedCheckResults = Object.assign({}, state.checkResults);
+      delete updatedCheckResults[action.title];
+      return Object.assign({}, state, {
+        checkResults: updatedCheckResults,
       });
     case ADD_SERVER_ERROR:
       errors = state.errors.slice();

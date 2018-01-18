@@ -4,6 +4,7 @@ import {
   LOGGED_IN,
   LOGGED_OUT,
   LOGIN_REQUESTED,
+  REFRESH_CHECK_RESULT,
   SET_VERSION,
   SUBMIT_VERSION,
   UPDATE_LATEST_CHANNEL_VERSIONS,
@@ -94,6 +95,50 @@ describe('deliveryDashboard reducer', () => {
           'some other test': failingCheckResult,
         },
         shouldRefresh: true,
+      }),
+    );
+  });
+  it('handles REFRESH_CHECK_RESULT', () => {
+    const checkResult = {
+      status: 'exists',
+      message: 'successful test',
+      link: 'some url',
+    };
+    expect(
+      deliveryDashboard(undefined, {
+        type: REFRESH_CHECK_RESULT,
+        title: 'some test',
+      }),
+    ).toEqual(
+      stateWith({
+        checkResults: {},
+      }),
+    );
+
+    const failingCheckResult = {
+      status: 'incomplete',
+      message: 'successful test',
+      link: 'some url',
+    };
+    expect(
+      deliveryDashboard(
+        stateWith({
+          checkResults: {
+            'some test': checkResult,
+            'some other test': failingCheckResult,
+          },
+        }),
+        {
+          type: REFRESH_CHECK_RESULT,
+          title: 'some other test',
+          result: failingCheckResult,
+        },
+      ),
+    ).toEqual(
+      stateWith({
+        checkResults: {
+          'some test': checkResult,
+        },
       }),
     );
   });
