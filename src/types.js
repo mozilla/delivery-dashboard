@@ -76,6 +76,7 @@ export type State = {
  * action types
  */
 export const ADD_CHECK_RESULT = 'ADD_CHECK_RESULT';
+export const REFRESH_CHECK_RESULT = 'REFRESH_CHECK_RESULT';
 export const ADD_SERVER_ERROR = 'ADD_SERVER_ERROR';
 export const SET_VERSION = 'SET_VERSION';
 export const UPDATE_VERSION_INPUT = 'UPDATE_VERSION_INPUT';
@@ -89,6 +90,10 @@ export type AddCheckResult = {|
   type: 'ADD_CHECK_RESULT',
   title: string,
   result: CheckResult,
+|};
+export type RefreshCheckResult = {|
+  type: 'REFRESH_CHECK_RESULT',
+  title: string,
 |};
 export type AddServerError = {|
   type: 'ADD_SERVER_ERROR',
@@ -174,6 +179,7 @@ export type RequestLogout = {|
 
 export type Action =
   | AddCheckResult
+  | RefreshCheckResult
   | AddServerError
   | LoggedIn
   | LoggedOut

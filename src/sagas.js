@@ -30,6 +30,7 @@ import {
   localUrlFromVersion,
   loggedOut,
   loginRequested,
+  refreshCheckResult,
   setVersion,
   updateLatestChannelVersions,
   updatePollbotVersion,
@@ -76,6 +77,8 @@ export function* checkResultAndUpdateAndNotify(
     }
   };
 
+  // Make sure the check we're refreshing is shown as being refreshed.
+  yield put(refreshCheckResult(title));
   yield call(checkResultAndUpdate, title, url);
   const state: State = yield select();
   const result: CheckResult = state.checkResults && state.checkResults[title];

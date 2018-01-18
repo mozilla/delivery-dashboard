@@ -11,6 +11,7 @@ import {
   addServerError,
   loggedOut,
   loginRequested,
+  refreshCheckResult,
   setVersion,
   updateLatestChannelVersions,
   updatePollbotVersion,
@@ -128,6 +129,10 @@ describe('sagas', () => {
       'some test',
       'some url',
       checkResultFailing,
+    );
+
+    expect(data.saga.next().value).toEqual(
+      put(refreshCheckResult('some test')),
     );
 
     expect(data.saga.next().value).toEqual(
