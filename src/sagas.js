@@ -12,7 +12,7 @@ import {
 import type {
   APIVersionData,
   CheckResult,
-  OngoingVersions,
+  OngoingVersionsDict,
   ReleaseInfo,
   RequestStatus,
   State,
@@ -53,7 +53,7 @@ export function* fetchPollbotVersion(): Saga {
 // Fetching the ongoing versions.
 export function* fetchOngoingVersions(): Saga {
   try {
-    const ongoingVersions: OngoingVersions = yield call(getOngoingVersions);
+    const ongoingVersions: OngoingVersionsDict = yield call(getOngoingVersions);
     yield put(updateLatestChannelVersions(ongoingVersions));
   } catch (err) {
     console.error('Failed getting the latest channel versions', err);
@@ -118,7 +118,7 @@ export function* checkResultAndUpdate(title: string, url: string): Saga {
 export function* requestStatus(action: RequestStatus): Saga {
   let {version} = action;
   try {
-    const ongoingVersions: OngoingVersions = yield call(getOngoingVersions);
+    const ongoingVersions: OngoingVersionsDict = yield call(getOngoingVersions);
     if (ongoingVersions.hasOwnProperty(version)) {
       version = ongoingVersions[version];
     }

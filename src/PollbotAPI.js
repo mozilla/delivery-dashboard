@@ -2,13 +2,13 @@
 import type {
   APIVersionData,
   CheckResult,
-  OngoingVersions,
+  OngoingVersionsDict,
   ReleaseInfo,
 } from './types';
 
 export const SERVER = 'https://pollbot.dev.mozaws.net/v1';
 
-export async function getOngoingVersions(): Promise<OngoingVersions> {
+export async function getOngoingVersions(): Promise<OngoingVersionsDict> {
   const response = await fetch(`${SERVER}/firefox/ongoing-versions`);
   return response.json();
 }

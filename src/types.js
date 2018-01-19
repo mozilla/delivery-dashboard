@@ -11,6 +11,9 @@ import type {
  */
 export type OngoingVersion = [string, string];
 export type OngoingVersions = OngoingVersion[];
+export type OngoingVersionsDict = {
+  [channel: string]: string,
+};
 
 export type Product = 'firefox';
 export type Status = 'missing' | 'exists' | 'incomplete' | 'error';
