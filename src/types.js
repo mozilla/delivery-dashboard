@@ -65,7 +65,7 @@ export const LOGGED_IN = 'LOGGED_IN';
 export type State = {
   +version: string,
   +versionInput: string,
-  +latestChannelVersions: OngoingVersions,
+  +latestChannelVersions: OngoingVersionsDict,
   +releaseInfo: ?ReleaseInfo,
   +checkResults: CheckResults,
   +pollbotVersion: ?APIVersionData,

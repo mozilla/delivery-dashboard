@@ -16,6 +16,7 @@ import './App.css';
 import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
 import {
+  capitalizeChannel,
   localUrlFromVersion,
   loggedIn,
   requestOngoingVersions,
@@ -25,6 +26,7 @@ import {
   requestLogout,
   requestStatus,
   setVersion,
+  sortByVersion,
   submitVersion,
   updateUrl,
   updateUserInfo,
@@ -318,9 +320,14 @@ function ClearableTextInput({
   );
 }
 
-const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) => ({
-  versions: state.latestChannelVersions,
-});
+const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) => {
+  let versionsArray = Object.entries(state.latestChannelVersions).map(([channel, version]) => {
+    return [channel, (typeof version === 'string' && version) || ''];
+  });
+  versionsArray.sort((a, b) => sortByVersion(a[1], b[1]));
+  const capitalized = versionsArray.map(capitalizeChannel);
+  return {versions: capitalized};
+};
 const SideBar = connect(sideBarMapStateToProps)(ReleasesMenu);
 
 function ReleasesMenu({versions}: {versions: OngoingVersions}) {

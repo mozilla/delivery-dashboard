@@ -119,12 +119,7 @@ export const capitalizeChannel = ([channel, version]: [string, string]) => [
 export function updateLatestChannelVersions(
   versions: OngoingVersionsDict,
 ): UpdateLatestChannelVersions {
-  let versionsArray = Object.entries(versions).map(([channel, version]) => {
-    return [channel, (typeof version === 'string' && version) || ''];
-  });
-  versionsArray.sort((a, b) => sortByVersion(a[1], b[1]));
-  const capitalized = versionsArray.map(capitalizeChannel);
-  return {type: UPDATE_LATEST_CHANNEL_VERSIONS, versions: capitalized};
+  return {type: UPDATE_LATEST_CHANNEL_VERSIONS, versions};
 }
 
 export function updatePollbotVersion(

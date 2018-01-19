@@ -117,10 +117,14 @@ export function* checkResultAndUpdate(title: string, url: string): Saga {
 // Requesting a status for a new version.
 export function* requestStatus(action: RequestStatus): Saga {
   let {version} = action;
+  let state: State = yield select();
   try {
-    const ongoingVersions: OngoingVersionsDict = yield call(getOngoingVersions);
-    if (ongoingVersions.hasOwnProperty(version)) {
-      version = ongoingVersions[version];
+    if (Object.keys(state.latestChannelVersions).length === 0) {
+      yield call(fetchOngoingVersions);
+      state = yield select();
+    }
+    if (state.latestChannelVersions.hasOwnProperty(version)) {
+      version = state.latestChannelVersions[version];
     }
     yield put(setVersion(version));
     yield call(updateUrl);
