@@ -35,6 +35,8 @@ export type ReleaseInfo = {
   +product: Product,
   +version: string,
   +checks: CheckInfo[],
+  +message: string,
+  +status: number,
 };
 
 export type CheckResult = {
