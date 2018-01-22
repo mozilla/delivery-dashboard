@@ -55,6 +55,7 @@ export function* fetchOngoingVersions(): Saga {
   try {
     const ongoingVersions: OngoingVersionsDict = yield call(getOngoingVersions);
     yield put(updateLatestChannelVersions(ongoingVersions));
+    return ongoingVersions;
   } catch (err) {
     console.error('Failed getting the latest channel versions', err);
   }
@@ -119,7 +120,7 @@ export function* requestStatus(action: RequestStatus): Saga {
   let {version} = action;
   let {latestChannelVersions} = yield select();
   try {
-    if (!latestChannelVersions) {
+    if (Object.keys(latestChannelVersions).length === 0) {
       latestChannelVersions = yield call(fetchOngoingVersions);
     }
     if (latestChannelVersions.hasOwnProperty(version)) {
