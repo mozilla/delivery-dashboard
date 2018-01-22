@@ -11,6 +11,9 @@ import type {
  */
 export type OngoingVersion = [string, string];
 export type OngoingVersions = OngoingVersion[];
+export type OngoingVersionsDict = {
+  [channel: string]: string,
+};
 
 export type Product = 'firefox';
 export type Status = 'missing' | 'exists' | 'incomplete' | 'error';
@@ -62,7 +65,7 @@ export const LOGGED_IN = 'LOGGED_IN';
 export type State = {
   +version: string,
   +versionInput: string,
-  +latestChannelVersions: OngoingVersions,
+  +latestChannelVersions: OngoingVersionsDict,
   +releaseInfo: ?ReleaseInfo,
   +checkResults: CheckResults,
   +pollbotVersion: ?APIVersionData,
@@ -113,7 +116,7 @@ export type SubmitVersion = {|
 |};
 export type UpdateLatestChannelVersions = {|
   type: 'UPDATE_LATEST_CHANNEL_VERSIONS',
-  versions: OngoingVersions,
+  versions: OngoingVersionsDict,
 |};
 export type UpdateReleaseInfo = {|
   type: 'UPDATE_RELEASE_INFO',

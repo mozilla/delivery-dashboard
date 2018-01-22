@@ -272,7 +272,74 @@ describe('sagas', () => {
       ],
     };
 
-    expect(data.saga.next().value).toEqual(put(setVersion('50.0')));
+    expect(data.saga.next().value).toEqual(select());
+    expect(
+      data.saga.next({
+        release: '50.0',
+      }).value,
+    ).toEqual(call(fetchOngoingVersions));
+    expect(data.saga.next({release: '50.0'}).value).toEqual(
+      put(setVersion('50.0')),
+    );
+    expect(data.saga.next().value).toEqual(call(updateUrl));
+    expect(data.saga.next().value).toEqual(call(getReleaseInfo, '50.0'));
+
+    // Clone to test success and failure of getReleaseInfo.
+    data.sagaThrow = data.saga.clone();
+
+    // getReleaseInfo throws an error.
+    console.error = jest.fn();
+    data.sagaThrow.throw('error');
+    expect(console.error).toHaveBeenCalledWith(
+      'Failed getting the release info for 50.0',
+      'error',
+    );
+    expect(data.sagaThrow.next().done).toBe(true);
+
+    // getReleaseInfo completes correctly.
+    expect(data.saga.next(releaseInfo).value).toEqual(
+      put(updateReleaseInfo(releaseInfo)),
+    );
+    expect(data.saga.next().value).toEqual(
+      all([
+        call(checkResultAndUpdate, 'some test', 'some url'),
+        call(checkResultAndUpdate, 'some other test', 'some other url'),
+      ]),
+    );
+    expect(data.saga.next().done).toBe(true);
+  });
+
+  it('handles requestStatus with a canonical url (using the channel)', () => {
+    const data = {};
+    // Request status for "release", it should in turn set version for "50.0".
+    data.saga = cloneableGenerator(requestStatus)({version: 'release'});
+
+    const releaseInfo = {
+      channel: 'release',
+      product: 'firefox',
+      version: '50.0',
+      checks: [
+        {
+          title: 'some test',
+          url: 'some url',
+        },
+        {
+          title: 'some other test',
+          url: 'some other url',
+        },
+      ],
+    };
+
+    expect(data.saga.next().value).toEqual(select());
+    expect(
+      data.saga.next({
+        release: '50.0',
+      }).value,
+    ).toEqual(call(fetchOngoingVersions));
+    expect(data.saga.next({release: '50.0'}).value).toEqual(
+      put(setVersion('50.0')),
+    );
+    expect(data.saga.next().value).toEqual(call(updateUrl));
     expect(data.saga.next().value).toEqual(call(getReleaseInfo, '50.0'));
 
     // Clone to test success and failure of getReleaseInfo.
