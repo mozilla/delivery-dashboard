@@ -277,10 +277,12 @@ describe('sagas', () => {
       data.saga.next({
         release: '50.0',
       }).value,
-    ).toEqual(call(fetchOngoingVersions));
+    ).toEqual(call(getOngoingVersions));
     expect(data.saga.next({release: '50.0'}).value).toEqual(
-      put(setVersion('50.0')),
+      put(updateLatestChannelVersions({release: '50.0'})),
     );
+
+    expect(data.saga.next().value).toEqual(put(setVersion('50.0')));
     expect(data.saga.next().value).toEqual(call(updateUrl));
     expect(data.saga.next().value).toEqual(call(getReleaseInfo, '50.0'));
 
