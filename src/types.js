@@ -116,7 +116,7 @@ export type SubmitVersion = {|
 |};
 export type UpdateLatestChannelVersions = {|
   type: 'UPDATE_LATEST_CHANNEL_VERSIONS',
-  versions: OngoingVersions,
+  versions: OngoingVersionsDict,
 |};
 export type UpdateReleaseInfo = {|
   type: 'UPDATE_RELEASE_INFO',

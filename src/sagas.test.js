@@ -272,7 +272,12 @@ describe('sagas', () => {
       ],
     };
 
-    expect(data.saga.next().value).toEqual(call(getOngoingVersions));
+    expect(data.saga.next().value).toEqual(select());
+    expect(
+      data.saga.next({
+        release: '50.0',
+      }).value,
+    ).toEqual(call(fetchOngoingVersions));
     expect(data.saga.next({release: '50.0'}).value).toEqual(
       put(setVersion('50.0')),
     );
@@ -325,7 +330,12 @@ describe('sagas', () => {
       ],
     };
 
-    expect(data.saga.next().value).toEqual(call(getOngoingVersions));
+    expect(data.saga.next().value).toEqual(select());
+    expect(
+      data.saga.next({
+        release: '50.0',
+      }).value,
+    ).toEqual(call(fetchOngoingVersions));
     expect(data.saga.next({release: '50.0'}).value).toEqual(
       put(setVersion('50.0')),
     );

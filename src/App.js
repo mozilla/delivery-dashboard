@@ -321,7 +321,9 @@ function ClearableTextInput({
 }
 
 const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) => {
-  let versionsArray = Object.entries(state.latestChannelVersions).map(([channel, version]) => {
+  let versionsArray = Object.entries(
+    state.latestChannelVersions,
+  ).map(([channel, version]) => {
     return [channel, (typeof version === 'string' && version) || ''];
   });
   versionsArray.sort((a, b) => sortByVersion(a[1], b[1]));
