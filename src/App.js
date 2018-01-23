@@ -408,6 +408,8 @@ export function Dashboard({
     );
   } else if (!releaseInfo) {
     return <Spin />;
+  } else if (releaseInfo.message) {
+    return <Errors errors={[['Pollbot error', releaseInfo.message]]} />;
   } else {
     return (
       <div>

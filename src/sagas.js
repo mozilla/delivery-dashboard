@@ -119,8 +119,9 @@ export function* requestStatus(action: RequestStatus): Saga {
   let {version} = action;
   let {latestChannelVersions} = yield select();
   try {
-    if (!latestChannelVersions) {
-      latestChannelVersions = yield call(fetchOngoingVersions);
+    if (Object.keys(latestChannelVersions).length === 0) {
+      latestChannelVersions = yield call(getOngoingVersions);
+      yield put(updateLatestChannelVersions(latestChannelVersions));
     }
     if (latestChannelVersions.hasOwnProperty(version)) {
       version = latestChannelVersions[version];
