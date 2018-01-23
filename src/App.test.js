@@ -347,6 +347,19 @@ describe('<Dashboard />', () => {
     const wrapper = shallow(<Dashboard version="50.0" />);
     expect(wrapper.find(Spin).length).toBe(1);
   });
+  it("displays an error when there's a Pollbot error", () => {
+    const wrapper = mount(
+      <Dashboard
+        version="50.0"
+        releaseInfo={{message: 'error from pollbot'}}
+      />,
+    );
+    const error = wrapper.find(Errors);
+    expect(error.length).toBe(1);
+    expect(error.text()).toEqual(
+      "Failed getting check result for 'Pollbot error': error from pollbot",
+    );
+  });
   it('displays a list of check results when a release info is present', () => {
     const wrapper = shallow(
       <Dashboard
