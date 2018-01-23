@@ -275,7 +275,9 @@ describe('sagas', () => {
     expect(data.saga.next().value).toEqual(select());
     expect(
       data.saga.next({
-        release: '50.0',
+        latestChannelVersions: {
+          release: '50.0',
+        },
       }).value,
     ).toEqual(put(setVersion('50.0')));
     expect(data.saga.next().value).toEqual(call(updateUrl));
@@ -330,7 +332,9 @@ describe('sagas', () => {
     expect(data.saga.next().value).toEqual(select());
     expect(
       data.saga.next({
-        release: '50.0',
+        latestChannelVersions: {
+          release: '50.0',
+        },
       }).value,
     ).toEqual(put(setVersion('50.0')));
     expect(data.saga.next().value).toEqual(call(updateUrl));
@@ -383,16 +387,14 @@ describe('sagas', () => {
     };
 
     expect(data.saga.next().value).toEqual(select());
-    expect(
-      data.saga.next({}).value,
-    ).toEqual(call(getOngoingVersions));
+    expect(data.saga.next({latestChannelVersions: {}}).value).toEqual(
+      call(getOngoingVersions),
+    );
     expect(data.saga.next({release: '50.0'}).value).toEqual(
       put(updateLatestChannelVersions({release: '50.0'})),
     );
 
-    expect(data.saga.next().value).toEqual(
-      put(setVersion('50.0')),
-    );
+    expect(data.saga.next().value).toEqual(put(setVersion('50.0')));
     expect(data.saga.next().value).toEqual(call(updateUrl));
     expect(data.saga.next().value).toEqual(call(getReleaseInfo, '50.0'));
 
