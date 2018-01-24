@@ -66,7 +66,6 @@ export const LOGGED_IN = 'LOGGED_IN';
 
 export type State = {
   +version: string,
-  +versionInput: string,
   +latestChannelVersions: OngoingVersionsDict,
   +releaseInfo: ?ReleaseInfo,
   +checkResults: CheckResults,
@@ -84,8 +83,6 @@ export const ADD_CHECK_RESULT = 'ADD_CHECK_RESULT';
 export const REFRESH_CHECK_RESULT = 'REFRESH_CHECK_RESULT';
 export const ADD_SERVER_ERROR = 'ADD_SERVER_ERROR';
 export const SET_VERSION = 'SET_VERSION';
-export const UPDATE_VERSION_INPUT = 'UPDATE_VERSION_INPUT';
-export const SUBMIT_VERSION = 'SUBMIT_VERSION';
 export const UPDATE_LATEST_CHANNEL_VERSIONS = 'UPDATE_LATEST_CHANNEL_VERSIONS';
 export const UPDATE_RELEASE_INFO = 'UPDATE_RELEASE_INFO';
 export const UPDATE_POLLBOT_VERSION = 'UPDATE_POLLBOT_VERSION';
@@ -108,13 +105,6 @@ export type AddServerError = {|
 export type SetVersion = {|
   type: 'SET_VERSION',
   version: string,
-|};
-export type UpdateVersionInput = {|
-  type: 'UPDATE_VERSION_INPUT',
-  version: string,
-|};
-export type SubmitVersion = {|
-  type: 'SUBMIT_VERSION',
 |};
 export type UpdateLatestChannelVersions = {|
   type: 'UPDATE_LATEST_CHANNEL_VERSIONS',
@@ -196,13 +186,11 @@ export type Action =
   | RequestPollbotVersion
   | RequestStatus
   | SetVersion
-  | SubmitVersion
   | UpdateLatestChannelVersions
   | UpdatePollbotVersion
   | UpdateReleaseInfo
   | UpdateUrl
-  | UpdateUserInfo
-  | UpdateVersionInput;
+  | UpdateUserInfo;
 
 /*
  * Redux types

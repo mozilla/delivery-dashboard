@@ -5,10 +5,8 @@ import {
   REFRESH_CHECK_RESULT,
   ADD_SERVER_ERROR,
   SET_VERSION,
-  SUBMIT_VERSION,
   UPDATE_LATEST_CHANNEL_VERSIONS,
   UPDATE_POLLBOT_VERSION,
-  UPDATE_VERSION_INPUT,
   UPDATE_RELEASE_INFO,
   LOGGED_IN,
   LOGGED_OUT,
@@ -19,7 +17,6 @@ import type {Action, State} from './types';
 
 export const initialState: State = {
   version: '',
-  versionInput: '',
   latestChannelVersions: {},
   releaseInfo: null,
   checkResults: {},
@@ -61,18 +58,9 @@ export function deliveryDashboard(
     case SET_VERSION:
       return Object.assign({}, state, {
         version: action.version,
-        versionInput: action.version,
         checkResults: {},
         shouldRefresh: false,
         errors: [],
-      });
-    case UPDATE_VERSION_INPUT:
-      return Object.assign({}, state, {
-        versionInput: action.version,
-      });
-    case SUBMIT_VERSION:
-      return Object.assign({}, state, {
-        version: state.versionInput,
       });
     case UPDATE_LATEST_CHANNEL_VERSIONS:
       return Object.assign({}, state, {
