@@ -325,7 +325,7 @@ export function Dashboard({
     return (
       <div>
         <h2 style={{marginBottom: '1em', display: 'flex', flexWrap: 'wrap'}}>
-          Channel: {releaseInfo.channel}{' '}
+          Firefox {version} - Channel: {releaseInfo.channel}{' '}
           <OverallStatus
             releaseInfo={releaseInfo}
             checkResults={checkResults}
