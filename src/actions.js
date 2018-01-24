@@ -29,6 +29,7 @@ import type {
   LoggedIn,
   LoggedOut,
   OngoingVersionsDict,
+  Product,
   RefreshCheckResult,
   RefreshStatus,
   ReleaseInfo,
@@ -46,15 +47,15 @@ import type {
 } from './types';
 
 // Small utility function.
-export const localUrlFromVersion = (version: string) =>
-  `#pollbot/firefox/${version}`;
+export const localUrlFromVersion = ([product, version]: [Product, string]) =>
+  `#pollbot/${product}/${version}`;
 
 /*
  * action creators
  */
 
-export function setVersion(version: string): SetVersion {
-  return {type: SET_VERSION, version};
+export function setVersion(product: Product, version: string): SetVersion {
+  return {type: SET_VERSION, product, version};
 }
 
 export const sortByVersion = (a: string, b: string) => {
@@ -105,9 +106,10 @@ export const capitalizeChannel = ([channel, version]: [string, string]) => [
 ];
 
 export function updateLatestChannelVersions(
+  product: Product,
   versions: OngoingVersionsDict,
 ): UpdateLatestChannelVersions {
-  return {type: UPDATE_LATEST_CHANNEL_VERSIONS, versions};
+  return {type: UPDATE_LATEST_CHANNEL_VERSIONS, product, versions};
 }
 
 export function updatePollbotVersion(
@@ -164,8 +166,11 @@ export function refreshStatus(): RefreshStatus {
   return {type: REFRESH_STATUS};
 }
 
-export function requestStatus(version: string): RequestStatus {
-  return {type: REQUEST_STATUS, version: version};
+export function requestStatus(
+  product: Product,
+  version: string,
+): RequestStatus {
+  return {type: REQUEST_STATUS, product, version};
 }
 
 export function requestLogin(): RequestLogin {

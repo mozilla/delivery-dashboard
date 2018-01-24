@@ -6,23 +6,20 @@ import type {
   GetState as ReduxGetState,
 } from 'redux';
 
+export const products = ['firefox', 'devedition'];
+
 /*
  * state types
  */
+export type Product = 'firefox' | 'devedition';
+export type Status = 'missing' | 'exists' | 'incomplete' | 'error';
+
 export type OngoingVersion = [string, string];
 export type OngoingVersions = OngoingVersion[];
+export type VersionsDict = {[channel: string]: string};
 export type OngoingVersionsDict = {
-  [channel: string]: string,
+  [product: Product]: VersionsDict,
 };
-
-export type Product = 'firefox';
-export type Status = 'missing' | 'exists' | 'incomplete' | 'error';
-export type Check =
-  | 'archive'
-  | 'product_details'
-  | 'release_notes'
-  | 'security_advisories'
-  | 'download_links';
 
 export type CheckInfo = {
   +url: string,
@@ -65,7 +62,7 @@ export const LOGIN_REQUESTED = 'LOGIN_REQUESTED';
 export const LOGGED_IN = 'LOGGED_IN';
 
 export type State = {
-  +version: string,
+  +version: [Product, string],
   +latestChannelVersions: OngoingVersionsDict,
   +releaseInfo: ?ReleaseInfo,
   +checkResults: CheckResults,
@@ -104,11 +101,13 @@ export type AddServerError = {|
 |};
 export type SetVersion = {|
   type: 'SET_VERSION',
+  product: Product,
   version: string,
 |};
 export type UpdateLatestChannelVersions = {|
   type: 'UPDATE_LATEST_CHANNEL_VERSIONS',
   versions: OngoingVersionsDict,
+  product: Product,
 |};
 export type UpdateReleaseInfo = {|
   type: 'UPDATE_RELEASE_INFO',
@@ -161,6 +160,7 @@ export type RefreshStatus = {|
 
 export type RequestStatus = {|
   type: 'REQUEST_STATUS',
+  product: Product,
   version: string,
 |};
 

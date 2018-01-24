@@ -16,8 +16,8 @@ import {
 import type {Action, State} from './types';
 
 export const initialState: State = {
-  version: '',
-  latestChannelVersions: {},
+  version: ['firefox', ''],
+  latestChannelVersions: {firefox: {}, devedition: {}},
   releaseInfo: null,
   checkResults: {},
   pollbotVersion: null,
@@ -57,14 +57,16 @@ export function deliveryDashboard(
       });
     case SET_VERSION:
       return Object.assign({}, state, {
-        version: action.version,
+        version: [action.product, action.version],
         checkResults: {},
         shouldRefresh: false,
         errors: [],
       });
     case UPDATE_LATEST_CHANNEL_VERSIONS:
       return Object.assign({}, state, {
-        latestChannelVersions: action.versions,
+        latestChannelVersions: Object.assign({}, state.latestChannelVersions, {
+          [action.product]: action.versions,
+        }),
       });
     case UPDATE_RELEASE_INFO:
       return Object.assign({}, state, {
