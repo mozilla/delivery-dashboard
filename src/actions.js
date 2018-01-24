@@ -5,8 +5,6 @@ import {
   REFRESH_CHECK_RESULT,
   ADD_SERVER_ERROR,
   SET_VERSION,
-  UPDATE_VERSION_INPUT,
-  SUBMIT_VERSION,
   UPDATE_LATEST_CHANNEL_VERSIONS,
   UPDATE_POLLBOT_VERSION,
   UPDATE_RELEASE_INFO,
@@ -40,13 +38,11 @@ import type {
   RequestPollbotVersion,
   RequestStatus,
   SetVersion,
-  SubmitVersion,
   UpdateLatestChannelVersions,
   UpdatePollbotVersion,
   UpdateReleaseInfo,
   UpdateUrl,
   UpdateUserInfo,
-  UpdateVersionInput,
 } from './types';
 
 // Small utility function.
@@ -59,14 +55,6 @@ export const localUrlFromVersion = (version: string) =>
 
 export function setVersion(version: string): SetVersion {
   return {type: SET_VERSION, version};
-}
-
-export function updateVersionInput(version: string): UpdateVersionInput {
-  return {type: UPDATE_VERSION_INPUT, version};
-}
-
-export function submitVersion(): SubmitVersion {
-  return {type: SUBMIT_VERSION};
 }
 
 export const sortByVersion = (a: string, b: string) => {

@@ -6,10 +6,8 @@ import {
   LOGIN_REQUESTED,
   REFRESH_CHECK_RESULT,
   SET_VERSION,
-  SUBMIT_VERSION,
   UPDATE_LATEST_CHANNEL_VERSIONS,
   UPDATE_POLLBOT_VERSION,
-  UPDATE_VERSION_INPUT,
   UPDATE_RELEASE_INFO,
   UPDATE_USER_INFO,
 } from './types';
@@ -179,59 +177,18 @@ describe('deliveryDashboard reducer', () => {
         type: SET_VERSION,
         version: '50.0',
       }),
-    ).toEqual(
-      stateWith({version: '50.0', versionInput: '50.0', shouldRefresh: false}),
-    );
+    ).toEqual(stateWith({version: '50.0', shouldRefresh: false}));
     expect(
       deliveryDashboard(
         stateWith({
           version: '50.0',
-          versionInput: '50.0',
         }),
         {
           type: SET_VERSION,
           version: '51.0',
         },
       ),
-    ).toEqual(
-      stateWith({version: '51.0', versionInput: '51.0', shouldRefresh: false}),
-    );
-  });
-  it('handles UPDATE_VERSION_INPUT', () => {
-    expect(
-      deliveryDashboard(undefined, {
-        type: UPDATE_VERSION_INPUT,
-        version: '50.0',
-      }),
-    ).toEqual(stateWith({versionInput: '50.0'}));
-    expect(
-      deliveryDashboard(
-        stateWith({
-          versionInput: '50.0',
-        }),
-        {
-          type: UPDATE_VERSION_INPUT,
-          version: '51.0',
-        },
-      ),
-    ).toEqual(stateWith({versionInput: '51.0'}));
-  });
-  it('handles SUBMIT_VERSION', () => {
-    expect(
-      deliveryDashboard(undefined, {
-        type: SUBMIT_VERSION,
-      }),
-    ).toEqual(stateWith({version: ''})); // No versionInput.
-    expect(
-      deliveryDashboard(
-        stateWith({
-          versionInput: '50.0',
-        }),
-        {
-          type: SUBMIT_VERSION,
-        },
-      ),
-    ).toEqual(stateWith({version: '50.0', versionInput: '50.0'}));
+    ).toEqual(stateWith({version: '51.0', shouldRefresh: false}));
   });
   it('handles UPDATE_LATEST_CHANNEL_VERSIONS', () => {
     expect(

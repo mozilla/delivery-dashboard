@@ -3,8 +3,6 @@ import {
   REFRESH_CHECK_RESULT,
   ADD_SERVER_ERROR,
   SET_VERSION,
-  UPDATE_VERSION_INPUT,
-  SUBMIT_VERSION,
   UPDATE_LATEST_CHANNEL_VERSIONS,
   UPDATE_POLLBOT_VERSION,
   UPDATE_RELEASE_INFO,
@@ -36,27 +34,16 @@ import {
   requestStatus,
   setVersion,
   sortByVersion,
-  submitVersion,
   updateLatestChannelVersions,
   updatePollbotVersion,
   updateReleaseInfo,
   updateUrl,
   updateUserInfo,
-  updateVersionInput,
 } from './actions';
 
 describe('action creators', () => {
   it('returns a UPDATE_VERSION_INPUT action for setVersion', () => {
     expect(setVersion('123')).toEqual({type: SET_VERSION, version: '123'});
-  });
-  it('returns a UPDATE_VERSION_INPUT action for updateVersionInput', () => {
-    expect(updateVersionInput('123')).toEqual({
-      type: UPDATE_VERSION_INPUT,
-      version: '123',
-    });
-  });
-  it('returns a SUBMIT_VERSION action for submitVersion', () => {
-    expect(submitVersion()).toEqual({type: SUBMIT_VERSION});
   });
   it('returns a UPDATE_LATEST_CHANNEL_VERSIONS action for updateLatestChannelVersions', () => {
     const ongoingVersions = {

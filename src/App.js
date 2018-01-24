@@ -1,17 +1,7 @@
 // @flow
 import 'photon-ant';
 import * as React from 'react';
-import {
-  Alert,
-  Button,
-  Card,
-  Form,
-  Icon,
-  Input,
-  Layout,
-  Spin,
-  Tooltip,
-} from 'antd';
+import {Alert, Button, Card, Icon, Layout, Spin, Tooltip} from 'antd';
 import './App.css';
 import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
@@ -25,12 +15,8 @@ import {
   requestLogin,
   requestLogout,
   requestStatus,
-  setVersion,
   sortByVersion,
-  submitVersion,
-  updateUrl,
   updateUserInfo,
-  updateVersionInput,
 } from './actions';
 import type {
   APIVersionData,
@@ -184,7 +170,6 @@ export class App extends React.Component<AppProps, void> {
             <SideBar />
           </Layout.Sider>
           <Layout.Content>
-            <VersionInput />
             <CurrentRelease />
           </Layout.Content>
         </Layout>
@@ -244,80 +229,6 @@ export function LoginButton({
         </Button>
       );
   }
-}
-
-export const versionInputDispatchProps = (dispatch: Dispatch) => ({
-  onSubmit: (e: SyntheticEvent<HTMLInputElement>): void => {
-    e.preventDefault();
-    dispatch(submitVersion());
-    dispatch(updateUrl());
-  },
-  handleSearchBoxChange: (e: SyntheticEvent<HTMLInputElement>): void => {
-    dispatch(updateVersionInput(e.currentTarget.value));
-  },
-  handleDismissSearchBoxVersion: (): void => {
-    window.location.hash = '';
-    dispatch(setVersion(''));
-  },
-});
-
-const VersionInput = connect(
-  // mapStateToProps
-  (state: State) => ({
-    value: state.versionInput,
-  }),
-  // mapDispatchToProps
-  (dispatch: Dispatch) => versionInputDispatchProps(dispatch),
-)(SearchForm);
-
-type SearchFormProps = {
-  onSubmit: (e: SyntheticEvent<HTMLInputElement>) => void,
-  handleSearchBoxChange: (e: SyntheticEvent<HTMLInputElement>) => void,
-  handleDismissSearchBoxVersion: () => void,
-  value: string,
-};
-
-export function SearchForm({
-  onSubmit,
-  handleSearchBoxChange,
-  handleDismissSearchBoxVersion,
-  value,
-}: SearchFormProps) {
-  return (
-    <Form onSubmit={onSubmit}>
-      <Form.Item>
-        <ClearableTextInput
-          onChange={handleSearchBoxChange}
-          onClick={handleDismissSearchBoxVersion}
-          value={value}
-        />
-      </Form.Item>
-    </Form>
-  );
-}
-
-type ClearableTextInputProps = {
-  onChange: (e: SyntheticEvent<HTMLInputElement>) => void,
-  onClick: () => void,
-  value: string,
-};
-
-function ClearableTextInput({
-  onChange,
-  onClick,
-  value,
-}: ClearableTextInputProps) {
-  return (
-    <Input
-      addonAfter={
-        <Icon type="close" onClick={onClick} style={{cursor: 'pointer'}} />
-      }
-      onChange={onChange}
-      placeholder={'Firefox version, eg. "57.0"'}
-      type="search"
-      value={value}
-    />
-  );
 }
 
 const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) => {

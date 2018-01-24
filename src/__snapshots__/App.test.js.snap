@@ -61,56 +61,6 @@ exports[`<App /> renders without crashing 1`] = `
     <div
       className="ant-layout-content"
     >
-      <form
-        className="ant-form ant-form-horizontal"
-        onSubmit={[Function]}
-      >
-        <div
-          className="ant-row ant-form-item"
-          style={undefined}
-        >
-          <div
-            className="ant-form-item-control-wrapper"
-          >
-            <div
-              className="ant-form-item-control "
-            >
-              <span
-                className="ant-input-group-wrapper"
-                style={undefined}
-              >
-                <span
-                  className="ant-input-wrapper ant-input-group"
-                >
-                  <input
-                    className="ant-input"
-                    disabled={false}
-                    onChange={[Function]}
-                    onKeyDown={[Function]}
-                    placeholder="Firefox version, eg. \\"57.0\\""
-                    style={null}
-                    type="search"
-                    value=""
-                  />
-                  <span
-                    className="ant-input-group-addon"
-                  >
-                    <i
-                      className="anticon anticon-close"
-                      onClick={[Function]}
-                      style={
-                        Object {
-                          "cursor": "pointer",
-                        }
-                      }
-                    />
-                  </span>
-                </span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </form>
       <p>
         Learn more about a specific version.
         <strong>
