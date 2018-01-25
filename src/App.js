@@ -286,7 +286,7 @@ const currentReleaseMapStateToProps: MapStateToProps<*, *, *> = (
 ) => ({
   checkResults: state.checkResults,
   releaseInfo: state.releaseInfo,
-  version: state.version,
+  productVersion: state.version,
 });
 const CurrentRelease = connect(currentReleaseMapStateToProps)(Dashboard);
 
@@ -319,19 +319,20 @@ export function Errors({errors}: ErrorsPropType) {
 type DashboardPropType = {
   checkResults: CheckResults,
   releaseInfo: ?ReleaseInfo,
-  version: [Product, string],
+  productVersion: [Product, string],
 };
 
 export function Dashboard({
   releaseInfo,
   checkResults,
-  version,
+  productVersion,
 }: DashboardPropType) {
+  const [_product, version] = productVersion;
   if (version === '') {
     return (
       <p>
         Learn more about a specific version.
-        <strong> Select or enter your version number.</strong>
+        <strong> Select a version number from the left menu.</strong>
       </p>
     );
   } else if (!releaseInfo) {
