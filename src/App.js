@@ -328,7 +328,7 @@ export function Dashboard({
   checkResults,
   productVersion,
 }: DashboardPropType) {
-  const [_product, version] = productVersion;
+  const [product, version] = productVersion;
   if (version === '') {
     return (
       <p>
@@ -344,7 +344,7 @@ export function Dashboard({
     return (
       <div>
         <h2 style={{marginBottom: '1em', display: 'flex', flexWrap: 'wrap'}}>
-          Firefox {version} - Channel: {releaseInfo.channel}{' '}
+          {capitalize(product)} {version} - Channel: {releaseInfo.channel}{' '}
           <OverallStatus
             releaseInfo={releaseInfo}
             checkResults={checkResults}
