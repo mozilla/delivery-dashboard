@@ -20,13 +20,28 @@ describe('getOngoingVersions', () => {
 });
 
 describe('getReleaseInfo', () => {
-  it('retrieves the release information', async () => {
+  it('retrieves the release information for firefox', async () => {
     const releaseInfo = await getReleaseInfo('firefox', '50.0');
     expect(releaseInfo).toMatchObject({
       channel: expect.stringMatching(/nightly|beta|release|esr/),
       checks: expect.any(Array),
       product: 'firefox',
       version: '50.0',
+    });
+    releaseInfo.checks.map(check => {
+      expect(check).toMatchObject({
+        title: expect.any(String),
+        url: expect.any(String),
+      });
+    });
+  });
+  it('retrieves the release information for devedition', async () => {
+    const releaseInfo = await getReleaseInfo('devedition', '59.0b3');
+    expect(releaseInfo).toMatchObject({
+      channel: expect.stringMatching(/nightly|beta|release|esr/),
+      checks: expect.any(Array),
+      product: 'devedition',
+      version: '59.0b3',
     });
     releaseInfo.checks.map(check => {
       expect(check).toMatchObject({

@@ -20,7 +20,7 @@ export async function getReleaseInfo(
   product: Product,
   version: string,
 ): Promise<ReleaseInfo> {
-  const response = await fetch(`${SERVER}/firefox/${version}`);
+  const response = await fetch(`${SERVER}/${product}/${version}`);
   return response.json();
 }
 
