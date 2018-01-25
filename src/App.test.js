@@ -250,6 +250,9 @@ describe('parseUrl', () => {
     expect(parseUrl('')).toBeNull();
     expect(parseUrl('#foobar')).toBeNull();
   });
+  it("returns null if the product isn't recognized", () => {
+    expect(parseUrl('#pollbot/foobar/50.0')).toBeNull();
+  });
   it('returns the proper structure for a matching url', () => {
     expect(parseUrl('#pollbot/firefox/50.0')).toEqual({
       service: 'pollbot',
