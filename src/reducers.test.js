@@ -6,7 +6,7 @@ import {
   LOGIN_REQUESTED,
   REFRESH_CHECK_RESULT,
   SET_VERSION,
-  UPDATE_LATEST_CHANNEL_VERSIONS,
+  UPDATE_PRODUCT_VERSIONS,
   UPDATE_POLLBOT_VERSION,
   UPDATE_RELEASE_INFO,
   UPDATE_USER_INFO,
@@ -192,16 +192,16 @@ describe('deliveryDashboard reducer', () => {
       ),
     ).toEqual(stateWith({version: ['firefox', '51.0'], shouldRefresh: false}));
   });
-  it('handles UPDATE_LATEST_CHANNEL_VERSIONS', () => {
+  it('handles UPDATE_PRODUCT_VERSIONS', () => {
     expect(
       deliveryDashboard(undefined, {
-        type: UPDATE_LATEST_CHANNEL_VERSIONS,
+        type: UPDATE_PRODUCT_VERSIONS,
         product: 'firefox',
         versions: {release: '0.1.2'},
       }),
     ).toEqual(
       stateWith({
-        latestChannelVersions: {
+        productVersions: {
           firefox: {release: '0.1.2'},
           devedition: {},
         },
@@ -210,20 +210,20 @@ describe('deliveryDashboard reducer', () => {
     expect(
       deliveryDashboard(
         stateWith({
-          latestChannelVersions: {
+          productVersions: {
             firefox: {release: '0.1.2'},
             devedition: {},
           },
         }),
         {
-          type: UPDATE_LATEST_CHANNEL_VERSIONS,
+          type: UPDATE_PRODUCT_VERSIONS,
           product: 'firefox',
           versions: {nightly: '1.2.3', release: '0.1.3'},
         },
       ),
     ).toEqual(
       stateWith({
-        latestChannelVersions: {
+        productVersions: {
           firefox: {nightly: '1.2.3', release: '0.1.3'},
           devedition: {},
         },

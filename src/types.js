@@ -14,10 +14,10 @@ export const products = ['firefox', 'devedition'];
 export type Product = 'firefox' | 'devedition';
 export type Status = 'missing' | 'exists' | 'incomplete' | 'error';
 
-export type OngoingVersion = [string, string];
-export type OngoingVersions = OngoingVersion[];
+export type ChannelVersion = [string, string];
+export type ChannelVersions = ChannelVersion[];
 export type VersionsDict = {[channel: string]: string};
-export type OngoingVersionsDict = {
+export type ProductVersions = {
   [product: Product]: VersionsDict,
 };
 
@@ -63,7 +63,7 @@ export const LOGGED_IN = 'LOGGED_IN';
 
 export type State = {
   +version: [Product, string],
-  +latestChannelVersions: OngoingVersionsDict,
+  +productVersions: ProductVersions,
   +releaseInfo: ?ReleaseInfo,
   +checkResults: CheckResults,
   +pollbotVersion: ?APIVersionData,
@@ -80,7 +80,7 @@ export const ADD_CHECK_RESULT = 'ADD_CHECK_RESULT';
 export const REFRESH_CHECK_RESULT = 'REFRESH_CHECK_RESULT';
 export const ADD_SERVER_ERROR = 'ADD_SERVER_ERROR';
 export const SET_VERSION = 'SET_VERSION';
-export const UPDATE_LATEST_CHANNEL_VERSIONS = 'UPDATE_LATEST_CHANNEL_VERSIONS';
+export const UPDATE_PRODUCT_VERSIONS = 'UPDATE_PRODUCT_VERSIONS';
 export const UPDATE_RELEASE_INFO = 'UPDATE_RELEASE_INFO';
 export const UPDATE_POLLBOT_VERSION = 'UPDATE_POLLBOT_VERSION';
 export const UPDATE_USER_INFO = 'UPDATE_USER_INFO';
@@ -104,8 +104,8 @@ export type SetVersion = {|
   product: Product,
   version: string,
 |};
-export type UpdateLatestChannelVersions = {|
-  type: 'UPDATE_LATEST_CHANNEL_VERSIONS',
+export type UpdateProductVersions = {|
+  type: 'UPDATE_PRODUCT_VERSIONS',
   versions: VersionsDict,
   product: Product,
 |};
@@ -186,7 +186,7 @@ export type Action =
   | RequestPollbotVersion
   | RequestStatus
   | SetVersion
-  | UpdateLatestChannelVersions
+  | UpdateProductVersions
   | UpdatePollbotVersion
   | UpdateReleaseInfo
   | UpdateUrl

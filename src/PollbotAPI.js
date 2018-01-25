@@ -2,7 +2,7 @@
 import type {
   APIVersionData,
   CheckResult,
-  OngoingVersionsDict,
+  ProductVersions,
   Product,
   ReleaseInfo,
 } from './types';
@@ -11,7 +11,7 @@ export const SERVER = 'https://pollbot.dev.mozaws.net/v1';
 
 export async function getOngoingVersions(
   product: Product,
-): Promise<OngoingVersionsDict> {
+): Promise<ProductVersions> {
   const response = await fetch(`${SERVER}/${product}/ongoing-versions`);
   return response.json();
 }

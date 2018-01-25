@@ -5,7 +5,7 @@ import {
   REFRESH_CHECK_RESULT,
   ADD_SERVER_ERROR,
   SET_VERSION,
-  UPDATE_LATEST_CHANNEL_VERSIONS,
+  UPDATE_PRODUCT_VERSIONS,
   UPDATE_POLLBOT_VERSION,
   UPDATE_RELEASE_INFO,
   REQUEST_ONGOING_VERSIONS,
@@ -39,7 +39,7 @@ import type {
   RequestPollbotVersion,
   RequestStatus,
   SetVersion,
-  UpdateLatestChannelVersions,
+  UpdateProductVersions,
   UpdatePollbotVersion,
   UpdateReleaseInfo,
   UpdateUrl,
@@ -105,11 +105,11 @@ export const capitalizeChannel = ([channel, version]: [string, string]) => [
   version,
 ];
 
-export function updateLatestChannelVersions(
+export function updateProductVersions(
   product: Product,
   versions: VersionsDict,
-): UpdateLatestChannelVersions {
-  return {type: UPDATE_LATEST_CHANNEL_VERSIONS, product, versions};
+): UpdateProductVersions {
+  return {type: UPDATE_PRODUCT_VERSIONS, product, versions};
 }
 
 export function updatePollbotVersion(

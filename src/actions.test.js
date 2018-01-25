@@ -3,7 +3,7 @@ import {
   REFRESH_CHECK_RESULT,
   ADD_SERVER_ERROR,
   SET_VERSION,
-  UPDATE_LATEST_CHANNEL_VERSIONS,
+  UPDATE_PRODUCT_VERSIONS,
   UPDATE_POLLBOT_VERSION,
   UPDATE_RELEASE_INFO,
   REQUEST_ONGOING_VERSIONS,
@@ -34,7 +34,7 @@ import {
   requestStatus,
   setVersion,
   sortByVersion,
-  updateLatestChannelVersions,
+  updateProductVersions,
   updatePollbotVersion,
   updateReleaseInfo,
   updateUrl,
@@ -49,17 +49,17 @@ describe('action creators', () => {
       version: '123',
     });
   });
-  it('returns a UPDATE_LATEST_CHANNEL_VERSIONS action for updateLatestChannelVersions', () => {
-    const ongoingVersions = {
+  it('returns a UPDATE_PRODUCT_VERSIONS action for updateProductVersions', () => {
+    const channelVersions = {
       nightly: '57.0a1',
       beta: '56.0b12',
       release: '55.0.3',
       esr: '52.3.0esr',
     };
-    expect(updateLatestChannelVersions('firefox', ongoingVersions)).toEqual({
-      type: UPDATE_LATEST_CHANNEL_VERSIONS,
+    expect(updateProductVersions('firefox', channelVersions)).toEqual({
+      type: UPDATE_PRODUCT_VERSIONS,
       product: 'firefox',
-      versions: ongoingVersions,
+      versions: channelVersions,
     });
   });
   it('returns a UPDATE_POLLBOT_VERSION action for updatePollbotVersion', () => {

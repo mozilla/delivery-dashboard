@@ -34,7 +34,7 @@ import {
   loginRequested,
   refreshCheckResult,
   setVersion,
-  updateLatestChannelVersions,
+  updateProductVersions,
   updatePollbotVersion,
   updateReleaseInfo,
 } from './actions';
@@ -54,11 +54,8 @@ export function* fetchPollbotVersion(): Saga {
 
 export function* fetchAndUpdateVersions(product: Product): Saga {
   try {
-    const ongoingVersions: VersionsDict = yield call(
-      getOngoingVersions,
-      product,
-    );
-    yield put(updateLatestChannelVersions(product, ongoingVersions));
+    const versions: VersionsDict = yield call(getOngoingVersions, product);
+    yield put(updateProductVersions(product, versions));
   } catch (err) {
     console.error(
       'Failed getting the latest channel versions for product: ' + product,
@@ -129,21 +126,21 @@ export function* checkResultAndUpdate(title: string, url: string): Saga {
 // Requesting a status for a new version.
 export function* requestStatus(action: RequestStatus): Saga {
   let {product, version} = action;
-  let {latestChannelVersions} = yield select();
+  let {productVersions} = yield select();
   try {
     if (
-      Object.keys(latestChannelVersions).length === 0 ||
-      !latestChannelVersions.hasOwnProperty(product) ||
-      Object.keys(latestChannelVersions[product]).length === 0
+      Object.keys(productVersions).length === 0 ||
+      !productVersions.hasOwnProperty(product) ||
+      Object.keys(productVersions[product]).length === 0
     ) {
       // We don't have the product channel versions yet.
       const versions = yield call(getOngoingVersions, product);
-      yield put(updateLatestChannelVersions(product, versions));
+      yield put(updateProductVersions(product, versions));
       // We now have the product channel versions.
-      ({latestChannelVersions} = yield select());
+      ({productVersions} = yield select());
     }
-    if (latestChannelVersions[product].hasOwnProperty(version)) {
-      version = latestChannelVersions[product][version];
+    if (productVersions[product].hasOwnProperty(version)) {
+      version = productVersions[product][version];
     }
     yield put(setVersion(product, version));
     yield call(updateUrl);

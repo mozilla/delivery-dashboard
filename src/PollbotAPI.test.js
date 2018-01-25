@@ -9,8 +9,8 @@ import {
 
 describe('getOngoingVersions', () => {
   it('retrieves the list of ongoing versions', async () => {
-    const onGoingVersions = await getOngoingVersions('firefox');
-    expect(onGoingVersions).toMatchObject({
+    const channelVersions = await getOngoingVersions('firefox');
+    expect(channelVersions).toMatchObject({
       beta: expect.any(String),
       esr: expect.any(String),
       nightly: expect.any(String),

@@ -13,7 +13,7 @@ import {
   loginRequested,
   refreshCheckResult,
   setVersion,
-  updateLatestChannelVersions,
+  updateProductVersions,
   updatePollbotVersion,
   updateReleaseInfo,
 } from './actions';
@@ -88,7 +88,7 @@ describe('sagas', () => {
     const data = {};
     data.saga = cloneableGenerator(fetchAndUpdateVersions)('firefox');
 
-    const ongoingVersions = {
+    const channelVersions = {
       nightly: '57.0a1',
       beta: '56.0b12',
       release: '55.0.3',
@@ -99,8 +99,8 @@ describe('sagas', () => {
     // Clone to test success and failure of getOngoingVersions.
     data.sagaThrow = data.saga.clone();
 
-    expect(data.saga.next(ongoingVersions).value).toEqual(
-      put(updateLatestChannelVersions('firefox', ongoingVersions)),
+    expect(data.saga.next(channelVersions).value).toEqual(
+      put(updateProductVersions('firefox', channelVersions)),
     );
     expect(data.saga.next().done).toBe(true);
 
@@ -292,7 +292,7 @@ describe('sagas', () => {
     expect(data.saga.next().value).toEqual(select());
     expect(
       data.saga.next({
-        latestChannelVersions: {
+        productVersions: {
           firefox: {
             release: '50.0',
           },
@@ -356,7 +356,7 @@ describe('sagas', () => {
     expect(data.saga.next().value).toEqual(select());
     expect(
       data.saga.next({
-        latestChannelVersions: {
+        productVersions: {
           firefox: {
             release: '50.0',
           },
@@ -418,17 +418,17 @@ describe('sagas', () => {
     };
 
     expect(data.saga.next().value).toEqual(select());
-    expect(data.saga.next({latestChannelVersions: {}}).value).toEqual(
+    expect(data.saga.next({productVersions: {}}).value).toEqual(
       call(getOngoingVersions, 'firefox'),
     );
     expect(data.saga.next({release: '50.0'}).value).toEqual(
-      put(updateLatestChannelVersions('firefox', {release: '50.0'})),
+      put(updateProductVersions('firefox', {release: '50.0'})),
     );
 
     expect(data.saga.next().value).toEqual(select());
     expect(
       data.saga.next({
-        latestChannelVersions: {firefox: {release: '50.0'}},
+        productVersions: {firefox: {release: '50.0'}},
       }).value,
     ).toEqual(put(setVersion('firefox', '50.0')));
     expect(data.saga.next().value).toEqual(call(updateUrl));

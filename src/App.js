@@ -25,8 +25,8 @@ import type {
   Dispatch,
   Error,
   Login,
-  OngoingVersions,
-  OngoingVersionsDict,
+  ChannelVersions,
+  ProductVersions,
   Product,
   ReleaseInfo,
   State,
@@ -239,7 +239,7 @@ export function LoginButton({
   }
 }
 
-const formatAndOrderVersions = (versions: VersionsDict): OngoingVersions => {
+const formatAndOrderVersions = (versions: VersionsDict): ChannelVersions => {
   const versionsArray = Object.entries(versions).map(([channel, version]) => {
     return [channel, (typeof version === 'string' && version) || ''];
   });
@@ -249,10 +249,10 @@ const formatAndOrderVersions = (versions: VersionsDict): OngoingVersions => {
 };
 
 const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) =>
-  state.latestChannelVersions;
+  state.productVersions;
 const SideBar = connect(sideBarMapStateToProps)(ReleasesMenu);
 
-function ReleasesMenu(versions: OngoingVersionsDict) {
+function ReleasesMenu(versions: ProductVersions) {
   const releases = products.map(product => {
     const productVersions = formatAndOrderVersions(versions[product]);
     const spinner = <Spin key={product} />;
