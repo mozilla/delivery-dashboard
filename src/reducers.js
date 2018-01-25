@@ -16,7 +16,7 @@ import {
 import type {Action, State} from './types';
 
 export const initialState: State = {
-  version: ['', ''],
+  version: ['firefox', ''],
   latestChannelVersions: {firefox: {}, devedition: {}},
   releaseInfo: null,
   checkResults: {},
