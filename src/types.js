@@ -106,7 +106,7 @@ export type SetVersion = {|
 |};
 export type UpdateLatestChannelVersions = {|
   type: 'UPDATE_LATEST_CHANNEL_VERSIONS',
-  versions: OngoingVersionsDict,
+  versions: VersionsDict,
   product: Product,
 |};
 export type UpdateReleaseInfo = {|

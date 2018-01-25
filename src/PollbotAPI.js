@@ -16,7 +16,10 @@ export async function getOngoingVersions(
   return response.json();
 }
 
-export async function getReleaseInfo(version: string): Promise<ReleaseInfo> {
+export async function getReleaseInfo(
+  product: Product,
+  version: string,
+): Promise<ReleaseInfo> {
   const response = await fetch(`${SERVER}/firefox/${version}`);
   return response.json();
 }

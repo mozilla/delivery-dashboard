@@ -28,7 +28,7 @@ import type {
   LoginRequested,
   LoggedIn,
   LoggedOut,
-  OngoingVersionsDict,
+  VersionsDict,
   Product,
   RefreshCheckResult,
   RefreshStatus,
@@ -107,7 +107,7 @@ export const capitalizeChannel = ([channel, version]: [string, string]) => [
 
 export function updateLatestChannelVersions(
   product: Product,
-  versions: OngoingVersionsDict,
+  versions: VersionsDict,
 ): UpdateLatestChannelVersions {
   return {type: UPDATE_LATEST_CHANNEL_VERSIONS, product, versions};
 }

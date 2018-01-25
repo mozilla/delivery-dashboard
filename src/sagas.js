@@ -13,7 +13,7 @@ import {
 import type {
   APIVersionData,
   CheckResult,
-  OngoingVersionsDict,
+  VersionsDict,
   Product,
   ReleaseInfo,
   RequestStatus,
@@ -54,7 +54,7 @@ export function* fetchPollbotVersion(): Saga {
 
 export function* fetchAndUpdateVersions(product: Product): Saga {
   try {
-    const ongoingVersions: OngoingVersionsDict = yield call(
+    const ongoingVersions: VersionsDict = yield call(
       getOngoingVersions,
       product,
     );
@@ -129,7 +129,6 @@ export function* checkResultAndUpdate(title: string, url: string): Saga {
 // Requesting a status for a new version.
 export function* requestStatus(action: RequestStatus): Saga {
   let {product, version} = action;
-  console.log(`requesting status for ${product} ${version}`);
   let {latestChannelVersions} = yield select();
   try {
     if (
@@ -137,26 +136,23 @@ export function* requestStatus(action: RequestStatus): Saga {
       !latestChannelVersions.hasOwnProperty(product) ||
       Object.keys(latestChannelVersions[product]).length === 0
     ) {
-      latestChannelVersions = yield call(getOngoingVersions, product);
-      yield put(updateLatestChannelVersions(product, latestChannelVersions));
-      console.log('>>>>>>ok');
+      // We don't have the product channel versions yet.
+      const versions = yield call(getOngoingVersions, product);
+      yield put(updateLatestChannelVersions(product, versions));
+      // We now have the product channel versions.
+      ({latestChannelVersions} = yield select());
     }
     if (latestChannelVersions[product].hasOwnProperty(version)) {
       version = latestChannelVersions[product][version];
     }
-    console.log('>>>>>>yep');
     yield put(setVersion(product, version));
-    console.log('>>>>>>good');
     yield call(updateUrl);
-    console.log('>>>>>>yeah');
     const releaseInfo: ReleaseInfo = yield call(
       getReleaseInfo,
       product,
       version,
     );
-    console.log('>>>>>>haha');
     yield put(updateReleaseInfo(releaseInfo));
-    console.log('>>>>>>pipo');
     yield all(
       releaseInfo.checks.map(({url, title}) =>
         call(checkResultAndUpdate, title, url),
