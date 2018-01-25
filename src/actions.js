@@ -100,8 +100,11 @@ export const sortByVersion = (a: string, b: string) => {
   return parseInt(subPartB[3], 10) - parseInt(subPartA[3], 10);
 };
 
+export const capitalize = (item: string) =>
+  item.charAt(0).toUpperCase() + item.slice(1);
+
 export const capitalizeChannel = ([channel, version]: [string, string]) => [
-  channel.charAt(0).toUpperCase() + channel.slice(1),
+  capitalize(channel),
   version,
 ];
 

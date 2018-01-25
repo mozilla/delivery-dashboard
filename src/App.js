@@ -6,6 +6,7 @@ import './App.css';
 import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
 import {
+  capitalize,
   capitalizeChannel,
   localUrlFromVersion,
   loggedIn,
@@ -272,7 +273,7 @@ function ReleasesMenu(versions: ProductVersions) {
     }
     const releasesMenu = (
       <div className="{product}-menu" key={product}>
-        <h2>{product} Releases</h2>
+        <h2>{capitalize(product)} Releases</h2>
         {content}
       </div>
     );
