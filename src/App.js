@@ -255,23 +255,27 @@ const SideBar = connect(sideBarMapStateToProps)(ReleasesMenu);
 function ReleasesMenu(versions: OngoingVersionsDict) {
   const releases = products.map(product => {
     const productVersions = formatAndOrderVersions(versions[product]);
-    let releasesMenu = <Spin key={product} />;
+    const spinner = <Spin key={product} />;
+    let content = spinner;
     if (productVersions.length) {
-      releasesMenu = (
-        <div className="{product}-menu" key={product}>
-          <h2>{product} Releases</h2>
-          <ul key="sub1">
-            {productVersions.map(([channel: string, version: string]) => (
-              <li key={channel}>
-                <a
-                  href={localUrlFromVersion([product, version])}
-                >{`${channel}: ${version}`}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
+      content = (
+        <ul key="sub1">
+          {productVersions.map(([channel: string, version: string]) => (
+            <li key={channel}>
+              <a
+                href={localUrlFromVersion([product, version])}
+              >{`${channel}: ${version}`}</a>
+            </li>
+          ))}
+        </ul>
       );
     }
+    const releasesMenu = (
+      <div className="{product}-menu" key={product}>
+        <h2>{product} Releases</h2>
+        {content}
+      </div>
+    );
     return releasesMenu;
   });
   return <div className="releasesMenu">{releases}</div>;
