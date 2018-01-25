@@ -43,18 +43,22 @@ import {
 
 describe('action creators', () => {
   it('returns a UPDATE_VERSION_INPUT action for setVersion', () => {
-    expect(setVersion('123')).toEqual({type: SET_VERSION, version: '123'});
+    expect(setVersion('firefox', '123')).toEqual({
+      type: SET_VERSION,
+      product: 'firefox',
+      version: '123',
+    });
   });
   it('returns a UPDATE_LATEST_CHANNEL_VERSIONS action for updateLatestChannelVersions', () => {
     const ongoingVersions = {
       nightly: '57.0a1',
       beta: '56.0b12',
       release: '55.0.3',
-      devedition: '56.0b12',
       esr: '52.3.0esr',
     };
-    expect(updateLatestChannelVersions(ongoingVersions)).toEqual({
+    expect(updateLatestChannelVersions('firefox', ongoingVersions)).toEqual({
       type: UPDATE_LATEST_CHANNEL_VERSIONS,
+      product: 'firefox',
       versions: ongoingVersions,
     });
   });
@@ -164,8 +168,9 @@ describe('sagas action creator', () => {
     expect(refreshStatus()).toEqual({type: REFRESH_STATUS});
   });
   it('handles a REQUEST_STATUS action for requestStatus', () => {
-    expect(requestStatus('50.0')).toEqual({
+    expect(requestStatus('firefox', '50.0')).toEqual({
       type: REQUEST_STATUS,
+      product: 'firefox',
       version: '50.0',
     });
   });

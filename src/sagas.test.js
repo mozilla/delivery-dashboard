@@ -29,6 +29,7 @@ import {
 import {
   checkResultAndUpdate,
   checkResultAndUpdateAndNotify,
+  fetchAndUpdateVersions,
   fetchOngoingVersions,
   fetchPollbotVersion,
   refreshStatus,
@@ -74,26 +75,39 @@ describe('sagas', () => {
     const data = {};
     data.saga = cloneableGenerator(fetchOngoingVersions)();
 
+    expect(data.saga.next().value).toEqual(
+      all([
+        call(fetchAndUpdateVersions, 'firefox'),
+        call(fetchAndUpdateVersions, 'devedition'),
+      ]),
+    );
+    expect(data.saga.next().done).toBe(true);
+  });
+
+  it('handles fetchAndUpdateVersions', () => {
+    const data = {};
+    data.saga = cloneableGenerator(fetchAndUpdateVersions)('firefox');
+
     const ongoingVersions = {
       nightly: '57.0a1',
       beta: '56.0b12',
       release: '55.0.3',
       esr: '52.3.0esr',
     };
-    expect(data.saga.next().value).toEqual(call(getOngoingVersions));
+    expect(data.saga.next().value).toEqual(call(getOngoingVersions, 'firefox'));
 
     // Clone to test success and failure of getOngoingVersions.
     data.sagaThrow = data.saga.clone();
 
     expect(data.saga.next(ongoingVersions).value).toEqual(
-      put(updateLatestChannelVersions(ongoingVersions)),
+      put(updateLatestChannelVersions('firefox', ongoingVersions)),
     );
     expect(data.saga.next().done).toBe(true);
 
     console.error = jest.fn();
     data.sagaThrow.throw('error');
     expect(console.error).toHaveBeenCalledWith(
-      'Failed getting the latest channel versions',
+      'Failed getting the latest channel versions for product: firefox',
       'error',
     );
     expect(data.sagaThrow.next().done).toBe(true);
@@ -104,7 +118,7 @@ describe('sagas', () => {
 
     expect(saga.next().value).toEqual(select());
     expect(window.location.hash).not.toEqual('#pollbot/firefox/50.0');
-    saga.next({version: '50.0'});
+    saga.next({version: ['firefox', '50.0']});
     expect(window.location.hash).toEqual('#pollbot/firefox/50.0');
   });
 
@@ -254,7 +268,10 @@ describe('sagas', () => {
 
   it('handles requestStatus', () => {
     const data = {};
-    data.saga = cloneableGenerator(requestStatus)({version: '50.0'});
+    data.saga = cloneableGenerator(requestStatus)({
+      product: 'firefox',
+      version: '50.0',
+    });
 
     const releaseInfo = {
       channel: 'release',
@@ -276,12 +293,16 @@ describe('sagas', () => {
     expect(
       data.saga.next({
         latestChannelVersions: {
-          release: '50.0',
+          firefox: {
+            release: '50.0',
+          },
         },
       }).value,
-    ).toEqual(put(setVersion('50.0')));
+    ).toEqual(put(setVersion('firefox', '50.0')));
     expect(data.saga.next().value).toEqual(call(updateUrl));
-    expect(data.saga.next().value).toEqual(call(getReleaseInfo, '50.0'));
+    expect(data.saga.next().value).toEqual(
+      call(getReleaseInfo, 'firefox', '50.0'),
+    );
 
     // Clone to test success and failure of getReleaseInfo.
     data.sagaThrow = data.saga.clone();
@@ -290,7 +311,7 @@ describe('sagas', () => {
     console.error = jest.fn();
     data.sagaThrow.throw('error');
     expect(console.error).toHaveBeenCalledWith(
-      'Failed getting the release info for 50.0',
+      'Failed getting the release info for firefox 50.0',
       'error',
     );
     expect(data.sagaThrow.next().done).toBe(true);
@@ -311,7 +332,10 @@ describe('sagas', () => {
   it('handles requestStatus with a canonical url (using the channel)', () => {
     const data = {};
     // Request status for "release", it should in turn set version for "50.0".
-    data.saga = cloneableGenerator(requestStatus)({version: 'release'});
+    data.saga = cloneableGenerator(requestStatus)({
+      product: 'firefox',
+      version: 'release',
+    });
 
     const releaseInfo = {
       channel: 'release',
@@ -333,12 +357,16 @@ describe('sagas', () => {
     expect(
       data.saga.next({
         latestChannelVersions: {
-          release: '50.0',
+          firefox: {
+            release: '50.0',
+          },
         },
       }).value,
-    ).toEqual(put(setVersion('50.0')));
+    ).toEqual(put(setVersion('firefox', '50.0')));
     expect(data.saga.next().value).toEqual(call(updateUrl));
-    expect(data.saga.next().value).toEqual(call(getReleaseInfo, '50.0'));
+    expect(data.saga.next().value).toEqual(
+      call(getReleaseInfo, 'firefox', '50.0'),
+    );
 
     // Clone to test success and failure of getReleaseInfo.
     data.sagaThrow = data.saga.clone();
@@ -347,7 +375,7 @@ describe('sagas', () => {
     console.error = jest.fn();
     data.sagaThrow.throw('error');
     expect(console.error).toHaveBeenCalledWith(
-      'Failed getting the release info for 50.0',
+      'Failed getting the release info for firefox 50.0',
       'error',
     );
     expect(data.sagaThrow.next().done).toBe(true);
@@ -368,7 +396,10 @@ describe('sagas', () => {
   it('handles requestStatus with a canonical url (using the channel) with a cold cache', () => {
     const data = {};
     // Request status for "release", it should in turn set version for "50.0".
-    data.saga = cloneableGenerator(requestStatus)({version: 'release'});
+    data.saga = cloneableGenerator(requestStatus)({
+      product: 'firefox',
+      version: 'release',
+    });
 
     const releaseInfo = {
       channel: 'release',
@@ -388,15 +419,22 @@ describe('sagas', () => {
 
     expect(data.saga.next().value).toEqual(select());
     expect(data.saga.next({latestChannelVersions: {}}).value).toEqual(
-      call(getOngoingVersions),
+      call(getOngoingVersions, 'firefox'),
     );
     expect(data.saga.next({release: '50.0'}).value).toEqual(
-      put(updateLatestChannelVersions({release: '50.0'})),
+      put(updateLatestChannelVersions('firefox', {release: '50.0'})),
     );
 
-    expect(data.saga.next().value).toEqual(put(setVersion('50.0')));
+    expect(data.saga.next().value).toEqual(select());
+    expect(
+      data.saga.next({
+        latestChannelVersions: {firefox: {release: '50.0'}},
+      }).value,
+    ).toEqual(put(setVersion('firefox', '50.0')));
     expect(data.saga.next().value).toEqual(call(updateUrl));
-    expect(data.saga.next().value).toEqual(call(getReleaseInfo, '50.0'));
+    expect(data.saga.next().value).toEqual(
+      call(getReleaseInfo, 'firefox', '50.0'),
+    );
 
     // Clone to test success and failure of getReleaseInfo.
     data.sagaThrow = data.saga.clone();
@@ -405,7 +443,7 @@ describe('sagas', () => {
     console.error = jest.fn();
     data.sagaThrow.throw('error');
     expect(console.error).toHaveBeenCalledWith(
-      'Failed getting the release info for 50.0',
+      'Failed getting the release info for firefox 50.0',
       'error',
     );
     expect(data.sagaThrow.next().done).toBe(true);

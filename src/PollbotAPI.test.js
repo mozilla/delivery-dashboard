@@ -9,7 +9,7 @@ import {
 
 describe('getOngoingVersions', () => {
   it('retrieves the list of ongoing versions', async () => {
-    const onGoingVersions = await getOngoingVersions();
+    const onGoingVersions = await getOngoingVersions('firefox');
     expect(onGoingVersions).toMatchObject({
       beta: expect.any(String),
       esr: expect.any(String),
@@ -21,7 +21,7 @@ describe('getOngoingVersions', () => {
 
 describe('getReleaseInfo', () => {
   it('retrieves the release information', async () => {
-    const releaseInfo = await getReleaseInfo('50.0');
+    const releaseInfo = await getReleaseInfo('firefox', '50.0');
     expect(releaseInfo).toMatchObject({
       channel: expect.stringMatching(/nightly|beta|release|esr/),
       checks: expect.any(Array),

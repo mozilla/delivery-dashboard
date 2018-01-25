@@ -176,7 +176,7 @@ describe('<App />', () => {
         <ConnectedApp />
       </Provider>,
     );
-    expect(module.requestStatus).toHaveBeenCalledWith('123.0');
+    expect(module.requestStatus).toHaveBeenCalledWith('firefox', '123.0');
   });
   it('sets up auto-refresh', () => {
     const module = require('./actions');
@@ -295,17 +295,19 @@ describe('<Dashboard />', () => {
     },
   };
   it('displays a help text when no version is selected', () => {
-    const wrapper = shallow(<Dashboard version="" />);
-    expect(wrapper.text()).toContain('enter your version number');
+    const wrapper = shallow(<Dashboard productVersion={['firefox', '']} />);
+    expect(wrapper.text()).toContain(
+      'Learn more about a specific version. Select a version number from the left menu.',
+    );
   });
   it('displays a spinner when a version is selected', () => {
-    const wrapper = shallow(<Dashboard version="50.0" />);
+    const wrapper = shallow(<Dashboard productVersion={['firefox', '50.0']} />);
     expect(wrapper.find(Spin).length).toBe(1);
   });
   it("displays an error when there's a Pollbot error", () => {
     const wrapper = mount(
       <Dashboard
-        version="50.0"
+        productVersion={['firefox', '50.0']}
         releaseInfo={{message: 'error from pollbot'}}
       />,
     );
@@ -318,7 +320,7 @@ describe('<Dashboard />', () => {
   it('displays a list of check results when a release info is present', () => {
     const wrapper = shallow(
       <Dashboard
-        version="50.0"
+        productVersion={['firefox', '50.0']}
         releaseInfo={releaseInfo}
         checkResults={checkResults}
       />,
@@ -329,7 +331,7 @@ describe('<Dashboard />', () => {
   it("displays an extra icon and tooltip on the checks that aren't actionable", () => {
     const wrapper = mount(
       <Dashboard
-        version="50.0"
+        productVersion={['firefox', '50.0']}
         releaseInfo={releaseInfo}
         checkResults={checkResults}
       />,

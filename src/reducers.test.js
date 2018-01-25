@@ -175,39 +175,60 @@ describe('deliveryDashboard reducer', () => {
     expect(
       deliveryDashboard(undefined, {
         type: SET_VERSION,
+        product: 'firefox',
         version: '50.0',
       }),
-    ).toEqual(stateWith({version: '50.0', shouldRefresh: false}));
+    ).toEqual(stateWith({version: ['firefox', '50.0'], shouldRefresh: false}));
     expect(
       deliveryDashboard(
         stateWith({
-          version: '50.0',
+          version: ['firefox', '50.0'],
         }),
         {
           type: SET_VERSION,
+          product: 'firefox',
           version: '51.0',
         },
       ),
-    ).toEqual(stateWith({version: '51.0', shouldRefresh: false}));
+    ).toEqual(stateWith({version: ['firefox', '51.0'], shouldRefresh: false}));
   });
   it('handles UPDATE_LATEST_CHANNEL_VERSIONS', () => {
     expect(
       deliveryDashboard(undefined, {
         type: UPDATE_LATEST_CHANNEL_VERSIONS,
-        versions: 'some new versions',
+        product: 'firefox',
+        versions: {release: '0.1.2'},
       }),
-    ).toEqual(stateWith({latestChannelVersions: 'some new versions'}));
+    ).toEqual(
+      stateWith({
+        latestChannelVersions: {
+          firefox: {release: '0.1.2'},
+          devedition: {},
+        },
+      }),
+    );
     expect(
       deliveryDashboard(
         stateWith({
-          latestChannelVersions: 'some versions',
+          latestChannelVersions: {
+            firefox: {release: '0.1.2'},
+            devedition: {},
+          },
         }),
         {
           type: UPDATE_LATEST_CHANNEL_VERSIONS,
-          versions: 'some new versions',
+          product: 'firefox',
+          versions: {nightly: '1.2.3', release: '0.1.3'},
         },
       ),
-    ).toEqual(stateWith({latestChannelVersions: 'some new versions'}));
+    ).toEqual(
+      stateWith({
+        latestChannelVersions: {
+          firefox: {nightly: '1.2.3', release: '0.1.3'},
+          devedition: {},
+        },
+      }),
+    );
   });
   it('handles UPDATE_RELEASE_INFO', () => {
     expect(
