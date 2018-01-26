@@ -45,16 +45,48 @@ exports[`<App /> renders without crashing 1`] = `
         className="ant-layout-sider-children"
       >
         <div
-          className="ant-spin ant-spin-spinning ant-spin-show-text"
+          className="releasesMenu"
         >
-          <span
-            className="ant-spin-dot"
+          <div
+            className="{product}-menu"
           >
-            <i />
-            <i />
-            <i />
-            <i />
-          </span>
+            <h2>
+              Firefox
+               Releases
+            </h2>
+            <div
+              className="ant-spin ant-spin-spinning ant-spin-show-text"
+            >
+              <span
+                className="ant-spin-dot"
+              >
+                <i />
+                <i />
+                <i />
+                <i />
+              </span>
+            </div>
+          </div>
+          <div
+            className="{product}-menu"
+          >
+            <h2>
+              Devedition
+               Releases
+            </h2>
+            <div
+              className="ant-spin ant-spin-spinning ant-spin-show-text"
+            >
+              <span
+                className="ant-spin-dot"
+              >
+                <i />
+                <i />
+                <i />
+                <i />
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -64,7 +96,7 @@ exports[`<App /> renders without crashing 1`] = `
       <p>
         Learn more about a specific version.
         <strong>
-           Select or enter your version number.
+           Select a version number from the left menu.
         </strong>
       </p>
     </div>

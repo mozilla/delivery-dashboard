@@ -6,23 +6,20 @@ import type {
   GetState as ReduxGetState,
 } from 'redux';
 
+export const products = ['firefox', 'devedition'];
+
 /*
  * state types
  */
-export type OngoingVersion = [string, string];
-export type OngoingVersions = OngoingVersion[];
-export type OngoingVersionsDict = {
-  [channel: string]: string,
-};
-
-export type Product = 'firefox';
+export type Product = 'firefox' | 'devedition';
 export type Status = 'missing' | 'exists' | 'incomplete' | 'error';
-export type Check =
-  | 'archive'
-  | 'product_details'
-  | 'release_notes'
-  | 'security_advisories'
-  | 'download_links';
+
+export type ChannelVersion = [string, string];
+export type ChannelVersions = ChannelVersion[];
+export type VersionsDict = {[channel: string]: string};
+export type ProductVersions = {
+  [product: Product]: VersionsDict,
+};
 
 export type CheckInfo = {
   +url: string,
@@ -65,8 +62,8 @@ export const LOGIN_REQUESTED = 'LOGIN_REQUESTED';
 export const LOGGED_IN = 'LOGGED_IN';
 
 export type State = {
-  +version: string,
-  +latestChannelVersions: OngoingVersionsDict,
+  +version: [Product, string],
+  +productVersions: ProductVersions,
   +releaseInfo: ?ReleaseInfo,
   +checkResults: CheckResults,
   +pollbotVersion: ?APIVersionData,
@@ -83,7 +80,7 @@ export const ADD_CHECK_RESULT = 'ADD_CHECK_RESULT';
 export const REFRESH_CHECK_RESULT = 'REFRESH_CHECK_RESULT';
 export const ADD_SERVER_ERROR = 'ADD_SERVER_ERROR';
 export const SET_VERSION = 'SET_VERSION';
-export const UPDATE_LATEST_CHANNEL_VERSIONS = 'UPDATE_LATEST_CHANNEL_VERSIONS';
+export const UPDATE_PRODUCT_VERSIONS = 'UPDATE_PRODUCT_VERSIONS';
 export const UPDATE_RELEASE_INFO = 'UPDATE_RELEASE_INFO';
 export const UPDATE_POLLBOT_VERSION = 'UPDATE_POLLBOT_VERSION';
 export const UPDATE_USER_INFO = 'UPDATE_USER_INFO';
@@ -104,11 +101,13 @@ export type AddServerError = {|
 |};
 export type SetVersion = {|
   type: 'SET_VERSION',
+  product: Product,
   version: string,
 |};
-export type UpdateLatestChannelVersions = {|
-  type: 'UPDATE_LATEST_CHANNEL_VERSIONS',
-  versions: OngoingVersionsDict,
+export type UpdateProductVersions = {|
+  type: 'UPDATE_PRODUCT_VERSIONS',
+  versions: VersionsDict,
+  product: Product,
 |};
 export type UpdateReleaseInfo = {|
   type: 'UPDATE_RELEASE_INFO',
@@ -161,6 +160,7 @@ export type RefreshStatus = {|
 
 export type RequestStatus = {|
   type: 'REQUEST_STATUS',
+  product: Product,
   version: string,
 |};
 
@@ -186,7 +186,7 @@ export type Action =
   | RequestPollbotVersion
   | RequestStatus
   | SetVersion
-  | UpdateLatestChannelVersions
+  | UpdateProductVersions
   | UpdatePollbotVersion
   | UpdateReleaseInfo
   | UpdateUrl

@@ -2,19 +2,25 @@
 import type {
   APIVersionData,
   CheckResult,
-  OngoingVersionsDict,
+  ProductVersions,
+  Product,
   ReleaseInfo,
 } from './types';
 
 export const SERVER = 'https://pollbot.dev.mozaws.net/v1';
 
-export async function getOngoingVersions(): Promise<OngoingVersionsDict> {
-  const response = await fetch(`${SERVER}/firefox/ongoing-versions`);
+export async function getOngoingVersions(
+  product: Product,
+): Promise<ProductVersions> {
+  const response = await fetch(`${SERVER}/${product}/ongoing-versions`);
   return response.json();
 }
 
-export async function getReleaseInfo(version: string): Promise<ReleaseInfo> {
-  const response = await fetch(`${SERVER}/firefox/${version}`);
+export async function getReleaseInfo(
+  product: Product,
+  version: string,
+): Promise<ReleaseInfo> {
+  const response = await fetch(`${SERVER}/${product}/${version}`);
   return response.json();
 }
 

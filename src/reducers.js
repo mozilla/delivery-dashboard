@@ -5,7 +5,7 @@ import {
   REFRESH_CHECK_RESULT,
   ADD_SERVER_ERROR,
   SET_VERSION,
-  UPDATE_LATEST_CHANNEL_VERSIONS,
+  UPDATE_PRODUCT_VERSIONS,
   UPDATE_POLLBOT_VERSION,
   UPDATE_RELEASE_INFO,
   LOGGED_IN,
@@ -16,8 +16,8 @@ import {
 import type {Action, State} from './types';
 
 export const initialState: State = {
-  version: '',
-  latestChannelVersions: {},
+  version: ['firefox', ''],
+  productVersions: {firefox: {}, devedition: {}},
   releaseInfo: null,
   checkResults: {},
   pollbotVersion: null,
@@ -57,14 +57,16 @@ export function deliveryDashboard(
       });
     case SET_VERSION:
       return Object.assign({}, state, {
-        version: action.version,
+        version: [action.product, action.version],
         checkResults: {},
         shouldRefresh: false,
         errors: [],
       });
-    case UPDATE_LATEST_CHANNEL_VERSIONS:
+    case UPDATE_PRODUCT_VERSIONS:
       return Object.assign({}, state, {
-        latestChannelVersions: action.versions,
+        productVersions: Object.assign({}, state.productVersions, {
+          [action.product]: action.versions,
+        }),
       });
     case UPDATE_RELEASE_INFO:
       return Object.assign({}, state, {

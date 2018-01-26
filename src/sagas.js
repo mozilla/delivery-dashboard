@@ -8,11 +8,13 @@ import {
   REQUEST_STATUS,
   REQUEST_LOGIN,
   REQUEST_LOGOUT,
+  products,
 } from './types';
 import type {
   APIVersionData,
   CheckResult,
-  OngoingVersionsDict,
+  VersionsDict,
+  Product,
   ReleaseInfo,
   RequestStatus,
   State,
@@ -32,7 +34,7 @@ import {
   loginRequested,
   refreshCheckResult,
   setVersion,
-  updateLatestChannelVersions,
+  updateProductVersions,
   updatePollbotVersion,
   updateReleaseInfo,
 } from './actions';
@@ -50,14 +52,21 @@ export function* fetchPollbotVersion(): Saga {
   }
 }
 
+export function* fetchAndUpdateVersions(product: Product): Saga {
+  try {
+    const versions: VersionsDict = yield call(getOngoingVersions, product);
+    yield put(updateProductVersions(product, versions));
+  } catch (err) {
+    console.error(
+      'Failed getting the latest channel versions for product: ' + product,
+      err,
+    );
+  }
+}
+
 // Fetching the ongoing versions.
 export function* fetchOngoingVersions(): Saga {
-  try {
-    const ongoingVersions: OngoingVersionsDict = yield call(getOngoingVersions);
-    yield put(updateLatestChannelVersions(ongoingVersions));
-  } catch (err) {
-    console.error('Failed getting the latest channel versions', err);
-  }
+  yield all(products.map(product => call(fetchAndUpdateVersions, product)));
 }
 
 // Update the url from the version stored in the state.
@@ -116,19 +125,30 @@ export function* checkResultAndUpdate(title: string, url: string): Saga {
 
 // Requesting a status for a new version.
 export function* requestStatus(action: RequestStatus): Saga {
-  let {version} = action;
-  let {latestChannelVersions} = yield select();
+  let {product, version} = action;
+  let {productVersions} = yield select();
   try {
-    if (Object.keys(latestChannelVersions).length === 0) {
-      latestChannelVersions = yield call(getOngoingVersions);
-      yield put(updateLatestChannelVersions(latestChannelVersions));
+    if (
+      Object.keys(productVersions).length === 0 ||
+      !productVersions.hasOwnProperty(product) ||
+      Object.keys(productVersions[product]).length === 0
+    ) {
+      // We don't have the product channel versions yet.
+      const versions = yield call(getOngoingVersions, product);
+      yield put(updateProductVersions(product, versions));
+      // We now have the product channel versions.
+      ({productVersions} = yield select());
     }
-    if (latestChannelVersions.hasOwnProperty(version)) {
-      version = latestChannelVersions[version];
+    if (productVersions[product].hasOwnProperty(version)) {
+      version = productVersions[product][version];
     }
-    yield put(setVersion(version));
+    yield put(setVersion(product, version));
     yield call(updateUrl);
-    const releaseInfo: ReleaseInfo = yield call(getReleaseInfo, version);
+    const releaseInfo: ReleaseInfo = yield call(
+      getReleaseInfo,
+      product,
+      version,
+    );
     yield put(updateReleaseInfo(releaseInfo));
     yield all(
       releaseInfo.checks.map(({url, title}) =>
@@ -136,7 +156,10 @@ export function* requestStatus(action: RequestStatus): Saga {
       ),
     );
   } catch (err) {
-    console.error(`Failed getting the release info for ${version}`, err);
+    console.error(
+      `Failed getting the release info for ${product} ${version}`,
+      err,
+    );
   }
 }
 

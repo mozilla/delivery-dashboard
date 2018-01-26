@@ -6,6 +6,7 @@ import './App.css';
 import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
 import {
+  capitalize,
   capitalizeChannel,
   localUrlFromVersion,
   loggedIn,
@@ -25,11 +26,15 @@ import type {
   Dispatch,
   Error,
   Login,
-  OngoingVersions,
+  ChannelVersions,
+  ProductVersions,
+  Product,
   ReleaseInfo,
   State,
   Status,
+  VersionsDict,
 } from './types';
+import {products} from './types';
 import {LOGGED_IN, LOGGED_OUT, LOGIN_REQUESTED} from './types';
 import {checkLogin, fetchUserInfo, isAuthenticated} from './auth0';
 
@@ -46,16 +51,21 @@ function requestNotificationPermission(): void {
 
 export const parseUrl = (
   url: string,
-): ?{service: string, product: string, version: string} => {
+): ?{service: string, product: Product, version: string} => {
   const re = /^#(\w+)\/(\w+)\/([^/]+)\/?/; // Eg: #pollbot/firefox/50.0
   const parsed: ?(string[]) = url.match(re);
   if (!parsed) {
     return null;
   }
   const [_, service, product, version] = parsed;
+  const maybeProduct = products.find(p => p === product);
+  if (!maybeProduct) {
+    // unsupported/unrecognized product.
+    return null;
+  }
   return {
     service: service,
-    product: product,
+    product: maybeProduct,
     version: version,
   };
 };
@@ -136,8 +146,7 @@ export class App extends React.Component<AppProps, void> {
   versionFromHash = (): void => {
     const parsedUrl = parseUrl(window.location.hash);
     if (parsedUrl) {
-      const version = parsedUrl.version;
-      this.props.dispatch(requestStatus(version));
+      this.props.dispatch(requestStatus(parsedUrl.product, parsedUrl.version));
     }
   };
 
@@ -231,37 +240,46 @@ export function LoginButton({
   }
 }
 
-const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) => {
-  let versionsArray = Object.entries(
-    state.latestChannelVersions,
-  ).map(([channel, version]) => {
+const formatAndOrderVersions = (versions: VersionsDict): ChannelVersions => {
+  const versionsArray = Object.entries(versions).map(([channel, version]) => {
     return [channel, (typeof version === 'string' && version) || ''];
   });
   versionsArray.sort((a, b) => sortByVersion(a[1], b[1]));
   const capitalized = versionsArray.map(capitalizeChannel);
-  return {versions: capitalized};
+  return capitalized;
 };
+
+const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) =>
+  state.productVersions;
 const SideBar = connect(sideBarMapStateToProps)(ReleasesMenu);
 
-function ReleasesMenu({versions}: {versions: OngoingVersions}) {
-  let releasesMenu = <Spin />;
-  if (versions.length) {
-    releasesMenu = (
-      <div className="menu">
-        <h2>Firefox Releases</h2>
+function ReleasesMenu(versions: ProductVersions) {
+  const releases = products.map(product => {
+    const productVersions = formatAndOrderVersions(versions[product]);
+    const spinner = <Spin key={product} />;
+    let content = spinner;
+    if (productVersions.length) {
+      content = (
         <ul key="sub1">
-          {versions.map(([channel: string, version: string]) => (
+          {productVersions.map(([channel: string, version: string]) => (
             <li key={channel}>
               <a
-                href={localUrlFromVersion(version)}
+                href={localUrlFromVersion([product, version])}
               >{`${channel}: ${version}`}</a>
             </li>
           ))}
         </ul>
+      );
+    }
+    const releasesMenu = (
+      <div className="{product}-menu" key={product}>
+        <h2>{capitalize(product)} Releases</h2>
+        {content}
       </div>
     );
-  }
-  return releasesMenu;
+    return releasesMenu;
+  });
+  return <div className="releasesMenu">{releases}</div>;
 }
 
 const currentReleaseMapStateToProps: MapStateToProps<*, *, *> = (
@@ -269,7 +287,7 @@ const currentReleaseMapStateToProps: MapStateToProps<*, *, *> = (
 ) => ({
   checkResults: state.checkResults,
   releaseInfo: state.releaseInfo,
-  version: state.version,
+  productVersion: state.version,
 });
 const CurrentRelease = connect(currentReleaseMapStateToProps)(Dashboard);
 
@@ -302,19 +320,20 @@ export function Errors({errors}: ErrorsPropType) {
 type DashboardPropType = {
   checkResults: CheckResults,
   releaseInfo: ?ReleaseInfo,
-  version: string,
+  productVersion: [Product, string],
 };
 
 export function Dashboard({
   releaseInfo,
   checkResults,
-  version,
+  productVersion,
 }: DashboardPropType) {
+  const [product, version] = productVersion;
   if (version === '') {
     return (
       <p>
         Learn more about a specific version.
-        <strong> Select or enter your version number.</strong>
+        <strong> Select a version number from the left menu.</strong>
       </p>
     );
   } else if (!releaseInfo) {
@@ -325,7 +344,7 @@ export function Dashboard({
     return (
       <div>
         <h2 style={{marginBottom: '1em', display: 'flex', flexWrap: 'wrap'}}>
-          Firefox {version} - Channel: {releaseInfo.channel}{' '}
+          {capitalize(product)} {version} - Channel: {releaseInfo.channel}{' '}
           <OverallStatus
             releaseInfo={releaseInfo}
             checkResults={checkResults}

@@ -5,7 +5,7 @@ import {
   REFRESH_CHECK_RESULT,
   ADD_SERVER_ERROR,
   SET_VERSION,
-  UPDATE_LATEST_CHANNEL_VERSIONS,
+  UPDATE_PRODUCT_VERSIONS,
   UPDATE_POLLBOT_VERSION,
   UPDATE_RELEASE_INFO,
   REQUEST_ONGOING_VERSIONS,
@@ -28,7 +28,8 @@ import type {
   LoginRequested,
   LoggedIn,
   LoggedOut,
-  OngoingVersionsDict,
+  VersionsDict,
+  Product,
   RefreshCheckResult,
   RefreshStatus,
   ReleaseInfo,
@@ -38,7 +39,7 @@ import type {
   RequestPollbotVersion,
   RequestStatus,
   SetVersion,
-  UpdateLatestChannelVersions,
+  UpdateProductVersions,
   UpdatePollbotVersion,
   UpdateReleaseInfo,
   UpdateUrl,
@@ -46,15 +47,15 @@ import type {
 } from './types';
 
 // Small utility function.
-export const localUrlFromVersion = (version: string) =>
-  `#pollbot/firefox/${version}`;
+export const localUrlFromVersion = ([product, version]: [Product, string]) =>
+  `#pollbot/${product}/${version}`;
 
 /*
  * action creators
  */
 
-export function setVersion(version: string): SetVersion {
-  return {type: SET_VERSION, version};
+export function setVersion(product: Product, version: string): SetVersion {
+  return {type: SET_VERSION, product, version};
 }
 
 export const sortByVersion = (a: string, b: string) => {
@@ -99,15 +100,19 @@ export const sortByVersion = (a: string, b: string) => {
   return parseInt(subPartB[3], 10) - parseInt(subPartA[3], 10);
 };
 
+export const capitalize = (item: string) =>
+  item.charAt(0).toUpperCase() + item.slice(1);
+
 export const capitalizeChannel = ([channel, version]: [string, string]) => [
-  channel.charAt(0).toUpperCase() + channel.slice(1),
+  capitalize(channel),
   version,
 ];
 
-export function updateLatestChannelVersions(
-  versions: OngoingVersionsDict,
-): UpdateLatestChannelVersions {
-  return {type: UPDATE_LATEST_CHANNEL_VERSIONS, versions};
+export function updateProductVersions(
+  product: Product,
+  versions: VersionsDict,
+): UpdateProductVersions {
+  return {type: UPDATE_PRODUCT_VERSIONS, product, versions};
 }
 
 export function updatePollbotVersion(
@@ -164,8 +169,11 @@ export function refreshStatus(): RefreshStatus {
   return {type: REFRESH_STATUS};
 }
 
-export function requestStatus(version: string): RequestStatus {
-  return {type: REQUEST_STATUS, version: version};
+export function requestStatus(
+  product: Product,
+  version: string,
+): RequestStatus {
+  return {type: REQUEST_STATUS, product, version};
 }
 
 export function requestLogin(): RequestLogin {
