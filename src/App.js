@@ -7,7 +7,6 @@ import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
 import {
   capitalize,
-  capitalizeChannel,
   localUrlFromVersion,
   loggedIn,
   requestOngoingVersions,
@@ -16,7 +15,6 @@ import {
   requestLogin,
   requestLogout,
   requestStatus,
-  sortByVersion,
   updateUserInfo,
 } from './actions';
 import type {
@@ -26,13 +24,11 @@ import type {
   Dispatch,
   Error,
   Login,
-  ChannelVersions,
   ProductVersions,
   Product,
   ReleaseInfo,
   State,
   Status,
-  VersionsDict,
 } from './types';
 import {products} from './types';
 import {LOGGED_IN, LOGGED_OUT, LOGIN_REQUESTED} from './types';
@@ -240,43 +236,32 @@ export function LoginButton({
   }
 }
 
-const formatAndOrderVersions = (versions: VersionsDict): ChannelVersions => {
-  const versionsArray = Object.entries(versions).map(([channel, version]) => {
-    return [channel, (typeof version === 'string' && version) || ''];
-  });
-  versionsArray.sort((a, b) => sortByVersion(a[1], b[1]));
-  const capitalized = versionsArray.map(capitalizeChannel);
-  return capitalized;
-};
-
 const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) =>
   state.productVersions;
 const SideBar = connect(sideBarMapStateToProps)(ReleasesMenu);
 
 function ReleasesMenu(versions: ProductVersions) {
-  const releases = products.map(product => {
-    const productVersions = formatAndOrderVersions(versions[product]);
-    const spinner = (
-      <li key={product}>
-        <Spin />
-      </li>
-    );
-    let content = spinner;
-    if (productVersions.length) {
-      content = productVersions.map(([channel: string, version: string]) => (
-        <li key={channel}>
-          <a
-            href={localUrlFromVersion([product, version])}
-          >{`${channel}: ${version}`}</a>
-        </li>
-      ));
+  const getVersion = (product, channel) => {
+    if (versions.hasOwnProperty(product) && versions[product][channel]) {
+      return (
+        <a href={localUrlFromVersion([product, channel])}>{`${capitalize(
+          channel,
+        )}: ${versions[product][channel]}`}</a>
+      );
+    } else {
+      return <Spin />;
     }
-    return content;
-  });
+  };
   return (
     <div className="releasesMenu">
       <h2>Firefox Releases</h2>
-      <ul>{releases}</ul>
+      <ul>
+        <li>{getVersion('firefox', 'nightly')}</li>
+        <li>{getVersion('firefox', 'beta')}</li>
+        <li>{getVersion('devedition', 'devedition')}</li>
+        <li>{getVersion('firefox', 'release')}</li>
+        <li>{getVersion('firefox', 'esr')}</li>
+      </ul>
     </div>
   );
 }

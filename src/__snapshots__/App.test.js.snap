@@ -79,6 +79,48 @@ exports[`<App /> renders without crashing 1`] = `
                 </span>
               </div>
             </li>
+            <li>
+              <div
+                className="ant-spin ant-spin-spinning ant-spin-show-text"
+              >
+                <span
+                  className="ant-spin-dot"
+                >
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                </span>
+              </div>
+            </li>
+            <li>
+              <div
+                className="ant-spin ant-spin-spinning ant-spin-show-text"
+              >
+                <span
+                  className="ant-spin-dot"
+                >
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                </span>
+              </div>
+            </li>
+            <li>
+              <div
+                className="ant-spin ant-spin-spinning ant-spin-show-text"
+              >
+                <span
+                  className="ant-spin-dot"
+                >
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                </span>
+              </div>
+            </li>
           </ul>
         </div>
       </div>
