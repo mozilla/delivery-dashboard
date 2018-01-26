@@ -399,7 +399,7 @@ export function DisplayCheckResult(
     titleContent = (
       <div>
         <Tooltip title="This check is not actionable">
-          <Icon type="dashboard" /> {title}
+          <Icon type="notification" /> {title}
         </Tooltip>
       </div>
     );
