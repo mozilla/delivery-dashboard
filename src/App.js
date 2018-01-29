@@ -338,7 +338,7 @@ export function Dashboard({
     return (
       <div>
         <h2 style={{marginBottom: '1em', display: 'flex', flexWrap: 'wrap'}}>
-          {capitalize(product)} {version} - Channel: {releaseInfo.channel}{' '}
+          {capitalize(product)} {version}{' '}
           <OverallStatus
             releaseInfo={releaseInfo}
             checkResults={checkResults}

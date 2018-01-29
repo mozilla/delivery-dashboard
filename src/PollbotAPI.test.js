@@ -38,7 +38,7 @@ describe('getReleaseInfo', () => {
   it('retrieves the release information for devedition', async () => {
     const releaseInfo = await getReleaseInfo('devedition', '59.0b3');
     expect(releaseInfo).toMatchObject({
-      channel: expect.stringMatching(/nightly|beta|release|esr/),
+      channel: expect.stringMatching(/nightly|beta|release|esr|aurora/),
       checks: expect.any(Array),
       product: 'devedition',
       version: '59.0b3',
