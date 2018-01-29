@@ -10,6 +10,7 @@ import {
   Errors,
   LoginButton,
   OverallStatus,
+  ReleasesMenu,
   parseUrl,
 } from './App';
 import {Alert, Spin, Tooltip} from 'antd';
@@ -259,6 +260,41 @@ describe('parseUrl', () => {
       product: 'firefox',
       version: '50.0',
     });
+  });
+});
+
+describe('<ReleasesMenu />', () => {
+  it("displays a list of channels with spinners if there's no product versions yet", () => {
+    const wrapper = mount(<ReleasesMenu versions={{}} />);
+    const textContent = wrapper.text();
+    expect(textContent).toContain('Nightly');
+    expect(textContent).toContain('Beta');
+    expect(textContent).toContain('Devedition');
+    expect(textContent).toContain('Release');
+    expect(textContent).toContain('Esr');
+  });
+  it("displays a list of channels with version numbers if there's product versions", () => {
+    const wrapper = mount(
+      <ReleasesMenu
+        versions={{
+          firefox: {
+            nightly: '60.0a1',
+            beta: '59.0b4',
+            release: '58.0',
+            esr: '52.6.0esr',
+          },
+          devedition: {
+            devedition: '59.0b4',
+          },
+        }}
+      />,
+    );
+    const textContent = wrapper.text();
+    expect(textContent).toContain('Nightly: 60.0a1');
+    expect(textContent).toContain('Beta: 59.0b4');
+    expect(textContent).toContain('Devedition: 59.0b4');
+    expect(textContent).toContain('Release: 58.0');
+    expect(textContent).toContain('Esr: 52.6.0esr');
   });
 });
 
