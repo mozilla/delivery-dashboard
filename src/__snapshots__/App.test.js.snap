@@ -53,7 +53,7 @@ exports[`<App /> renders without crashing 1`] = `
           <ul>
             <li>
               <span>
-                nightly
+                Nightly
                 : 
                 <div
                   className="ant-spin ant-spin-spinning ant-spin-show-text"
@@ -71,7 +71,7 @@ exports[`<App /> renders without crashing 1`] = `
             </li>
             <li>
               <span>
-                beta
+                Beta
                 : 
                 <div
                   className="ant-spin ant-spin-spinning ant-spin-show-text"
@@ -89,7 +89,7 @@ exports[`<App /> renders without crashing 1`] = `
             </li>
             <li>
               <span>
-                devedition
+                Devedition
                 : 
                 <div
                   className="ant-spin ant-spin-spinning ant-spin-show-text"
@@ -107,7 +107,7 @@ exports[`<App /> renders without crashing 1`] = `
             </li>
             <li>
               <span>
-                release
+                Release
                 : 
                 <div
                   className="ant-spin ant-spin-spinning ant-spin-show-text"
@@ -125,7 +125,7 @@ exports[`<App /> renders without crashing 1`] = `
             </li>
             <li>
               <span>
-                esr
+                Esr
                 : 
                 <div
                   className="ant-spin ant-spin-spinning ant-spin-show-text"

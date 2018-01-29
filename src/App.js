@@ -240,18 +240,19 @@ const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) =>
   state.productVersions;
 const SideBar = connect(sideBarMapStateToProps)(ReleasesMenu);
 
-function ReleasesMenu(versions: ProductVersions) {
+export function ReleasesMenu(versions: ProductVersions) {
   const getVersion = (product, channel) => {
+    const capitalizedChannel = capitalize(channel);
     if (versions.hasOwnProperty(product) && versions[product][channel]) {
       return (
-        <a href={localUrlFromVersion([product, channel])}>{`${capitalize(
-          channel,
-        )}: ${versions[product][channel]}`}</a>
+        <a
+          href={localUrlFromVersion([product, channel])}
+        >{`${capitalizedChannel}: ${versions[product][channel]}`}</a>
       );
     } else {
       return (
         <span>
-          {channel}: <Spin />
+          {capitalizedChannel}: <Spin />
         </span>
       );
     }
