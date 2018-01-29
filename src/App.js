@@ -7,7 +7,6 @@ import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
 import {
   capitalize,
-  capitalizeChannel,
   localUrlFromVersion,
   loggedIn,
   requestOngoingVersions,
@@ -16,7 +15,6 @@ import {
   requestLogin,
   requestLogout,
   requestStatus,
-  sortByVersion,
   updateUserInfo,
 } from './actions';
 import type {
@@ -26,13 +24,11 @@ import type {
   Dispatch,
   Error,
   Login,
-  ChannelVersions,
   ProductVersions,
   Product,
   ReleaseInfo,
   State,
   Status,
-  VersionsDict,
 } from './types';
 import {products} from './types';
 import {LOGGED_IN, LOGGED_OUT, LOGIN_REQUESTED} from './types';
@@ -240,46 +236,44 @@ export function LoginButton({
   }
 }
 
-const formatAndOrderVersions = (versions: VersionsDict): ChannelVersions => {
-  const versionsArray = Object.entries(versions).map(([channel, version]) => {
-    return [channel, (typeof version === 'string' && version) || ''];
-  });
-  versionsArray.sort((a, b) => sortByVersion(a[1], b[1]));
-  const capitalized = versionsArray.map(capitalizeChannel);
-  return capitalized;
-};
-
-const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) =>
-  state.productVersions;
+const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) => ({
+  versions: state.productVersions,
+});
 const SideBar = connect(sideBarMapStateToProps)(ReleasesMenu);
 
-function ReleasesMenu(versions: ProductVersions) {
-  const releases = products.map(product => {
-    const productVersions = formatAndOrderVersions(versions[product]);
-    const spinner = <Spin key={product} />;
-    let content = spinner;
-    if (productVersions.length) {
-      content = (
-        <ul key="sub1">
-          {productVersions.map(([channel: string, version: string]) => (
-            <li key={channel}>
-              <a
-                href={localUrlFromVersion([product, version])}
-              >{`${channel}: ${version}`}</a>
-            </li>
-          ))}
-        </ul>
+type ReleasesMenuPropType = {
+  versions: ProductVersions,
+};
+
+export function ReleasesMenu({versions}: ReleasesMenuPropType) {
+  const getVersion = (product, channel) => {
+    const capitalizedChannel = capitalize(channel);
+    if (versions.hasOwnProperty(product) && versions[product][channel]) {
+      return (
+        <a
+          href={localUrlFromVersion([product, channel])}
+        >{`${capitalizedChannel}: ${versions[product][channel]}`}</a>
+      );
+    } else {
+      return (
+        <span>
+          {capitalizedChannel}: <Spin />
+        </span>
       );
     }
-    const releasesMenu = (
-      <div className="{product}-menu" key={product}>
-        <h2>{capitalize(product)} Releases</h2>
-        {content}
-      </div>
-    );
-    return releasesMenu;
-  });
-  return <div className="releasesMenu">{releases}</div>;
+  };
+  return (
+    <div className="releasesMenu">
+      <h2>Firefox Releases</h2>
+      <ul>
+        <li>{getVersion('firefox', 'nightly')}</li>
+        <li>{getVersion('firefox', 'beta')}</li>
+        <li>{getVersion('devedition', 'devedition')}</li>
+        <li>{getVersion('firefox', 'release')}</li>
+        <li>{getVersion('firefox', 'esr')}</li>
+      </ul>
+    </div>
+  );
 }
 
 const currentReleaseMapStateToProps: MapStateToProps<*, *, *> = (
