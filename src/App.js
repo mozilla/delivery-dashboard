@@ -249,7 +249,11 @@ function ReleasesMenu(versions: ProductVersions) {
         )}: ${versions[product][channel]}`}</a>
       );
     } else {
-      return <Spin />;
+      return (
+        <span>
+          {channel}: <Spin />
+        </span>
+      );
     }
   };
   return (
