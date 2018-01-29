@@ -236,11 +236,16 @@ export function LoginButton({
   }
 }
 
-const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) =>
-  state.productVersions;
+const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) => ({
+  versions: state.productVersions,
+});
 const SideBar = connect(sideBarMapStateToProps)(ReleasesMenu);
 
-export function ReleasesMenu(versions: ProductVersions) {
+type ReleasesMenuPropType = {
+  versions: ProductVersions,
+};
+
+export function ReleasesMenu({versions}: ReleasesMenuPropType) {
   const getVersion = (product, channel) => {
     const capitalizedChannel = capitalize(channel);
     if (versions.hasOwnProperty(product) && versions[product][channel]) {
