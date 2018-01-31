@@ -161,6 +161,7 @@ export class App extends React.Component<AppProps, void> {
           <h1>
             <a href=".">Delivery Dashboard</a>
           </h1>
+          {/* We don't need the login button yet, and don't have an auth0 account/profile for it
           <div className="user">
             <LoginButton
               loginState={this.props.login}
@@ -168,6 +169,7 @@ export class App extends React.Component<AppProps, void> {
               onLogoutRequested={this.onLogoutRequested}
             />
           </div>
+          */}
         </header>
         <Errors errors={this.props.errors} />
         <Layout className="mainContent">
