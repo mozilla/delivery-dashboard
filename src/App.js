@@ -423,7 +423,6 @@ export function DisplayCheckResult(
     <Card
       title={titleContent}
       key={title}
-      noHovering={true}
       style={{textAlign: 'center'}}
     >
       {checkResult ? (
