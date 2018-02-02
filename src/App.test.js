@@ -6,6 +6,7 @@ import {
   App,
   ConnectedApp,
   Dashboard,
+  DisplayCheckResult,
   DisplayStatus,
   Errors,
   LoginButton,
@@ -365,7 +366,7 @@ describe('<Dashboard />', () => {
       />,
     );
     expect(wrapper.find(Spin).length).toBe(0);
-    expect(wrapper.find(DisplayStatus).length).toBe(2);
+    expect(wrapper.find(DisplayCheckResult).length).toBe(2);
   });
   it("displays an extra icon and tooltip on the checks that aren't actionable", () => {
     const wrapper = mount(
