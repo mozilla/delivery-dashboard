@@ -51,7 +51,7 @@
     "eslint-plugin-prettier": "2.6.0",
     "eslint-plugin-promise": "3.6.0",
     "flow-bin": "0.64.0",
-    "flow-coverage-report": "0.4.0",
+    "flow-coverage-report": "0.4.1",
     "flow-typed": "2.1.5",
     "prettier": "1.7.0",
     "react-app-rewired": "1.2.9",
