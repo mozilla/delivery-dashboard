@@ -56,7 +56,7 @@ export const parseUrl = (
   if (!parsed) {
     return null;
   }
-  const [_, service, product, version] = parsed;
+  const [, service, product, version] = parsed;
   const maybeProduct = products.find(p => p === product);
   if (!maybeProduct) {
     // unsupported/unrecognized product.
