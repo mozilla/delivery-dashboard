@@ -3,7 +3,7 @@
   "version": "2.1.0",
   "private": true,
   "dependencies": {
-    "eslint-plugin-react": "7.4.0",
+    "eslint-plugin-react": "7.6.1",
     "gh-pages": "1.0.0",
     "photon-ant": "0.1.4",
     "react": "16.0.0",
