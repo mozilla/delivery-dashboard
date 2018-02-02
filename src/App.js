@@ -350,14 +350,15 @@ export function Dashboard({
           />
         </h2>
         <div className="dashboard">
-          {releaseInfo.checks.map(check =>
+          {releaseInfo.checks.map(check => (
             // Map on the checklist to display the results in the same order.
             <DisplayCheckResult
+              key={check.title}
               title={check.title}
               actionable={check.actionable}
               checkResult={checkResults[check.title]}
             />
-          )}
+          ))}
         </div>
       </div>
     );
@@ -410,11 +411,14 @@ export function OverallStatus({
 type DisplayCheckResultProps = {
   title: string,
   actionable: boolean,
-  checkResult: CheckResult
-}
-class DisplayCheckResult extends React.PureComponent<DisplayCheckResultProps, void> {
+  checkResult: CheckResult,
+};
+class DisplayCheckResult extends React.PureComponent<
+  DisplayCheckResultProps,
+  void,
+> {
   render() {
-    const { title, actionable, checkResult} = this.props;
+    const {title, actionable, checkResult} = this.props;
     let titleContent = title;
     if (!actionable) {
       titleContent = (
@@ -426,12 +430,7 @@ class DisplayCheckResult extends React.PureComponent<DisplayCheckResultProps, vo
       );
     }
     return (
-      <Card
-        title={titleContent}
-        key={title}
-        noHovering={true}
-        style={{textAlign: 'center'}}
-      >
+      <Card title={titleContent} key={title} style={{textAlign: 'center'}}>
         {checkResult ? (
           <DisplayStatus
             status={checkResult.status}
