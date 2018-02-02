@@ -420,11 +420,7 @@ export function DisplayCheckResult(
     );
   }
   return (
-    <Card
-      title={titleContent}
-      key={title}
-      style={{textAlign: 'center'}}
-    >
+    <Card title={titleContent} key={title} style={{textAlign: 'center'}}>
       {checkResult ? (
         <DisplayStatus
           status={checkResult.status}
