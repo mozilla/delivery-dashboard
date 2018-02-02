@@ -37,11 +37,14 @@ import {checkLogin, fetchUserInfo, isAuthenticated} from './auth0';
 const deliveryDashboardVersionData: APIVersionData = require('./version.json');
 
 function requestNotificationPermission(): void {
-  if (
-    Notification.permission !== 'denied' &&
-    Notification.permission !== 'granted'
-  ) {
-    Notification.requestPermission();
+  // Some browsers don't support Notification yet. I'm looking at you iOS Safari
+  if ('Notification' in window) {
+    if (
+      Notification.permission !== 'denied' &&
+      Notification.permission !== 'granted'
+    ) {
+      Notification.requestPermission();
+    }
   }
 }
 
