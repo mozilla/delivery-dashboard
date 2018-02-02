@@ -15,7 +15,7 @@
     "redux-logger": "3.0.6",
     "redux-saga": "0.16.0",
     "redux-thunk": "2.2.0",
-    "yarn": "1.2.1"
+    "yarn": "1.3.2"
   },
   "homepage": "https://mozilla.github.io/delivery-dashboard/",
   "homepage_dev": "https://mozilla.github.io/delivery-dashboard/dev/",
