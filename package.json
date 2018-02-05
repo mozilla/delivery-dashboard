@@ -25,14 +25,17 @@
     "build:readme": "toctoc -w -d 2 README.md",
     "prebuild": "yarn run version-file",
     "test": "NODE_ENV=test react-app-rewired test --env=jsdom --silent",
-    "test-coverage": "yarn run test --coverage --collectCoverageFrom=src/**/*js --collectCoverageFrom=!src/index.js --collectCoverageFrom=!src/registerServiceWorker.js",
+    "test-coverage":
+      "yarn run test --coverage --collectCoverageFrom=src/**/*js --collectCoverageFrom=!src/index.js --collectCoverageFrom=!src/registerServiceWorker.js",
     "eject": "react-app-rewired eject",
     "deploy": "yarn run build && gh-pages --add --dist build/",
-    "deploy-dev": "PUBLIC_URL=$npm_package_homepage_dev yarn run deploy --dest dev/",
+    "deploy-dev":
+      "PUBLIC_URL=$npm_package_homepage_dev yarn run deploy --dest dev/",
     "lint": "eslint *.js src",
     "lint-fix": "yarn lint --fix",
     "flow": "flow",
-    "flow-coverage": "flow-coverage-report -i 'src/**/*.js' -x 'src/**/*.test.js' -t html -t text",
+    "flow-coverage":
+      "flow-coverage-report -i 'src/**/*.js' -x 'src/**/*.test.js' -t html -t text",
     "check": "yarn lint && yarn flow",
     "precheck": "yarn run version-file",
     "version-file": "./update_version.sh"

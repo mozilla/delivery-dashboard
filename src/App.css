@@ -57,7 +57,6 @@ header h1 {
   word-wrap: break-word;
 }
 
-
 footer {
   background-color: #fff;
   bottom: 0;
@@ -67,7 +66,6 @@ footer {
   text-align: center;
   width: 100%;
 }
-
 
 @media (max-width: 992px) {
   .user {
@@ -85,7 +83,7 @@ footer {
   }
 
   .ant-card {
-      margin-bottom: 5px;
+    margin-bottom: 5px;
   }
 
   .ant-layout-sider {
