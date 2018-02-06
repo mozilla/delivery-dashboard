@@ -11,26 +11,15 @@ import {
   UPDATE_URL,
   REFRESH_STATUS,
   REQUEST_STATUS,
-  LOGGED_IN,
-  LOGGED_OUT,
-  LOGIN_REQUESTED,
-  REQUEST_LOGIN,
-  REQUEST_LOGOUT,
-  UPDATE_USER_INFO,
 } from './types';
 import {
   addCheckResult,
   addServerError,
   capitalizeChannel,
-  loggedIn,
-  loggedOut,
-  loginRequested,
   requestOngoingVersions,
   requestPollbotVersion,
   refreshCheckResult,
   refreshStatus,
-  requestLogin,
-  requestLogout,
   requestStatus,
   setVersion,
   sortByVersion,
@@ -38,7 +27,6 @@ import {
   updatePollbotVersion,
   updateReleaseInfo,
   updateUrl,
-  updateUserInfo,
 } from './actions';
 
 describe('action creators', () => {
@@ -141,15 +129,6 @@ describe('action creators', () => {
       err: 'some error',
     });
   });
-  it('returns a LOGGED_IN action for loggedIn', () => {
-    expect(loggedIn()).toEqual({type: LOGGED_IN});
-  });
-  it('returns a LOGGED_OUT action for loggedOut', () => {
-    expect(loggedOut()).toEqual({type: LOGGED_OUT});
-  });
-  it('returns a LOGIN_REQUESTED action for loginRequested', () => {
-    expect(loginRequested()).toEqual({type: LOGIN_REQUESTED});
-  });
 });
 
 describe('sagas action creator', () => {
@@ -173,15 +152,6 @@ describe('sagas action creator', () => {
       product: 'firefox',
       version: '50.0',
     });
-  });
-  it('handles a REQUEST_LOGIN action for requestLogin', () => {
-    expect(requestLogin()).toEqual({type: REQUEST_LOGIN});
-  });
-  it('handles a REQUEST_LOGOUT action for requestLogout', () => {
-    expect(requestLogout()).toEqual({type: REQUEST_LOGOUT});
-  });
-  it('handles a UPDATE_USER_INFO action for updateUserInfo', () => {
-    expect(updateUserInfo()).toEqual({type: UPDATE_USER_INFO});
   });
 });
 

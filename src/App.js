@@ -8,14 +8,10 @@ import type {MapStateToProps} from 'react-redux';
 import {
   capitalize,
   localUrlFromVersion,
-  // loggedIn,
   requestOngoingVersions,
   requestPollbotVersion,
   refreshStatus,
-  // requestLogin,
-  // requestLogout,
   requestStatus,
-  // updateUserInfo,
 } from './actions';
 import type {
   APIVersionData,
@@ -23,7 +19,6 @@ import type {
   CheckResults,
   Dispatch,
   Error,
-  Login,
   ProductVersions,
   Product,
   ReleaseInfo,
@@ -31,8 +26,6 @@ import type {
   Status,
 } from './types';
 import {products} from './types';
-// import {LOGGED_IN, LOGGED_OUT, LOGIN_REQUESTED} from './types';
-// import {checkLogin, fetchUserInfo, isAuthenticated} from './auth0';
 
 const deliveryDashboardVersionData: APIVersionData = require('./version.json');
 
@@ -74,7 +67,6 @@ type AppProps = {
   dispatch: Dispatch,
   pollbotVersion: APIVersionData,
   shouldRefresh: boolean,
-  login: Login,
   errors: Error[],
 };
 export class App extends React.Component<AppProps, void> {
@@ -107,15 +99,6 @@ export class App extends React.Component<AppProps, void> {
     }
   }
 
-  // onUserInfo = (userInfo: any): void => {
-  //   this.props.dispatch(updateUserInfo(userInfo));
-  // };
-
-  // onLoggedIn = (): void => {
-  //   this.props.dispatch(loggedIn());
-  //   fetchUserInfo(this.onUserInfo);
-  // };
-
   componentDidMount(): void {
     this.props.dispatch(requestPollbotVersion());
     this.props.dispatch(requestOngoingVersions());
@@ -125,13 +108,6 @@ export class App extends React.Component<AppProps, void> {
     window.onhashchange = this.versionFromHash;
     // Check if we have a version in the url.
     this.versionFromHash();
-    // // If we just came back from an auth0 login, we should have the needed info
-    // // in the hash.
-    // checkLogin(this.onLoggedIn);
-    // // Maybe we were already logged in.
-    // if (isAuthenticated()) {
-    //   this.onLoggedIn();
-    // }
   }
 
   componentDidUpdate(): void {
@@ -149,14 +125,6 @@ export class App extends React.Component<AppProps, void> {
     }
   };
 
-  // onLoginRequested = (): void => {
-  //   this.props.dispatch(requestLogin());
-  // };
-  //
-  // onLogoutRequested = (): void => {
-  //   this.props.dispatch(requestLogout());
-  // };
-
   render() {
     return (
       <div>
@@ -164,15 +132,6 @@ export class App extends React.Component<AppProps, void> {
           <h1>
             <a href=".">Delivery Dashboard</a>
           </h1>
-          {/* We don't need the login button yet, and don't have an auth0 account/profile for it
-          <div className="user">
-            <LoginButton
-              loginState={this.props.login}
-              onLoginRequested={this.onLoginRequested}
-              onLogoutRequested={this.onLogoutRequested}
-            />
-          </div>
-          */}
         </header>
         <Errors errors={this.props.errors} />
         <Layout className="mainContent">
@@ -199,47 +158,12 @@ const connectedAppMapStateToProps: MapStateToProps<*, *, *> = (
   checkResults: state.checkResults,
   pollbotVersion: state.pollbotVersion,
   shouldRefresh: state.shouldRefresh,
-  login: state.login,
   errors: state.errors,
 });
 export const ConnectedApp = connect(
   connectedAppMapStateToProps,
   (dispatch: Dispatch) => ({dispatch: dispatch}),
 )(App);
-
-// type LoginButtonProps = {
-//   onLoginRequested: () => void,
-//   onLogoutRequested: () => void,
-//   loginState: Login,
-// };
-
-// export function LoginButton({
-//   onLoginRequested,
-//   onLogoutRequested,
-//   loginState,
-// }: LoginButtonProps) {
-//   switch (loginState) {
-//     case LOGGED_IN:
-//       return (
-//         <Button icon="logout" onClick={onLogoutRequested}>
-//           logout
-//         </Button>
-//       );
-//     case LOGIN_REQUESTED:
-//       return (
-//         <Button icon="login" loading={true}>
-//           login
-//         </Button>
-//       );
-//     case LOGGED_OUT:
-//     default:
-//       return (
-//         <Button icon="login" onClick={onLoginRequested}>
-//           login
-//         </Button>
-//       );
-//   }
-// }
 
 const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) => ({
   versions: state.productVersions,
