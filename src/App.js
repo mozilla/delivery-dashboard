@@ -1,21 +1,21 @@
 // @flow
 import 'photon-ant';
 import * as React from 'react';
-import {Alert, Button, Card, Icon, Layout, Spin, Tooltip} from 'antd';
+import {Alert, Card, Icon, Layout, Spin, Tooltip} from 'antd';
 import './App.css';
 import {connect} from 'react-redux';
 import type {MapStateToProps} from 'react-redux';
 import {
   capitalize,
   localUrlFromVersion,
-  loggedIn,
+  // loggedIn,
   requestOngoingVersions,
   requestPollbotVersion,
   refreshStatus,
-  requestLogin,
-  requestLogout,
+  // requestLogin,
+  // requestLogout,
   requestStatus,
-  updateUserInfo,
+  // updateUserInfo,
 } from './actions';
 import type {
   APIVersionData,
@@ -31,8 +31,8 @@ import type {
   Status,
 } from './types';
 import {products} from './types';
-import {LOGGED_IN, LOGGED_OUT, LOGIN_REQUESTED} from './types';
-import {checkLogin, fetchUserInfo, isAuthenticated} from './auth0';
+// import {LOGGED_IN, LOGGED_OUT, LOGIN_REQUESTED} from './types';
+// import {checkLogin, fetchUserInfo, isAuthenticated} from './auth0';
 
 const deliveryDashboardVersionData: APIVersionData = require('./version.json');
 
@@ -107,14 +107,14 @@ export class App extends React.Component<AppProps, void> {
     }
   }
 
-  onUserInfo = (userInfo: any): void => {
-    this.props.dispatch(updateUserInfo(userInfo));
-  };
+  // onUserInfo = (userInfo: any): void => {
+  //   this.props.dispatch(updateUserInfo(userInfo));
+  // };
 
-  onLoggedIn = (): void => {
-    this.props.dispatch(loggedIn());
-    fetchUserInfo(this.onUserInfo);
-  };
+  // onLoggedIn = (): void => {
+  //   this.props.dispatch(loggedIn());
+  //   fetchUserInfo(this.onUserInfo);
+  // };
 
   componentDidMount(): void {
     this.props.dispatch(requestPollbotVersion());
@@ -125,13 +125,13 @@ export class App extends React.Component<AppProps, void> {
     window.onhashchange = this.versionFromHash;
     // Check if we have a version in the url.
     this.versionFromHash();
-    // If we just came back from an auth0 login, we should have the needed info
-    // in the hash.
-    checkLogin(this.onLoggedIn);
-    // Maybe we were already logged in.
-    if (isAuthenticated()) {
-      this.onLoggedIn();
-    }
+    // // If we just came back from an auth0 login, we should have the needed info
+    // // in the hash.
+    // checkLogin(this.onLoggedIn);
+    // // Maybe we were already logged in.
+    // if (isAuthenticated()) {
+    //   this.onLoggedIn();
+    // }
   }
 
   componentDidUpdate(): void {
@@ -149,13 +149,13 @@ export class App extends React.Component<AppProps, void> {
     }
   };
 
-  onLoginRequested = (): void => {
-    this.props.dispatch(requestLogin());
-  };
-
-  onLogoutRequested = (): void => {
-    this.props.dispatch(requestLogout());
-  };
+  // onLoginRequested = (): void => {
+  //   this.props.dispatch(requestLogin());
+  // };
+  //
+  // onLogoutRequested = (): void => {
+  //   this.props.dispatch(requestLogout());
+  // };
 
   render() {
     return (
@@ -207,39 +207,39 @@ export const ConnectedApp = connect(
   (dispatch: Dispatch) => ({dispatch: dispatch}),
 )(App);
 
-type LoginButtonProps = {
-  onLoginRequested: () => void,
-  onLogoutRequested: () => void,
-  loginState: Login,
-};
+// type LoginButtonProps = {
+//   onLoginRequested: () => void,
+//   onLogoutRequested: () => void,
+//   loginState: Login,
+// };
 
-export function LoginButton({
-  onLoginRequested,
-  onLogoutRequested,
-  loginState,
-}: LoginButtonProps) {
-  switch (loginState) {
-    case LOGGED_IN:
-      return (
-        <Button icon="logout" onClick={onLogoutRequested}>
-          logout
-        </Button>
-      );
-    case LOGIN_REQUESTED:
-      return (
-        <Button icon="login" loading={true}>
-          login
-        </Button>
-      );
-    case LOGGED_OUT:
-    default:
-      return (
-        <Button icon="login" onClick={onLoginRequested}>
-          login
-        </Button>
-      );
-  }
-}
+// export function LoginButton({
+//   onLoginRequested,
+//   onLogoutRequested,
+//   loginState,
+// }: LoginButtonProps) {
+//   switch (loginState) {
+//     case LOGGED_IN:
+//       return (
+//         <Button icon="logout" onClick={onLogoutRequested}>
+//           logout
+//         </Button>
+//       );
+//     case LOGIN_REQUESTED:
+//       return (
+//         <Button icon="login" loading={true}>
+//           login
+//         </Button>
+//       );
+//     case LOGGED_OUT:
+//     default:
+//       return (
+//         <Button icon="login" onClick={onLoginRequested}>
+//           login
+//         </Button>
+//       );
+//   }
+// }
 
 const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) => ({
   versions: state.productVersions,
