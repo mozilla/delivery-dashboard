@@ -3,43 +3,39 @@ module.exports = {
     browser: true,
     es6: true,
     node: true,
-    jest: true,
+    jest: true
   },
-  parser: 'babel-eslint',
+  parser: "babel-eslint",
   extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:flowtype/recommended',
-    'prettier',
-    'prettier/flowtype',
-    'prettier/react',
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:flowtype/recommended",
+    "prettier",
+    "prettier/flowtype",
+    "prettier/react"
   ],
   parserOptions: {
-    ecmaVersion: '2017',
+    ecmaVersion: "2017",
     ecmaFeatures: {
       experimentalObjectRestSpread: true,
-      jsx: true,
+      jsx: true
     },
-    sourceType: 'module',
+    sourceType: "module"
   },
-  plugins: ['react', 'import', 'prettier', 'flowtype'],
+  plugins: ["react", "import", "prettier", "flowtype"],
   rules: {
-    'prettier/prettier': [
-      'error',
+    "prettier/prettier": [
+      "error",
       {
-        singleQuote: true,
-        trailingComma: 'all',
-        bracketSpacing: false,
-        jsxBracketSameLine: false,
-        parser: 'flow',
-      },
+        parser: "flow"
+      }
     ],
 
     // overriding recommended rules
-    'no-console': ['error', {allow: ['log', 'warn', 'error']}],
-    'no-unused-vars': [
-      'error',
-      {argsIgnorePattern: '^_', varsIgnorePattern: '^_'},
-    ],
-  },
+    "no-console": ["error", { allow: ["log", "warn", "error"] }],
+    "no-unused-vars": [
+      "error",
+      { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }
+    ]
+  }
 };

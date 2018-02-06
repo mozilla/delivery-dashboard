@@ -11,25 +11,25 @@ import {
   LOGGED_IN,
   LOGGED_OUT,
   LOGIN_REQUESTED,
-  UPDATE_USER_INFO,
-} from './types';
-import type {Action, State} from './types';
+  UPDATE_USER_INFO
+} from "./types";
+import type { Action, State } from "./types";
 
 export const initialState: State = {
-  version: ['firefox', ''],
-  productVersions: {firefox: {}, devedition: {}},
+  version: ["firefox", ""],
+  productVersions: { firefox: {}, devedition: {} },
   releaseInfo: null,
   checkResults: {},
   pollbotVersion: null,
   shouldRefresh: false,
   login: LOGGED_OUT,
   userInfo: null,
-  errors: [],
+  errors: []
 };
 
 export function deliveryDashboard(
   state: State = initialState,
-  action: Action,
+  action: Action
 ): State {
   let errors;
   let updatedCheckResults;
@@ -37,61 +37,61 @@ export function deliveryDashboard(
     case ADD_CHECK_RESULT:
       return Object.assign({}, state, {
         checkResults: Object.assign({}, state.checkResults, {
-          [action.title]: action.result,
+          [action.title]: action.result
         }),
         shouldRefresh:
-          action.result.status !== 'exists' ? true : state.shouldRefresh,
+          action.result.status !== "exists" ? true : state.shouldRefresh
       });
     case REFRESH_CHECK_RESULT:
       updatedCheckResults = Object.assign({}, state.checkResults);
       delete updatedCheckResults[action.title];
       return Object.assign({}, state, {
-        checkResults: updatedCheckResults,
+        checkResults: updatedCheckResults
       });
     case ADD_SERVER_ERROR:
       errors = state.errors.slice();
       errors.push([action.title, action.err]);
       return Object.assign({}, state, {
         errors: errors,
-        shouldRefresh: true,
+        shouldRefresh: true
       });
     case SET_VERSION:
       return Object.assign({}, state, {
         version: [action.product, action.version],
         checkResults: {},
         shouldRefresh: false,
-        errors: [],
+        errors: []
       });
     case UPDATE_PRODUCT_VERSIONS:
       return Object.assign({}, state, {
         productVersions: Object.assign({}, state.productVersions, {
-          [action.product]: action.versions,
-        }),
+          [action.product]: action.versions
+        })
       });
     case UPDATE_RELEASE_INFO:
       return Object.assign({}, state, {
-        releaseInfo: action.releaseInfo,
+        releaseInfo: action.releaseInfo
       });
     case UPDATE_POLLBOT_VERSION:
       return Object.assign({}, state, {
-        pollbotVersion: action.version,
+        pollbotVersion: action.version
       });
     case LOGGED_IN:
       return Object.assign({}, state, {
-        login: LOGGED_IN,
+        login: LOGGED_IN
       });
     case LOGGED_OUT:
       return Object.assign({}, state, {
         login: LOGGED_OUT,
-        userInfo: null,
+        userInfo: null
       });
     case LOGIN_REQUESTED:
       return Object.assign({}, state, {
-        login: LOGIN_REQUESTED,
+        login: LOGIN_REQUESTED
       });
     case UPDATE_USER_INFO:
       return Object.assign({}, state, {
-        userInfo: action.userInfo,
+        userInfo: action.userInfo
       });
     default:
       return state;
