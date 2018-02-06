@@ -3,7 +3,6 @@
   "version": "2.1.0",
   "private": true,
   "dependencies": {
-    "eslint-plugin-react": "7.6.1",
     "gh-pages": "1.1.0",
     "photon-ant": "0.1.4",
     "react": "16.2.0",
@@ -31,8 +30,8 @@
     "deploy": "yarn run build && gh-pages --add --dist build/",
     "deploy-dev":
       "PUBLIC_URL=$npm_package_homepage_dev yarn run deploy --dest dev/",
-    "lint": "eslint *.js src",
-    "lint-fix": "yarn lint --fix",
+    "lint": "prettier -l src/*.js src/*.css",
+    "lint-fix": "yarn lint --write",
     "flow": "flow",
     "flow-coverage":
       "flow-coverage-report -i 'src/**/*.js' -x 'src/**/*.test.js' -t html -t text",
@@ -45,13 +44,6 @@
     "codecov": "3.0.0",
     "enzyme": "3.3.0",
     "enzyme-adapter-react-16": "1.1.1",
-    "eslint": "4.7.2",
-    "eslint-config-prettier": "2.9.0",
-    "eslint-plugin-flowtype": "2.42.0",
-    "eslint-plugin-import": "2.8.0",
-    "eslint-plugin-node": "6.0.0",
-    "eslint-plugin-prettier": "2.6.0",
-    "eslint-plugin-promise": "3.6.0",
     "flow-bin": "0.64.0",
     "flow-coverage-report": "0.4.1",
     "flow-typed": "2.3.0",
