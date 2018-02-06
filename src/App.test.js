@@ -1,7 +1,7 @@
-import React from 'react';
-import renderer from 'react-test-renderer';
-import {Provider} from 'react-redux';
-import {mount, shallow} from 'enzyme';
+import React from "react";
+import renderer from "react-test-renderer";
+import { Provider } from "react-redux";
+import { mount, shallow } from "enzyme";
 import {
   App,
   ConnectedApp,
@@ -11,20 +11,20 @@ import {
   LoginButton,
   OverallStatus,
   ReleasesMenu,
-  parseUrl,
-} from './App';
-import {Alert, Spin, Tooltip} from 'antd';
-import createStore from './create-store';
-import {SERVER} from './PollbotAPI';
-import Enzyme from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import {LOGGED_IN, LOGGED_OUT, LOGIN_REQUESTED} from './types';
+  parseUrl
+} from "./App";
+import { Alert, Spin, Tooltip } from "antd";
+import createStore from "./create-store";
+import { SERVER } from "./PollbotAPI";
+import Enzyme from "enzyme";
+import Adapter from "enzyme-adapter-react-16";
+import { LOGGED_IN, LOGGED_OUT, LOGIN_REQUESTED } from "./types";
 
-Enzyme.configure({adapter: new Adapter()});
+Enzyme.configure({ adapter: new Adapter() });
 
 // Mock the Notification API.
 global.Notification = {
-  requestPermission: jest.fn(),
+  requestPermission: jest.fn()
 };
 
 // Mock the localStorage API.
@@ -40,7 +40,7 @@ global.localStorage = (function() {
     },
     clear: function() {
       store = {};
-    },
+    }
   };
 })();
 
@@ -50,22 +50,22 @@ global.localStorage = (function() {
 function fetchMocker(response) {
   return jest
     .fn()
-    .mockImplementation(() => Promise.resolve({json: () => response}));
+    .mockImplementation(() => Promise.resolve({ json: () => response }));
 }
 
 global.fetch = fetchMocker({
-  version: 'pollbot-version-number',
-  commit: 'pollbot-commit-hash',
-  source: 'https://github.com/mozilla/PollBot.git',
-  name: 'pollbot',
+  version: "pollbot-version-number",
+  commit: "pollbot-commit-hash",
+  source: "https://github.com/mozilla/PollBot.git",
+  name: "pollbot"
 });
 
 // Mock the delivery-dashboard version
-jest.mock('./version', () => ({
-  version: 'version-number',
-  commit: 'commit-hash',
-  source: 'https://github.com/mozilla/delivery-dashboard.git',
-  name: 'delivery-dashboard',
+jest.mock("./version", () => ({
+  version: "version-number",
+  commit: "commit-hash",
+  source: "https://github.com/mozilla/delivery-dashboard.git",
+  name: "delivery-dashboard"
 }));
 
 beforeAll(() => {
@@ -76,43 +76,43 @@ afterAll(() => {
   jest.clearAllTimers();
 });
 
-describe('<App />', () => {
-  it('renders without crashing', () => {
+describe("<App />", () => {
+  it("renders without crashing", () => {
     const app = renderer.create(
       <Provider store={createStore()}>
         <ConnectedApp />
-      </Provider>,
+      </Provider>
     );
     expect(app.toJSON()).toMatchSnapshot();
   });
-  it('requests for Notification permissions', () => {
+  it("requests for Notification permissions", () => {
     renderer.create(
       <Provider store={createStore()}>
         <ConnectedApp />
-      </Provider>,
+      </Provider>
     );
     expect(global.Notification.requestPermission).toHaveBeenCalled();
   });
-  it('requests PollBot for its version', () => {
+  it("requests PollBot for its version", () => {
     renderer.create(
       <Provider store={createStore()}>
         <ConnectedApp />
-      </Provider>,
+      </Provider>
     );
     expect(global.fetch).toHaveBeenCalledWith(`${SERVER}/__version__`);
   });
-  it('checks if the user just logged in', () => {
-    const module = require('./auth0');
+  it("checks if the user just logged in", () => {
+    const module = require("./auth0");
     module.checkLogin = jest.fn();
 
     const app = shallow(<App dispatch={jest.fn()} />).instance();
     expect(module.checkLogin).toHaveBeenCalledWith(app.onLoggedIn);
   });
-  it('checks if the user is logged in', () => {
-    const auth0Module = require('./auth0');
+  it("checks if the user is logged in", () => {
+    const auth0Module = require("./auth0");
     auth0Module.isAuthenticated = jest.fn();
     auth0Module.fetchUserInfo = jest.fn();
-    const actionsModule = require('./actions');
+    const actionsModule = require("./actions");
     actionsModule.loggedIn = jest.fn();
 
     shallow(<App dispatch={jest.fn()} />);
@@ -125,10 +125,10 @@ describe('<App />', () => {
     expect(actionsModule.loggedIn).toHaveBeenCalledTimes(1);
     expect(auth0Module.fetchUserInfo).toHaveBeenCalledWith(app.onUserInfo);
   });
-  it('dispatches loggedIn and requests user info', () => {
-    const auth0Module = require('./auth0');
+  it("dispatches loggedIn and requests user info", () => {
+    const auth0Module = require("./auth0");
     auth0Module.fetchUserInfo = jest.fn();
-    const actionsModule = require('./actions');
+    const actionsModule = require("./actions");
     actionsModule.loggedIn = jest.fn();
 
     const app = shallow(<App dispatch={jest.fn()} />).instance();
@@ -137,34 +137,34 @@ describe('<App />', () => {
     expect(actionsModule.loggedIn).toHaveBeenCalledTimes(numCalls + 1);
     expect(auth0Module.fetchUserInfo).toHaveBeenCalledWith(app.onUserInfo);
   });
-  it('dispatches userInfo', () => {
-    const module = require('./actions');
+  it("dispatches userInfo", () => {
+    const module = require("./actions");
     module.updateUserInfo = jest.fn();
 
     const app = shallow(<App dispatch={jest.fn()} />).instance();
-    app.onUserInfo('foo');
-    expect(module.updateUserInfo).toHaveBeenCalledWith('foo');
+    app.onUserInfo("foo");
+    expect(module.updateUserInfo).toHaveBeenCalledWith("foo");
   });
-  it('dispatches requestLogin', () => {
-    const module = require('./actions');
+  it("dispatches requestLogin", () => {
+    const module = require("./actions");
     module.requestLogin = jest.fn();
 
     const app = shallow(<App dispatch={jest.fn()} />).instance();
     app.onLoginRequested();
     expect(module.requestLogin).toHaveBeenCalledTimes(1);
   });
-  it('dispatches requestLogout', () => {
-    const module = require('./actions');
+  it("dispatches requestLogout", () => {
+    const module = require("./actions");
     module.requestLogout = jest.fn();
 
     const app = shallow(<App dispatch={jest.fn()} />).instance();
     app.onLogoutRequested();
     expect(module.requestLogout).toHaveBeenCalledTimes(1);
   });
-  it('calls requestStatus(version) with the version from the hash', () => {
-    global.window.location.hash = '#pollbot/firefox/123.0';
+  it("calls requestStatus(version) with the version from the hash", () => {
+    global.window.location.hash = "#pollbot/firefox/123.0";
 
-    const module = require('./actions');
+    const module = require("./actions");
     module.requestStatus = jest.fn();
 
     const store = createStore();
@@ -175,12 +175,12 @@ describe('<App />', () => {
     renderer.create(
       <Provider store={store}>
         <ConnectedApp />
-      </Provider>,
+      </Provider>
     );
-    expect(module.requestStatus).toHaveBeenCalledWith('firefox', '123.0');
+    expect(module.requestStatus).toHaveBeenCalledWith("firefox", "123.0");
   });
-  it('sets up auto-refresh', () => {
-    const module = require('./actions');
+  it("sets up auto-refresh", () => {
+    const module = require("./actions");
     module.requestStatus = jest.fn();
     module.refreshStatus = jest.fn();
 
@@ -194,7 +194,7 @@ describe('<App />', () => {
 
     // Shouldn't auto-refresh => stop auto refresh.
     expect(app.stopAutoRefresh).toHaveBeenCalledTimes(0);
-    wrapper.setProps({shouldRefresh: false});
+    wrapper.setProps({ shouldRefresh: false });
     expect(app.stopAutoRefresh).toHaveBeenCalledTimes(1);
     expect(app.refreshIntervalId).toBeNull();
     app.setUpAutoRefresh();
@@ -206,7 +206,7 @@ describe('<App />', () => {
 
     // Should auto-refresh => start auto refresh.
     expect(app.refreshIntervalId).toBeNull();
-    wrapper.setProps({shouldRefresh: true});
+    wrapper.setProps({ shouldRefresh: true });
     app.setUpAutoRefresh();
     expect(app.stopAutoRefresh).toHaveBeenCalledTimes(2); // Not called again.
     expect(setInterval).toHaveBeenCalledTimes(1);
@@ -216,7 +216,7 @@ describe('<App />', () => {
     expect(module.refreshStatus).toHaveBeenCalledTimes(1);
 
     // Should auto-refresh, but already set up => don't start auto refresh.
-    wrapper.setProps({shouldRefresh: true});
+    wrapper.setProps({ shouldRefresh: true });
     app.setUpAutoRefresh();
     expect(app.stopAutoRefresh).toHaveBeenCalledTimes(2); // Not called again.
     expect(setInterval).toHaveBeenCalledTimes(1); // Not called again.
@@ -224,7 +224,7 @@ describe('<App />', () => {
     expect(module.requestStatus).toHaveBeenCalledTimes(numCalledRequestStatus);
     expect(module.refreshStatus).toHaveBeenCalledTimes(1); // Not called again.
   });
-  it('stops auto-refresh', () => {
+  it("stops auto-refresh", () => {
     const app = shallow(<App dispatch={jest.fn()} />).instance();
 
     // Shouldn't call clearInterval if not needed.
@@ -237,7 +237,7 @@ describe('<App />', () => {
     expect(clearInterval).toHaveBeenCalledWith(123);
     expect(app.refreshIntervalId).toBeNull();
   });
-  it('stops the auto-refresh on unmount', () => {
+  it("stops the auto-refresh on unmount", () => {
     const wrapper = shallow(<App dispatch={jest.fn()} />);
     const app = wrapper.instance();
     app.stopAutoRefresh = jest.fn();
@@ -246,63 +246,63 @@ describe('<App />', () => {
   });
 });
 
-describe('parseUrl', () => {
-  it('returns null for a non matching url', () => {
-    expect(parseUrl('')).toBeNull();
-    expect(parseUrl('#foobar')).toBeNull();
+describe("parseUrl", () => {
+  it("returns null for a non matching url", () => {
+    expect(parseUrl("")).toBeNull();
+    expect(parseUrl("#foobar")).toBeNull();
   });
   it("returns null if the product isn't recognized", () => {
-    expect(parseUrl('#pollbot/foobar/50.0')).toBeNull();
+    expect(parseUrl("#pollbot/foobar/50.0")).toBeNull();
   });
-  it('returns the proper structure for a matching url', () => {
-    expect(parseUrl('#pollbot/firefox/50.0')).toEqual({
-      service: 'pollbot',
-      product: 'firefox',
-      version: '50.0',
+  it("returns the proper structure for a matching url", () => {
+    expect(parseUrl("#pollbot/firefox/50.0")).toEqual({
+      service: "pollbot",
+      product: "firefox",
+      version: "50.0"
     });
   });
 });
 
-describe('<ReleasesMenu />', () => {
+describe("<ReleasesMenu />", () => {
   it("displays a list of channels with spinners if there's no product versions yet", () => {
     const wrapper = mount(<ReleasesMenu versions={{}} />);
     const textContent = wrapper.text();
-    expect(textContent).toContain('Nightly');
-    expect(textContent).toContain('Beta');
-    expect(textContent).toContain('Devedition');
-    expect(textContent).toContain('Release');
-    expect(textContent).toContain('Esr');
+    expect(textContent).toContain("Nightly");
+    expect(textContent).toContain("Beta");
+    expect(textContent).toContain("Devedition");
+    expect(textContent).toContain("Release");
+    expect(textContent).toContain("Esr");
   });
   it("displays a list of channels with version numbers if there's product versions", () => {
     const wrapper = mount(
       <ReleasesMenu
         versions={{
           firefox: {
-            nightly: '60.0a1',
-            beta: '59.0b4',
-            release: '58.0',
-            esr: '52.6.0esr',
+            nightly: "60.0a1",
+            beta: "59.0b4",
+            release: "58.0",
+            esr: "52.6.0esr"
           },
           devedition: {
-            devedition: '59.0b4',
-          },
+            devedition: "59.0b4"
+          }
         }}
-      />,
+      />
     );
     const textContent = wrapper.text();
-    expect(textContent).toContain('Nightly: 60.0a1');
-    expect(textContent).toContain('Beta: 59.0b4');
-    expect(textContent).toContain('Devedition: 59.0b4');
-    expect(textContent).toContain('Release: 58.0');
-    expect(textContent).toContain('Esr: 52.6.0esr');
+    expect(textContent).toContain("Nightly: 60.0a1");
+    expect(textContent).toContain("Beta: 59.0b4");
+    expect(textContent).toContain("Devedition: 59.0b4");
+    expect(textContent).toContain("Release: 58.0");
+    expect(textContent).toContain("Esr: 52.6.0esr");
   });
 });
 
-describe('<Errors />', () => {
-  it('displays a list of errors', () => {
-    const wrapper = mount(<Errors errors={[['foo', 'bar']]} />);
+describe("<Errors />", () => {
+  it("displays a list of errors", () => {
+    const wrapper = mount(<Errors errors={[["foo", "bar"]]} />);
     expect(wrapper.text()).toContain(
-      "Failed getting check result for 'foo': bar",
+      "Failed getting check result for 'foo': bar"
     );
   });
   it("doesn't return anything if there's no errors", () => {
@@ -311,58 +311,58 @@ describe('<Errors />', () => {
   });
 });
 
-describe('<Dashboard />', () => {
+describe("<Dashboard />", () => {
   const releaseInfo = {
-    channel: 'nightly',
-    product: 'firefox',
-    version: '50.0',
+    channel: "nightly",
+    product: "firefox",
+    version: "50.0",
     checks: [
-      {url: 'some-url', title: 'some title', actionable: true},
-      {url: 'some-url-2', title: 'some title 2', actionable: false},
-    ],
+      { url: "some-url", title: "some title", actionable: true },
+      { url: "some-url-2", title: "some title 2", actionable: false }
+    ]
   };
   const checkResults = {
-    'some title': {
-      status: 'exists',
-      message: 'check is successful',
-      link: 'some link',
+    "some title": {
+      status: "exists",
+      message: "check is successful",
+      link: "some link"
     },
-    'some title 2': {
-      status: 'exists',
-      message: 'check is successful',
-      link: 'some link',
-    },
+    "some title 2": {
+      status: "exists",
+      message: "check is successful",
+      link: "some link"
+    }
   };
-  it('displays a help text when no version is selected', () => {
-    const wrapper = shallow(<Dashboard productVersion={['firefox', '']} />);
+  it("displays a help text when no version is selected", () => {
+    const wrapper = shallow(<Dashboard productVersion={["firefox", ""]} />);
     expect(wrapper.text()).toContain(
-      'Learn more about a specific version. Select a version number from the left menu.',
+      "Learn more about a specific version. Select a version number from the left menu."
     );
   });
-  it('displays a spinner when a version is selected', () => {
-    const wrapper = shallow(<Dashboard productVersion={['firefox', '50.0']} />);
+  it("displays a spinner when a version is selected", () => {
+    const wrapper = shallow(<Dashboard productVersion={["firefox", "50.0"]} />);
     expect(wrapper.find(Spin).length).toBe(1);
   });
   it("displays an error when there's a Pollbot error", () => {
     const wrapper = mount(
       <Dashboard
-        productVersion={['firefox', '50.0']}
-        releaseInfo={{message: 'error from pollbot'}}
-      />,
+        productVersion={["firefox", "50.0"]}
+        releaseInfo={{ message: "error from pollbot" }}
+      />
     );
     const error = wrapper.find(Errors);
     expect(error.length).toBe(1);
     expect(error.text()).toEqual(
-      "Failed getting check result for 'Pollbot error': error from pollbot",
+      "Failed getting check result for 'Pollbot error': error from pollbot"
     );
   });
-  it('displays a list of check results when a release info is present', () => {
+  it("displays a list of check results when a release info is present", () => {
     const wrapper = shallow(
       <Dashboard
-        productVersion={['firefox', '50.0']}
+        productVersion={["firefox", "50.0"]}
         releaseInfo={releaseInfo}
         checkResults={checkResults}
-      />,
+      />
     );
     expect(wrapper.find(Spin).length).toBe(0);
     expect(wrapper.find(DisplayStatus).length).toBe(2);
@@ -370,106 +370,106 @@ describe('<Dashboard />', () => {
   it("displays an extra icon and tooltip on the checks that aren't actionable", () => {
     const wrapper = mount(
       <Dashboard
-        productVersion={['firefox', '50.0']}
+        productVersion={["firefox", "50.0"]}
         releaseInfo={releaseInfo}
         checkResults={checkResults}
-      />,
+      />
     );
     const tooltip = wrapper.find(Tooltip);
     expect(tooltip.length).toBe(1);
-    expect(tooltip.text()).toEqual(' some title 2');
-    expect(tooltip.prop('title')).toEqual('This check is not actionable');
+    expect(tooltip.text()).toEqual(" some title 2");
+    expect(tooltip.prop("title")).toEqual("This check is not actionable");
   });
 });
 
-describe('<OverallStatus />', () => {
+describe("<OverallStatus />", () => {
   const releaseInfo = {
-    channel: 'nightly',
-    product: 'firefox',
-    version: '50.0',
+    channel: "nightly",
+    product: "firefox",
+    version: "50.0",
     checks: [
-      {url: 'some-url', title: 'some title', actionable: true},
-      {url: 'some-url-2', title: 'some title 2', actionable: false},
-    ],
+      { url: "some-url", title: "some title", actionable: true },
+      { url: "some-url-2", title: "some title 2", actionable: false }
+    ]
   };
   const incompleteCheckResults = {
-    'some title': {
-      status: 'exists',
-      message: 'check is successful',
-      link: 'some link',
-    },
+    "some title": {
+      status: "exists",
+      message: "check is successful",
+      link: "some link"
+    }
   };
   const checkResults = {
-    'some title': {
-      status: 'exists',
-      message: 'check is successful',
-      link: 'some link',
+    "some title": {
+      status: "exists",
+      message: "check is successful",
+      link: "some link"
     },
-    'some title 2': {
-      status: 'exists',
-      message: 'check is successful',
-      link: 'some link',
-    },
+    "some title 2": {
+      status: "exists",
+      message: "check is successful",
+      link: "some link"
+    }
   };
   it('displays a "success" label when all the results are successful', () => {
     const wrapper = mount(
-      <OverallStatus releaseInfo={releaseInfo} checkResults={checkResults} />,
+      <OverallStatus releaseInfo={releaseInfo} checkResults={checkResults} />
     );
     const status = wrapper.find(Alert);
-    expect(status.prop('message')).toEqual('All checks are successful');
-    expect(status.prop('type')).toEqual('success');
+    expect(status.prop("message")).toEqual("All checks are successful");
+    expect(status.prop("type")).toEqual("success");
   });
   it('displays an "success" label if some non actionable check results are unsuccessful', () => {
     const results = Object.assign({}, checkResults, {
-      'some title 2': Object.assign({}, checkResults['some title 2'], {
-        status: 'missing',
-      }),
+      "some title 2": Object.assign({}, checkResults["some title 2"], {
+        status: "missing"
+      })
     });
     const wrapper = mount(
-      <OverallStatus releaseInfo={releaseInfo} checkResults={results} />,
+      <OverallStatus releaseInfo={releaseInfo} checkResults={results} />
     );
     const status = wrapper.find(Alert);
-    expect(status.prop('message')).toEqual('All checks are successful');
-    expect(status.prop('type')).toEqual('success');
+    expect(status.prop("message")).toEqual("All checks are successful");
+    expect(status.prop("type")).toEqual("success");
   });
   it('displays an "error" label if some actionable check results are unsuccessful', () => {
     const results = Object.assign({}, checkResults, {
-      'some title': Object.assign({}, checkResults['some title'], {
-        status: 'missing',
-      }),
+      "some title": Object.assign({}, checkResults["some title"], {
+        status: "missing"
+      })
     });
     const wrapper = mount(
-      <OverallStatus releaseInfo={releaseInfo} checkResults={results} />,
+      <OverallStatus releaseInfo={releaseInfo} checkResults={results} />
     );
     const status = wrapper.find(Alert);
-    expect(status.prop('message')).toEqual('Some checks failed');
-    expect(status.prop('type')).toEqual('error');
+    expect(status.prop("message")).toEqual("Some checks failed");
+    expect(status.prop("type")).toEqual("error");
   });
   it('displays an "error" label if some actionable check results are errored', () => {
     const results = Object.assign({}, checkResults, {
-      'some title': Object.assign({}, checkResults['some title'], {
-        status: 'error',
-      }),
+      "some title": Object.assign({}, checkResults["some title"], {
+        status: "error"
+      })
     });
     const wrapper = mount(
-      <OverallStatus releaseInfo={releaseInfo} checkResults={results} />,
+      <OverallStatus releaseInfo={releaseInfo} checkResults={results} />
     );
     const status = wrapper.find(Alert);
-    expect(status.prop('message')).toEqual('Some checks failed');
-    expect(status.prop('type')).toEqual('error');
+    expect(status.prop("message")).toEqual("Some checks failed");
+    expect(status.prop("type")).toEqual("error");
   });
-  it('displays a spinner for the overall status until all the checks results are received', () => {
+  it("displays a spinner for the overall status until all the checks results are received", () => {
     const wrapper = shallow(
       <OverallStatus
         releaseInfo={releaseInfo}
         checkResults={incompleteCheckResults}
-      />,
+      />
     );
     expect(wrapper.find(Spin).length).toBe(1);
   });
 });
 
-describe('<DisplayStatus />', () => {
+describe("<DisplayStatus />", () => {
   const checkDisplayStatus = (status, actionable, label) => {
     const wrapper = mount(
       <DisplayStatus
@@ -477,89 +477,89 @@ describe('<DisplayStatus />', () => {
         actionable={actionable}
         message="check message"
         url="check url"
-      />,
+      />
     );
-    const link = wrapper.find('a');
-    expect(link.prop('href')).toEqual('check url');
-    expect(link.prop('title')).toEqual('check message');
+    const link = wrapper.find("a");
+    expect(link.prop("href")).toEqual("check url");
+    expect(link.prop("title")).toEqual("check message");
     const alert = wrapper.find(Alert);
-    expect(alert.prop('type')).toBe(label);
-    expect(link.text()).toEqual('check message');
+    expect(alert.prop("type")).toBe(label);
+    expect(link.text()).toEqual("check message");
   };
-  it('displays the status when the status is exists', () => {
-    checkDisplayStatus('exists', true, 'success');
+  it("displays the status when the status is exists", () => {
+    checkDisplayStatus("exists", true, "success");
   });
-  it('displays the status when the status is incomplete', () => {
-    checkDisplayStatus('incomplete', true, 'warning');
+  it("displays the status when the status is incomplete", () => {
+    checkDisplayStatus("incomplete", true, "warning");
   });
-  it('displays the status when the status is missing', () => {
-    checkDisplayStatus('missing', true, 'warning');
+  it("displays the status when the status is missing", () => {
+    checkDisplayStatus("missing", true, "warning");
   });
-  it('displays the error message when there an error', () => {
-    checkDisplayStatus('error', true, 'error');
+  it("displays the error message when there an error", () => {
+    checkDisplayStatus("error", true, "error");
   });
-  it('displays the status when the status is exists and the item is not actionable', () => {
-    checkDisplayStatus('exists', false, 'success');
+  it("displays the status when the status is exists and the item is not actionable", () => {
+    checkDisplayStatus("exists", false, "success");
   });
-  it('displays the status when the status is incomplete and the item is not actionable', () => {
-    checkDisplayStatus('incomplete', false, 'info');
+  it("displays the status when the status is incomplete and the item is not actionable", () => {
+    checkDisplayStatus("incomplete", false, "info");
   });
-  it('displays the status when the status is missing and the item is not actionable', () => {
-    checkDisplayStatus('missing', false, 'info');
+  it("displays the status when the status is missing and the item is not actionable", () => {
+    checkDisplayStatus("missing", false, "info");
   });
-  it('displays the error message when there an error and the item is not actionable', () => {
-    checkDisplayStatus('error', false, 'error');
+  it("displays the error message when there an error and the item is not actionable", () => {
+    checkDisplayStatus("error", false, "error");
   });
 });
 
-describe('<Login Button />', () => {
+describe("<Login Button />", () => {
   const onLoginRequested = jest.fn();
   const onLogoutRequested = jest.fn();
-  it('displays a login icon and text when logged off', () => {
+  it("displays a login icon and text when logged off", () => {
     const wrapper = mount(
       <LoginButton
         onLoginRequested={onLoginRequested}
         onLogoutRequested={onLogoutRequested}
         loginState={LOGGED_OUT}
-      />,
+      />
     );
-    const button = wrapper.find('button');
-    expect(button.text()).toEqual('login');
-    const icon = wrapper.find('i');
-    expect(icon.prop('className')).toContain('login');
+    const button = wrapper.find("button");
+    expect(button.text()).toEqual("login");
+    const icon = wrapper.find("i");
+    expect(icon.prop("className")).toContain("login");
 
     expect(onLoginRequested).toHaveBeenCalledTimes(0);
-    button.simulate('click');
+    button.simulate("click");
     expect(onLoginRequested).toHaveBeenCalledTimes(1);
   });
-  it('displays a logout icon and text when logged in', () => {
+  it("displays a logout icon and text when logged in", () => {
     const wrapper = mount(
       <LoginButton
         onLoginRequested={onLoginRequested}
         onLogoutRequested={onLogoutRequested}
         loginState={LOGGED_IN}
-      />,
+      />
     );
-    const button = wrapper.find('button');
-    expect(button.text()).toEqual('logout');
-    const icon = wrapper.find('i');
-    expect(icon.prop('className')).toContain('logout');
+    const button = wrapper.find("button");
+    expect(button.text()).toEqual("logout");
+    const icon = wrapper.find("i");
+    expect(icon.prop("className")).toContain("logout");
 
     expect(onLogoutRequested).toHaveBeenCalledTimes(0);
-    button.simulate('click');
+    button.simulate("click");
     expect(onLogoutRequested).toHaveBeenCalledTimes(1);
   });
-  it('displays a loading icon when login in', () => {
+  it("displays a loading icon when login in", () => {
     const wrapper = mount(
       <LoginButton
         onLoginRequested={onLoginRequested}
         onLogoutRequested={onLogoutRequested}
         loginState={LOGIN_REQUESTED}
-      />,
+      />
     );
-    const button = wrapper.find('button');
-    expect(button.text()).toEqual('login');
-    const icon = wrapper.find('i');
-    expect(icon.prop('className')).toContain('loading');
+    const button = wrapper.find("button");
+    expect(button.text()).toEqual("login");
+    const icon = wrapper.find("i");
+    expect(icon.prop("className")).toContain("loading");
   });
 });

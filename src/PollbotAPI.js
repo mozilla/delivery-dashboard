@@ -4,13 +4,13 @@ import type {
   CheckResult,
   ProductVersions,
   Product,
-  ReleaseInfo,
-} from './types';
+  ReleaseInfo
+} from "./types";
 
-export const SERVER = 'https://pollbot.dev.mozaws.net/v1';
+export const SERVER = "https://pollbot.dev.mozaws.net/v1";
 
 export async function getOngoingVersions(
-  product: Product,
+  product: Product
 ): Promise<ProductVersions> {
   const response = await fetch(`${SERVER}/${product}/ongoing-versions`);
   return response.json();
@@ -18,7 +18,7 @@ export async function getOngoingVersions(
 
 export async function getReleaseInfo(
   product: Product,
-  version: string,
+  version: string
 ): Promise<ReleaseInfo> {
   const response = await fetch(`${SERVER}/${product}/${version}`);
   return response.json();

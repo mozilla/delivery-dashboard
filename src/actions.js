@@ -18,8 +18,8 @@ import {
   LOGGED_IN,
   LOGGED_OUT,
   LOGIN_REQUESTED,
-  UPDATE_USER_INFO,
-} from './types';
+  UPDATE_USER_INFO
+} from "./types";
 import type {
   AddCheckResult,
   AddServerError,
@@ -43,8 +43,8 @@ import type {
   UpdatePollbotVersion,
   UpdateReleaseInfo,
   UpdateUrl,
-  UpdateUserInfo,
-} from './types';
+  UpdateUserInfo
+} from "./types";
 
 // Small utility function.
 export const localUrlFromVersion = ([product, version]: [Product, string]) =>
@@ -55,12 +55,12 @@ export const localUrlFromVersion = ([product, version]: [Product, string]) =>
  */
 
 export function setVersion(product: Product, version: string): SetVersion {
-  return {type: SET_VERSION, product, version};
+  return { type: SET_VERSION, product, version };
 }
 
 export const sortByVersion = (a: string, b: string) => {
-  const partsA = a.split('.');
-  const partsB = b.split('.');
+  const partsA = a.split(".");
+  const partsB = b.split(".");
   if (partsA.length < 2 || partsB.length < 2) {
     // Bogus version, list it last.
     return 1;
@@ -105,85 +105,85 @@ export const capitalize = (item: string) =>
 
 export const capitalizeChannel = ([channel, version]: [string, string]) => [
   capitalize(channel),
-  version,
+  version
 ];
 
 export function updateProductVersions(
   product: Product,
-  versions: VersionsDict,
+  versions: VersionsDict
 ): UpdateProductVersions {
-  return {type: UPDATE_PRODUCT_VERSIONS, product, versions};
+  return { type: UPDATE_PRODUCT_VERSIONS, product, versions };
 }
 
 export function updatePollbotVersion(
-  version: APIVersionData,
+  version: APIVersionData
 ): UpdatePollbotVersion {
-  return {type: UPDATE_POLLBOT_VERSION, version};
+  return { type: UPDATE_POLLBOT_VERSION, version };
 }
 
 export function updateReleaseInfo(releaseInfo: ReleaseInfo): UpdateReleaseInfo {
-  return {type: UPDATE_RELEASE_INFO, releaseInfo};
+  return { type: UPDATE_RELEASE_INFO, releaseInfo };
 }
 
 export function addCheckResult(
   title: string,
-  result: CheckResult,
+  result: CheckResult
 ): AddCheckResult {
-  return {type: ADD_CHECK_RESULT, title, result};
+  return { type: ADD_CHECK_RESULT, title, result };
 }
 
 export function refreshCheckResult(title: string): RefreshCheckResult {
-  return {type: REFRESH_CHECK_RESULT, title};
+  return { type: REFRESH_CHECK_RESULT, title };
 }
 
 export function addServerError(title: string, err: string): AddServerError {
-  return {type: ADD_SERVER_ERROR, title, err};
+  return { type: ADD_SERVER_ERROR, title, err };
 }
 
 export function loggedIn(): LoggedIn {
-  return {type: LOGGED_IN};
+  return { type: LOGGED_IN };
 }
 
 export function loggedOut(): LoggedOut {
-  return {type: LOGGED_OUT};
+  return { type: LOGGED_OUT };
 }
 
 export function loginRequested(): LoginRequested {
-  return {type: LOGIN_REQUESTED};
+  return { type: LOGIN_REQUESTED };
 }
 
 // For sagas
 export function requestPollbotVersion(): RequestPollbotVersion {
-  return {type: REQUEST_POLLBOT_VERSION};
+  return { type: REQUEST_POLLBOT_VERSION };
 }
 
 export function requestOngoingVersions(): RequestOngoingVersions {
-  return {type: REQUEST_ONGOING_VERSIONS};
+  return { type: REQUEST_ONGOING_VERSIONS };
 }
 
 export function updateUrl(): UpdateUrl {
-  return {type: UPDATE_URL};
+  return { type: UPDATE_URL };
 }
 
 export function refreshStatus(): RefreshStatus {
-  return {type: REFRESH_STATUS};
+  return { type: REFRESH_STATUS };
 }
 
 export function requestStatus(
   product: Product,
-  version: string,
+  version: string
 ): RequestStatus {
-  return {type: REQUEST_STATUS, product, version};
+  return { type: REQUEST_STATUS, product, version };
 }
 
 export function requestLogin(): RequestLogin {
-  return {type: REQUEST_LOGIN};
+  return { type: REQUEST_LOGIN };
 }
 
 export function requestLogout(): RequestLogout {
-  return {type: REQUEST_LOGOUT};
+  return { type: REQUEST_LOGOUT };
 }
 
 export function updateUserInfo(userInfo: any): UpdateUserInfo {
-  return {type: UPDATE_USER_INFO, userInfo};
+  return { type: UPDATE_USER_INFO, userInfo };
 }
