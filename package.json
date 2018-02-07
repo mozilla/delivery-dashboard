@@ -44,7 +44,7 @@
     "codecov": "3.0.0",
     "enzyme": "3.3.0",
     "enzyme-adapter-react-16": "1.1.1",
-    "flow-bin": "0.64.0",
+    "flow-bin": "0.65.0",
     "flow-coverage-report": "0.4.1",
     "flow-typed": "2.3.0",
     "prettier": "1.10.2",

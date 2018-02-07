@@ -13,28 +13,17 @@ import {
   UPDATE_URL,
   REFRESH_STATUS,
   REQUEST_STATUS,
-  REQUEST_LOGIN,
-  REQUEST_LOGOUT,
-  LOGGED_IN,
-  LOGGED_OUT,
-  LOGIN_REQUESTED,
-  UPDATE_USER_INFO,
 } from './types';
 import type {
   AddCheckResult,
   AddServerError,
   APIVersionData,
   CheckResult,
-  LoginRequested,
-  LoggedIn,
-  LoggedOut,
   VersionsDict,
   Product,
   RefreshCheckResult,
   RefreshStatus,
   ReleaseInfo,
-  RequestLogin,
-  RequestLogout,
   RequestOngoingVersions,
   RequestPollbotVersion,
   RequestStatus,
@@ -43,7 +32,6 @@ import type {
   UpdatePollbotVersion,
   UpdateReleaseInfo,
   UpdateUrl,
-  UpdateUserInfo,
 } from './types';
 
 // Small utility function.
@@ -140,18 +128,6 @@ export function addServerError(title: string, err: string): AddServerError {
   return {type: ADD_SERVER_ERROR, title, err};
 }
 
-export function loggedIn(): LoggedIn {
-  return {type: LOGGED_IN};
-}
-
-export function loggedOut(): LoggedOut {
-  return {type: LOGGED_OUT};
-}
-
-export function loginRequested(): LoginRequested {
-  return {type: LOGIN_REQUESTED};
-}
-
 // For sagas
 export function requestPollbotVersion(): RequestPollbotVersion {
   return {type: REQUEST_POLLBOT_VERSION};
@@ -174,16 +150,4 @@ export function requestStatus(
   version: string,
 ): RequestStatus {
   return {type: REQUEST_STATUS, product, version};
-}
-
-export function requestLogin(): RequestLogin {
-  return {type: REQUEST_LOGIN};
-}
-
-export function requestLogout(): RequestLogout {
-  return {type: REQUEST_LOGOUT};
-}
-
-export function updateUserInfo(userInfo: any): UpdateUserInfo {
-  return {type: UPDATE_USER_INFO, userInfo};
 }
