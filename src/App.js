@@ -1,18 +1,18 @@
 // @flow
-import 'photon-ant';
-import * as React from 'react';
-import {Alert, Card, Icon, Layout, Spin, Tooltip} from 'antd';
-import './App.css';
-import {connect} from 'react-redux';
-import type {MapStateToProps} from 'react-redux';
+import "photon-ant";
+import * as React from "react";
+import { Alert, Card, Icon, Layout, Spin, Tooltip } from "antd";
+import "./App.css";
+import { connect } from "react-redux";
+import type { MapStateToProps } from "react-redux";
 import {
   capitalize,
   localUrlFromVersion,
   requestOngoingVersions,
   requestPollbotVersion,
   refreshStatus,
-  requestStatus,
-} from './actions';
+  requestStatus
+} from "./actions";
 import type {
   APIVersionData,
   CheckResult,
@@ -23,18 +23,18 @@ import type {
   Product,
   ReleaseInfo,
   State,
-  Status,
-} from './types';
-import {products} from './types';
+  Status
+} from "./types";
+import { products } from "./types";
 
-const deliveryDashboardVersionData: APIVersionData = require('./version.json');
+const deliveryDashboardVersionData: APIVersionData = require("./version.json");
 
 function requestNotificationPermission(): void {
   // Some browsers don't support Notification yet. I'm looking at you iOS Safari
-  if ('Notification' in window) {
+  if ("Notification" in window) {
     if (
-      Notification.permission !== 'denied' &&
-      Notification.permission !== 'granted'
+      Notification.permission !== "denied" &&
+      Notification.permission !== "granted"
     ) {
       Notification.requestPermission();
     }
@@ -42,8 +42,8 @@ function requestNotificationPermission(): void {
 }
 
 export const parseUrl = (
-  url: string,
-): ?{service: string, product: Product, version: string} => {
+  url: string
+): ?{ service: string, product: Product, version: string } => {
   const re = /^#(\w+)\/(\w+)\/([^/]+)\/?/; // Eg: #pollbot/firefox/50.0
   const parsed: ?(string[]) = url.match(re);
   if (!parsed) {
@@ -58,7 +58,7 @@ export const parseUrl = (
   return {
     service: service,
     product: maybeProduct,
-    version: version,
+    version: version
   };
 };
 
@@ -67,7 +67,7 @@ type AppProps = {
   dispatch: Dispatch,
   pollbotVersion: APIVersionData,
   shouldRefresh: boolean,
-  errors: Error[],
+  errors: Error[]
 };
 export class App extends React.Component<AppProps, void> {
   refreshIntervalId: ?IntervalID;
@@ -85,7 +85,7 @@ export class App extends React.Component<AppProps, void> {
       }
       this.refreshIntervalId = setInterval(
         () => this.props.dispatch(refreshStatus()),
-        60000,
+        60000
       );
     } else {
       this.stopAutoRefresh();
@@ -143,9 +143,9 @@ export class App extends React.Component<AppProps, void> {
           </Layout.Content>
         </Layout>
         <footer>
-          Delivery dashboard version:{' '}
+          Delivery dashboard version:{" "}
           <VersionLink versionData={deliveryDashboardVersionData} />
-          &nbsp;--&nbsp;Pollbot version:{' '}
+          &nbsp;--&nbsp;Pollbot version:{" "}
           <VersionLink versionData={this.props.pollbotVersion} />
         </footer>
       </div>
@@ -153,28 +153,28 @@ export class App extends React.Component<AppProps, void> {
   }
 }
 const connectedAppMapStateToProps: MapStateToProps<*, *, *> = (
-  state: State,
+  state: State
 ) => ({
   checkResults: state.checkResults,
   pollbotVersion: state.pollbotVersion,
   shouldRefresh: state.shouldRefresh,
-  errors: state.errors,
+  errors: state.errors
 });
 export const ConnectedApp = connect(
   connectedAppMapStateToProps,
-  (dispatch: Dispatch) => ({dispatch: dispatch}),
+  (dispatch: Dispatch) => ({ dispatch: dispatch })
 )(App);
 
 const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) => ({
-  versions: state.productVersions,
+  versions: state.productVersions
 });
 const SideBar = connect(sideBarMapStateToProps)(ReleasesMenu);
 
 type ReleasesMenuPropType = {
-  versions: ProductVersions,
+  versions: ProductVersions
 };
 
-export function ReleasesMenu({versions}: ReleasesMenuPropType) {
+export function ReleasesMenu({ versions }: ReleasesMenuPropType) {
   const getVersion = (product, channel) => {
     const capitalizedChannel = capitalize(channel);
     if (versions.hasOwnProperty(product) && versions[product][channel]) {
@@ -195,30 +195,30 @@ export function ReleasesMenu({versions}: ReleasesMenuPropType) {
     <div className="releasesMenu">
       <h2>Firefox Releases</h2>
       <ul>
-        <li>{getVersion('firefox', 'nightly')}</li>
-        <li>{getVersion('firefox', 'beta')}</li>
-        <li>{getVersion('devedition', 'devedition')}</li>
-        <li>{getVersion('firefox', 'release')}</li>
-        <li>{getVersion('firefox', 'esr')}</li>
+        <li>{getVersion("firefox", "nightly")}</li>
+        <li>{getVersion("firefox", "beta")}</li>
+        <li>{getVersion("devedition", "devedition")}</li>
+        <li>{getVersion("firefox", "release")}</li>
+        <li>{getVersion("firefox", "esr")}</li>
       </ul>
     </div>
   );
 }
 
 const currentReleaseMapStateToProps: MapStateToProps<*, *, *> = (
-  state: State,
+  state: State
 ) => ({
   checkResults: state.checkResults,
   releaseInfo: state.releaseInfo,
-  productVersion: state.version,
+  productVersion: state.version
 });
 const CurrentRelease = connect(currentReleaseMapStateToProps)(Dashboard);
 
 type ErrorsPropType = {
-  errors: Error[],
+  errors: Error[]
 };
 
-export function Errors({errors}: ErrorsPropType) {
+export function Errors({ errors }: ErrorsPropType) {
   if (!errors || errors.length === 0) {
     return null;
   }
@@ -243,16 +243,16 @@ export function Errors({errors}: ErrorsPropType) {
 type DashboardPropType = {
   checkResults: CheckResults,
   releaseInfo: ?ReleaseInfo,
-  productVersion: [Product, string],
+  productVersion: [Product, string]
 };
 
 export function Dashboard({
   releaseInfo,
   checkResults,
-  productVersion,
+  productVersion
 }: DashboardPropType) {
   const [product, version] = productVersion;
-  if (version === '') {
+  if (version === "") {
     return (
       <p>
         Learn more about a specific version.
@@ -262,12 +262,12 @@ export function Dashboard({
   } else if (!releaseInfo) {
     return <Spin />;
   } else if (releaseInfo.message) {
-    return <Errors errors={[['Pollbot error', releaseInfo.message]]} />;
+    return <Errors errors={[["Pollbot error", releaseInfo.message]]} />;
   } else {
     return (
       <div>
-        <h2 style={{marginBottom: '1em', display: 'flex', flexWrap: 'wrap'}}>
-          {capitalize(product)} {version}{' '}
+        <h2 style={{ marginBottom: "1em", display: "flex", flexWrap: "wrap" }}>
+          {capitalize(product)} {version}{" "}
           <OverallStatus
             releaseInfo={releaseInfo}
             checkResults={checkResults}
@@ -290,18 +290,18 @@ export function Dashboard({
 
 type OverallStatusPropType = {
   checkResults: CheckResults,
-  releaseInfo: ReleaseInfo,
+  releaseInfo: ReleaseInfo
 };
 
 export function OverallStatus({
   releaseInfo,
-  checkResults,
+  checkResults
 }: OverallStatusPropType) {
   const checksStatus = releaseInfo.checks.map(
-    check => checkResults[check.title],
+    check => checkResults[check.title]
   );
   const allChecksCompleted = !checksStatus.some(
-    result => typeof result === 'undefined',
+    result => typeof result === "undefined"
   );
   if (!allChecksCompleted) {
     return <Spin />;
@@ -319,29 +319,34 @@ export function OverallStatus({
   });
   let type;
   let message;
-  if (actionableChecks.some(status => status !== 'exists')) {
-    type = 'error';
-    message = 'Some checks failed';
+  if (actionableChecks.some(status => status !== "exists")) {
+    type = "error";
+    message = "Some checks failed";
   } else {
-    type = 'success';
-    message = 'All checks are successful';
+    type = "success";
+    message = "All checks are successful";
   }
   return (
-    <Alert message={message} type={type} showIcon style={{marginLeft: '1em'}} />
+    <Alert
+      message={message}
+      type={type}
+      showIcon
+      style={{ marginLeft: "1em" }}
+    />
   );
 }
 
 type DisplayCheckResultProps = {
   title: string,
   actionable: boolean,
-  checkResult: CheckResult,
+  checkResult: CheckResult
 };
 export class DisplayCheckResult extends React.PureComponent<
   DisplayCheckResultProps,
-  void,
+  void
 > {
   render() {
-    const {title, actionable, checkResult} = this.props;
+    const { title, actionable, checkResult } = this.props;
     let titleContent = title;
     if (!actionable) {
       titleContent = (
@@ -353,7 +358,7 @@ export class DisplayCheckResult extends React.PureComponent<
       );
     }
     return (
-      <Card title={titleContent} style={{textAlign: 'center'}}>
+      <Card title={titleContent} style={{ textAlign: "center" }}>
         {checkResult ? (
           <DisplayStatus
             status={checkResult.status}
@@ -373,24 +378,24 @@ export function DisplayStatus({
   status,
   message,
   url,
-  actionable,
+  actionable
 }: {
   status: Status,
   message: string,
   url: string,
-  actionable: boolean,
+  actionable: boolean
 }) {
   const getLabelClass = (status, actionable) => {
-    if (status === 'error') {
-      return 'error';
+    if (status === "error") {
+      return "error";
     }
-    if (status === 'exists') {
-      return 'success';
+    if (status === "exists") {
+      return "success";
     }
     if (actionable) {
-      return 'warning';
+      return "warning";
     }
-    return 'info'; // It's a non actionable item.
+    return "info"; // It's a non actionable item.
   };
   return (
     <a title={message} href={url}>
@@ -403,12 +408,12 @@ export function DisplayStatus({
   );
 }
 
-function VersionLink({versionData}: {versionData: APIVersionData}) {
+function VersionLink({ versionData }: { versionData: APIVersionData }) {
   if (!versionData) {
     return null;
   }
-  const {commit, source, version} = versionData;
-  const sourceUrl = source.replace(/\.git/, '');
+  const { commit, source, version } = versionData;
+  const sourceUrl = source.replace(/\.git/, "");
   const url = `${sourceUrl}/commit/${commit}`;
   return <a href={url}>{version}</a>;
 }

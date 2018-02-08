@@ -5,263 +5,267 @@ import {
   SET_VERSION,
   UPDATE_PRODUCT_VERSIONS,
   UPDATE_POLLBOT_VERSION,
-  UPDATE_RELEASE_INFO,
-} from './types';
-import {deliveryDashboard, initialState} from './reducers';
+  UPDATE_RELEASE_INFO
+} from "./types";
+import { deliveryDashboard, initialState } from "./reducers";
 
 const stateWith = stateCrumbs => Object.assign({}, initialState, stateCrumbs);
 
-describe('deliveryDashboard reducer', () => {
-  it('returns the initial state', () => {
+describe("deliveryDashboard reducer", () => {
+  it("returns the initial state", () => {
     expect(deliveryDashboard(undefined, {})).toEqual(initialState);
   });
-  it('handles ADD_CHECK_RESULT', () => {
+  it("handles ADD_CHECK_RESULT", () => {
     const checkResult = {
-      status: 'exists',
-      message: 'successful test',
-      link: 'some url',
+      status: "exists",
+      message: "successful test",
+      link: "some url"
     };
     expect(
       deliveryDashboard(undefined, {
         type: ADD_CHECK_RESULT,
-        title: 'some test',
-        result: checkResult,
-      }),
+        title: "some test",
+        result: checkResult
+      })
     ).toEqual(
       stateWith({
         checkResults: {
-          'some test': checkResult,
+          "some test": checkResult
         },
-        shouldRefresh: false,
-      }),
+        shouldRefresh: false
+      })
     );
 
     const otherCheckResult = {
-      status: 'exists',
-      message: 'successful test',
-      link: 'some url',
+      status: "exists",
+      message: "successful test",
+      link: "some url"
     };
     expect(
       deliveryDashboard(
         stateWith({
           checkResults: {
-            'some test': checkResult,
-          },
+            "some test": checkResult
+          }
         }),
         {
           type: ADD_CHECK_RESULT,
-          title: 'some other test',
-          result: otherCheckResult,
-        },
-      ),
+          title: "some other test",
+          result: otherCheckResult
+        }
+      )
     ).toEqual(
       stateWith({
         checkResults: {
-          'some test': checkResult,
-          'some other test': otherCheckResult,
+          "some test": checkResult,
+          "some other test": otherCheckResult
         },
-        shouldRefresh: false,
-      }),
+        shouldRefresh: false
+      })
     );
 
     const failingCheckResult = {
-      status: 'incomplete',
-      message: 'successful test',
-      link: 'some url',
+      status: "incomplete",
+      message: "successful test",
+      link: "some url"
     };
     expect(
       deliveryDashboard(
         stateWith({
           checkResults: {
-            'some test': checkResult,
-          },
+            "some test": checkResult
+          }
         }),
         {
           type: ADD_CHECK_RESULT,
-          title: 'some other test',
-          result: failingCheckResult,
-        },
-      ),
+          title: "some other test",
+          result: failingCheckResult
+        }
+      )
     ).toEqual(
       stateWith({
         checkResults: {
-          'some test': checkResult,
-          'some other test': failingCheckResult,
+          "some test": checkResult,
+          "some other test": failingCheckResult
         },
-        shouldRefresh: true,
-      }),
+        shouldRefresh: true
+      })
     );
   });
-  it('handles REFRESH_CHECK_RESULT', () => {
+  it("handles REFRESH_CHECK_RESULT", () => {
     const checkResult = {
-      status: 'exists',
-      message: 'successful test',
-      link: 'some url',
+      status: "exists",
+      message: "successful test",
+      link: "some url"
     };
     expect(
       deliveryDashboard(undefined, {
         type: REFRESH_CHECK_RESULT,
-        title: 'some test',
-      }),
+        title: "some test"
+      })
     ).toEqual(
       stateWith({
-        checkResults: {},
-      }),
+        checkResults: {}
+      })
     );
 
     const failingCheckResult = {
-      status: 'incomplete',
-      message: 'successful test',
-      link: 'some url',
+      status: "incomplete",
+      message: "successful test",
+      link: "some url"
     };
     expect(
       deliveryDashboard(
         stateWith({
           checkResults: {
-            'some test': checkResult,
-            'some other test': failingCheckResult,
-          },
+            "some test": checkResult,
+            "some other test": failingCheckResult
+          }
         }),
         {
           type: REFRESH_CHECK_RESULT,
-          title: 'some other test',
-          result: failingCheckResult,
-        },
-      ),
+          title: "some other test",
+          result: failingCheckResult
+        }
+      )
     ).toEqual(
       stateWith({
         checkResults: {
-          'some test': checkResult,
-        },
-      }),
+          "some test": checkResult
+        }
+      })
     );
   });
-  it('handles ADD_SERVER_ERROR', () => {
+  it("handles ADD_SERVER_ERROR", () => {
     expect(
       deliveryDashboard(undefined, {
         type: ADD_SERVER_ERROR,
-        title: 'some check',
-        err: 'some error',
-      }),
+        title: "some check",
+        err: "some error"
+      })
     ).toEqual(
-      stateWith({errors: [['some check', 'some error']], shouldRefresh: true}),
+      stateWith({ errors: [["some check", "some error"]], shouldRefresh: true })
     );
     expect(
       deliveryDashboard(
         stateWith({
-          errors: [['some check', 'some error']],
+          errors: [["some check", "some error"]]
         }),
         {
           type: ADD_SERVER_ERROR,
-          title: 'some other check',
-          err: 'some other error',
-        },
-      ),
+          title: "some other check",
+          err: "some other error"
+        }
+      )
     ).toEqual(
       stateWith({
         errors: [
-          ['some check', 'some error'],
-          ['some other check', 'some other error'],
+          ["some check", "some error"],
+          ["some other check", "some other error"]
         ],
-        shouldRefresh: true,
-      }),
+        shouldRefresh: true
+      })
     );
   });
-  it('handles SET_VERSION', () => {
+  it("handles SET_VERSION", () => {
     expect(
       deliveryDashboard(undefined, {
         type: SET_VERSION,
-        product: 'firefox',
-        version: '50.0',
-      }),
-    ).toEqual(stateWith({version: ['firefox', '50.0'], shouldRefresh: false}));
+        product: "firefox",
+        version: "50.0"
+      })
+    ).toEqual(
+      stateWith({ version: ["firefox", "50.0"], shouldRefresh: false })
+    );
     expect(
       deliveryDashboard(
         stateWith({
-          version: ['firefox', '50.0'],
+          version: ["firefox", "50.0"]
         }),
         {
           type: SET_VERSION,
-          product: 'firefox',
-          version: '51.0',
-        },
-      ),
-    ).toEqual(stateWith({version: ['firefox', '51.0'], shouldRefresh: false}));
+          product: "firefox",
+          version: "51.0"
+        }
+      )
+    ).toEqual(
+      stateWith({ version: ["firefox", "51.0"], shouldRefresh: false })
+    );
   });
-  it('handles UPDATE_PRODUCT_VERSIONS', () => {
+  it("handles UPDATE_PRODUCT_VERSIONS", () => {
     expect(
       deliveryDashboard(undefined, {
         type: UPDATE_PRODUCT_VERSIONS,
-        product: 'firefox',
-        versions: {release: '0.1.2'},
-      }),
+        product: "firefox",
+        versions: { release: "0.1.2" }
+      })
     ).toEqual(
       stateWith({
         productVersions: {
-          firefox: {release: '0.1.2'},
-          devedition: {},
-        },
-      }),
+          firefox: { release: "0.1.2" },
+          devedition: {}
+        }
+      })
     );
     expect(
       deliveryDashboard(
         stateWith({
           productVersions: {
-            firefox: {release: '0.1.2'},
-            devedition: {},
-          },
+            firefox: { release: "0.1.2" },
+            devedition: {}
+          }
         }),
         {
           type: UPDATE_PRODUCT_VERSIONS,
-          product: 'firefox',
-          versions: {nightly: '1.2.3', release: '0.1.3'},
-        },
-      ),
+          product: "firefox",
+          versions: { nightly: "1.2.3", release: "0.1.3" }
+        }
+      )
     ).toEqual(
       stateWith({
         productVersions: {
-          firefox: {nightly: '1.2.3', release: '0.1.3'},
-          devedition: {},
-        },
-      }),
+          firefox: { nightly: "1.2.3", release: "0.1.3" },
+          devedition: {}
+        }
+      })
     );
   });
-  it('handles UPDATE_RELEASE_INFO', () => {
+  it("handles UPDATE_RELEASE_INFO", () => {
     expect(
       deliveryDashboard(undefined, {
         type: UPDATE_RELEASE_INFO,
-        releaseInfo: 'some new release info',
-      }),
-    ).toEqual(stateWith({releaseInfo: 'some new release info'}));
+        releaseInfo: "some new release info"
+      })
+    ).toEqual(stateWith({ releaseInfo: "some new release info" }));
     expect(
       deliveryDashboard(
         stateWith({
-          releaseInfo: 'some release info',
+          releaseInfo: "some release info"
         }),
         {
           type: UPDATE_RELEASE_INFO,
-          releaseInfo: 'some new release info',
-        },
-      ),
-    ).toEqual(stateWith({releaseInfo: 'some new release info'}));
+          releaseInfo: "some new release info"
+        }
+      )
+    ).toEqual(stateWith({ releaseInfo: "some new release info" }));
   });
-  it('handles UPDATE_POLLBOT_VERSION', () => {
+  it("handles UPDATE_POLLBOT_VERSION", () => {
     expect(
       deliveryDashboard(undefined, {
         type: UPDATE_POLLBOT_VERSION,
-        version: 'some new pollbot version',
-      }),
-    ).toEqual(stateWith({pollbotVersion: 'some new pollbot version'}));
+        version: "some new pollbot version"
+      })
+    ).toEqual(stateWith({ pollbotVersion: "some new pollbot version" }));
     expect(
       deliveryDashboard(
         stateWith({
-          pollbotVersion: 'some pollbot version',
+          pollbotVersion: "some pollbot version"
         }),
         {
           type: UPDATE_POLLBOT_VERSION,
-          version: 'some new pollbot version',
-        },
-      ),
-    ).toEqual(stateWith({pollbotVersion: 'some new pollbot version'}));
+          version: "some new pollbot version"
+        }
+      )
+    ).toEqual(stateWith({ pollbotVersion: "some new pollbot version" }));
   });
 });

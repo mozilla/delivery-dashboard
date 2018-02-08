@@ -10,14 +10,13 @@ displaying information from those in a centralized place.
 
 ## Table of Contents
 
-  - [Cloning and getting into the Project Dir](#cloning-and-getting-into-the-project-dir)
-  - [Setting up the development environment](#setting-up-the-development-environment)
-  - [Starting the dev server](#starting-the-dev-server)
-     - [Building](#building)
-     - [Deploying to gh-pages](#deploying-to-gh-pages)
-  - [Launching testsuite](#launching-testsuite)
-
-
+* [Cloning and getting into the Project Dir](#cloning-and-getting-into-the-project-dir)
+* [Setting up the development environment](#setting-up-the-development-environment)
+* [Starting the dev server](#starting-the-dev-server)
+  * [Building](#building)
+  * [Deploying to gh-pages](#deploying-to-gh-pages)
+* [Launching testsuite](#launching-testsuite)
+* [Linting](#linting)
 
 ## Cloning and getting into the Project Dir
 
@@ -60,3 +59,31 @@ https://[your-github-username].github.io/delivery-dashboard/
 To run the testsuite, simply type:
 
     $ yarn test
+
+## Linting
+
+We use [Prettier](https://prettier.io/) to format all `.js` and `.css` files
+according to the default configuration of Prettier.
+
+When contributing, it is your responsibility to make sure all files you
+touch conform to the Prettier standard, but there are useful tools to make
+this easier.
+
+Linting is checked in continuous integration for every pull request and
+build of `master`. If any file has any deviation from the Prettier output
+it will "break the build" and you're expected to fix it.
+
+To make it easier to see what the potential linting problems are run:
+
+```sh
+$ yarn lint
+```
+
+It will report any errors and explain which files need attention. To
+make this more convenient you can simply run:
+
+```sh
+$ yarn lint-fix
+```
+
+which will directly fix the files that didn't pass.
