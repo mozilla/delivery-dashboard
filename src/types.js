@@ -3,28 +3,28 @@ import type {
   Store as ReduxStore,
   ThunkAction as ReduxThunkAction,
   Dispatch as ReduxDispatch,
-  GetState as ReduxGetState,
-} from 'redux';
+  GetState as ReduxGetState
+} from "redux";
 
-export const products = ['firefox', 'devedition'];
+export const products = ["firefox", "devedition"];
 
 /*
  * state types
  */
-export type Product = 'firefox' | 'devedition';
-export type Status = 'missing' | 'exists' | 'incomplete' | 'error';
+export type Product = "firefox" | "devedition";
+export type Status = "missing" | "exists" | "incomplete" | "error";
 
 export type ChannelVersion = [string, string];
 export type ChannelVersions = ChannelVersion[];
-export type VersionsDict = {[channel: string]: string};
+export type VersionsDict = { [channel: string]: string };
 export type ProductVersions = {
-  [product: Product]: VersionsDict,
+  [product: Product]: VersionsDict
 };
 
 export type CheckInfo = {
   +url: string,
   +title: string,
-  +actionable: boolean,
+  +actionable: boolean
 };
 
 export type ReleaseInfo = {
@@ -33,24 +33,24 @@ export type ReleaseInfo = {
   +version: string,
   +checks: CheckInfo[],
   +message: string,
-  +status: number,
+  +status: number
 };
 
 export type CheckResult = {
   +status: Status,
   +message: string,
-  +link: string,
+  +link: string
 };
 
 export type CheckResults = {
-  [check: string]: CheckResult,
+  [check: string]: CheckResult
 };
 
 export type APIVersionData = {
   name: string,
   version: string,
   source: string,
-  commit: string,
+  commit: string
 };
 
 /* Error: [title, errorMessage] */
@@ -63,82 +63,82 @@ export type State = {
   +checkResults: CheckResults,
   +pollbotVersion: ?APIVersionData,
   +shouldRefresh: boolean,
-  +errors: Error[],
+  +errors: Error[]
 };
 
 /*
  * action types
  */
-export const ADD_CHECK_RESULT = 'ADD_CHECK_RESULT';
-export const REFRESH_CHECK_RESULT = 'REFRESH_CHECK_RESULT';
-export const ADD_SERVER_ERROR = 'ADD_SERVER_ERROR';
-export const SET_VERSION = 'SET_VERSION';
-export const UPDATE_PRODUCT_VERSIONS = 'UPDATE_PRODUCT_VERSIONS';
-export const UPDATE_RELEASE_INFO = 'UPDATE_RELEASE_INFO';
-export const UPDATE_POLLBOT_VERSION = 'UPDATE_POLLBOT_VERSION';
+export const ADD_CHECK_RESULT = "ADD_CHECK_RESULT";
+export const REFRESH_CHECK_RESULT = "REFRESH_CHECK_RESULT";
+export const ADD_SERVER_ERROR = "ADD_SERVER_ERROR";
+export const SET_VERSION = "SET_VERSION";
+export const UPDATE_PRODUCT_VERSIONS = "UPDATE_PRODUCT_VERSIONS";
+export const UPDATE_RELEASE_INFO = "UPDATE_RELEASE_INFO";
+export const UPDATE_POLLBOT_VERSION = "UPDATE_POLLBOT_VERSION";
 
 export type AddCheckResult = {|
-  type: 'ADD_CHECK_RESULT',
+  type: "ADD_CHECK_RESULT",
   title: string,
-  result: CheckResult,
+  result: CheckResult
 |};
 export type RefreshCheckResult = {|
-  type: 'REFRESH_CHECK_RESULT',
-  title: string,
+  type: "REFRESH_CHECK_RESULT",
+  title: string
 |};
 export type AddServerError = {|
-  type: 'ADD_SERVER_ERROR',
+  type: "ADD_SERVER_ERROR",
   title: string,
-  err: string,
+  err: string
 |};
 export type SetVersion = {|
-  type: 'SET_VERSION',
+  type: "SET_VERSION",
   product: Product,
-  version: string,
+  version: string
 |};
 export type UpdateProductVersions = {|
-  type: 'UPDATE_PRODUCT_VERSIONS',
+  type: "UPDATE_PRODUCT_VERSIONS",
   versions: VersionsDict,
-  product: Product,
+  product: Product
 |};
 export type UpdateReleaseInfo = {|
-  type: 'UPDATE_RELEASE_INFO',
-  releaseInfo: ReleaseInfo,
+  type: "UPDATE_RELEASE_INFO",
+  releaseInfo: ReleaseInfo
 |};
 export type UpdatePollbotVersion = {|
-  type: 'UPDATE_POLLBOT_VERSION',
-  version: APIVersionData,
+  type: "UPDATE_POLLBOT_VERSION",
+  version: APIVersionData
 |};
 
 /*
  * saga types
  */
-export const REQUEST_ONGOING_VERSIONS = 'REQUEST_ONGOING_VERSIONS';
-export const REQUEST_POLLBOT_VERSION = 'REQUEST_POLLBOT_VERSION';
-export const UPDATE_URL = 'UPDATE_URL';
-export const REFRESH_STATUS = 'REFRESH_STATUS';
-export const REQUEST_STATUS = 'REQUEST_STATUS';
+export const REQUEST_ONGOING_VERSIONS = "REQUEST_ONGOING_VERSIONS";
+export const REQUEST_POLLBOT_VERSION = "REQUEST_POLLBOT_VERSION";
+export const UPDATE_URL = "UPDATE_URL";
+export const REFRESH_STATUS = "REFRESH_STATUS";
+export const REQUEST_STATUS = "REQUEST_STATUS";
 
 export type RequestOngoingVersions = {|
-  type: 'REQUEST_ONGOING_VERSIONS',
+  type: "REQUEST_ONGOING_VERSIONS"
 |};
 
 export type RequestPollbotVersion = {|
-  type: 'REQUEST_POLLBOT_VERSION',
+  type: "REQUEST_POLLBOT_VERSION"
 |};
 
 export type UpdateUrl = {|
-  type: 'UPDATE_URL',
+  type: "UPDATE_URL"
 |};
 
 export type RefreshStatus = {|
-  type: 'REFRESH_STATUS',
+  type: "REFRESH_STATUS"
 |};
 
 export type RequestStatus = {|
-  type: 'REQUEST_STATUS',
+  type: "REQUEST_STATUS",
   product: Product,
-  version: string,
+  version: string
 |};
 
 export type Action =

@@ -6,8 +6,8 @@ import {
   UPDATE_URL,
   REFRESH_STATUS,
   REQUEST_STATUS,
-  products,
-} from './types';
+  products
+} from "./types";
 import type {
   APIVersionData,
   CheckResult,
@@ -15,15 +15,15 @@ import type {
   Product,
   ReleaseInfo,
   RequestStatus,
-  State,
-} from './types';
-import {all, call, put, select, takeEvery} from 'redux-saga/effects';
+  State
+} from "./types";
+import { all, call, put, select, takeEvery } from "redux-saga/effects";
 import {
   checkStatus,
   getOngoingVersions,
   getPollbotVersion,
-  getReleaseInfo,
-} from './PollbotAPI';
+  getReleaseInfo
+} from "./PollbotAPI";
 import {
   addCheckResult,
   addServerError,
@@ -32,8 +32,8 @@ import {
   setVersion,
   updateProductVersions,
   updatePollbotVersion,
-  updateReleaseInfo,
-} from './actions';
+  updateReleaseInfo
+} from "./actions";
 
 type Saga = Generator<*, void, *>;
 
@@ -43,7 +43,7 @@ export function* fetchPollbotVersion(): Saga {
     const version: APIVersionData = yield call(getPollbotVersion);
     yield put(updatePollbotVersion(version));
   } catch (err) {
-    console.error('Failed getting the pollbot version', err);
+    console.error("Failed getting the pollbot version", err);
   }
 }
 
@@ -53,8 +53,8 @@ export function* fetchAndUpdateVersions(product: Product): Saga {
     yield put(updateProductVersions(product, versions));
   } catch (err) {
     console.error(
-      'Failed getting the latest channel versions for product: ' + product,
-      err,
+      "Failed getting the latest channel versions for product: " + product,
+      err
     );
   }
 }
@@ -73,10 +73,10 @@ export function* updateUrl(): Saga {
 export function* checkResultAndUpdateAndNotify(
   title: string,
   url: string,
-  prevResult: CheckResult,
+  prevResult: CheckResult
 ): Saga {
   const notifyChanges = (checkTitle, status) => {
-    if (Notification.permission === 'granted') {
+    if (Notification.permission === "granted") {
       new Notification(`${checkTitle}: status changed (${status}).`);
     }
   };
@@ -100,10 +100,10 @@ export function* refreshStatus(): Saga {
     yield all(
       state.releaseInfo.checks
         // only refresh checks that were failing.
-        .filter(({title}) => state.checkResults[title].status !== 'exists')
-        .map(({url, title}) =>
-          call(checkResultAndUpdateAndNotify, title, url, prevResults[title]),
-        ),
+        .filter(({ title }) => state.checkResults[title].status !== "exists")
+        .map(({ url, title }) =>
+          call(checkResultAndUpdateAndNotify, title, url, prevResults[title])
+        )
     );
   }
 }
@@ -120,8 +120,8 @@ export function* checkResultAndUpdate(title: string, url: string): Saga {
 
 // Requesting a status for a new version.
 export function* requestStatus(action: RequestStatus): Saga {
-  let {product, version} = action;
-  let {productVersions} = yield select();
+  let { product, version } = action;
+  let { productVersions } = yield select();
   try {
     if (
       Object.keys(productVersions).length === 0 ||
@@ -132,7 +132,7 @@ export function* requestStatus(action: RequestStatus): Saga {
       const versions = yield call(getOngoingVersions, product);
       yield put(updateProductVersions(product, versions));
       // We now have the product channel versions.
-      ({productVersions} = yield select());
+      ({ productVersions } = yield select());
     }
     if (productVersions[product].hasOwnProperty(version)) {
       version = productVersions[product][version];
@@ -142,18 +142,18 @@ export function* requestStatus(action: RequestStatus): Saga {
     const releaseInfo: ReleaseInfo = yield call(
       getReleaseInfo,
       product,
-      version,
+      version
     );
     yield put(updateReleaseInfo(releaseInfo));
     yield all(
-      releaseInfo.checks.map(({url, title}) =>
-        call(checkResultAndUpdate, title, url),
-      ),
+      releaseInfo.checks.map(({ url, title }) =>
+        call(checkResultAndUpdate, title, url)
+      )
     );
   } catch (err) {
     console.error(
       `Failed getting the release info for ${product} ${version}`,
-      err,
+      err
     );
   }
 }
@@ -165,6 +165,6 @@ export function* rootSaga(): Saga {
     takeEvery(REQUEST_POLLBOT_VERSION, fetchPollbotVersion),
     takeEvery(UPDATE_URL, updateUrl),
     takeEvery(REFRESH_STATUS, refreshStatus),
-    takeEvery(REQUEST_STATUS, requestStatus),
+    takeEvery(REQUEST_STATUS, requestStatus)
   ]);
 }
