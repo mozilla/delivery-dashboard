@@ -30,8 +30,9 @@
     "deploy": "yarn run build && gh-pages --add --dist build/",
     "deploy-dev":
       "PUBLIC_URL=$npm_package_homepage_dev yarn run deploy --dest dev/",
-    "lint": "prettier --list-different src/**/*.js | scripts/lint_problems.sh",
-    "lint-fix": "prettier --write src/**/*.js",
+    "lint":
+      "prettier --list-different src/**/*.js src/**/*.css | scripts/lint_problems.sh",
+    "lint-fix": "prettier --write src/**/*.js src/**/*.css",
     "flow": "flow",
     "flow-coverage":
       "flow-coverage-report -i 'src/**/*.js' -x 'src/**/*.test.js' -t html -t text",
