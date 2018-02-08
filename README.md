@@ -1,6 +1,6 @@
 # Delivery Dashboard
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/mozilla/delivery-dashboard.svg)](https://greenkeeper.io/)
+[![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovateapp.com/)
 
 Product Delivery's Web Client to Microservices.
 
