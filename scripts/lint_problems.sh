@@ -3,7 +3,7 @@ set -eo pipefail
 
 prelude() {
   echo "
-You have Prettier linting errors!
+You have prettier linting errors!
 ----------------------------------
 The following files would turn out different if you process them with prettier.
 
@@ -27,7 +27,7 @@ done < "${1:-/dev/stdin}"
 
 
 $any && echo "
-If you're not interesting how they're different, consider running:
+If you're not interested in how they're different, consider running:
 
   yarn run lint-fix
 "
