@@ -30,14 +30,14 @@
     "deploy": "yarn run build && gh-pages --add --dist build/",
     "deploy-dev":
       "PUBLIC_URL=$npm_package_homepage_dev yarn run deploy --dest dev/",
-    "lint": "prettier --list-different src/**/*.js",
-    "lint-fix": "yarn lint --write",
+    "lint": "prettier --list-different src/**/*.js | scripts/lint_problems.sh",
+    "lint-fix": "prettier --write src/**/*.js",
     "flow": "flow",
     "flow-coverage":
       "flow-coverage-report -i 'src/**/*.js' -x 'src/**/*.test.js' -t html -t text",
     "check": "yarn lint && yarn flow",
     "precheck": "yarn run version-file",
-    "version-file": "./update_version.sh"
+    "version-file": "./scripts/update_version.sh"
   },
   "devDependencies": {
     "babel-plugin-import": "1.6.3",
