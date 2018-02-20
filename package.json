@@ -55,6 +55,6 @@
     "react-app-rewired": "1.4.1",
     "react-test-renderer": "16.2.0",
     "redux-mock-store": "1.5.1",
-    "toctoc": "0.2.4"
+    "toctoc": "0.3.0"
   }
 }
