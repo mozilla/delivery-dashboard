@@ -7,7 +7,7 @@ import type {
   ReleaseInfo
 } from "./types";
 
-export const SERVER = "https://pollbot.services.mozilla.com/v1";
+export const SERVER = process.env.REACT_APP_POLLBOT_URL || "https://pollbot.services.mozilla.com/v1";
 
 export async function getOngoingVersions(
   product: Product
