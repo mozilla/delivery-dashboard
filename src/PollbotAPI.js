@@ -8,8 +8,7 @@ import type {
 } from "./types";
 
 export const SERVER =
-  process.env.REACT_APP_POLLBOT_URL ||
-  "https://pollbot.services.mozilla.com/v1";
+  process.env.POLLBOT_URL || "https://pollbot.services.mozilla.com/v1";
 
 export async function getOngoingVersions(
   product: Product

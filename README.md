@@ -92,6 +92,12 @@ which will directly fix the files that didn't pass.
 
 By default, data is fetched from https://pollbot.services.mozilla.com/v1. 
 If you want to temporary try against a different server you can override 
-it on the command line with an environment variable like this for example:
+it on the command line with an environment variable.
 
-    $ REACT_APP_POLLBOT_URL=http://locahost:8000/v1 yarn start
+If you want to use Pollbot's dev environment:
+
+    $ POLLBOT_URL=https://pollbot.dev.mozaws.net/v1 yarn start
+
+Or to use the staging environment:
+
+    $ POLLBOT_URL=https://pollbot.stage.mozaws.net/v1 yarn start

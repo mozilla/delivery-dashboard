@@ -35,9 +35,9 @@
     "eject": "react-app-rewired eject",
     "deploy": "yarn run build && gh-pages --add --dist build/",
     "deploy-dev":
-      "REACT_APP_POLLBOT_URL=$npm_package_pollbot PUBLIC_URL=$npm_package_homepage_dev yarn run deploy --dest dev/",
+      "POLLBOT_URL=$npm_package_pollbot PUBLIC_URL=$npm_package_homepage_dev yarn run deploy --dest dev/",
     "deploy-stage":
-      "REACT_APP_POLLBOT_URL=$npm_package_pollbot_stage PUBLIC_URL=$npm_package_homepage_stage yarn run deploy --dest stage/",
+      "POLLBOT_URL=$npm_package_pollbot_stage PUBLIC_URL=$npm_package_homepage_stage yarn run deploy --dest stage/",
     "lint":
       "prettier --list-different src/**/*.js src/**/*.css | scripts/lint_problems.sh",
     "lint-fix": "prettier --write src/**/*.js src/**/*.css",
