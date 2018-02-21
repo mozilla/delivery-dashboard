@@ -35,7 +35,7 @@
     "eject": "react-app-rewired eject",
     "deploy": "yarn run build && gh-pages --add --dist build/",
     "deploy-dev":
-      "POLLBOT_URL=$npm_package_pollbot PUBLIC_URL=$npm_package_homepage_dev yarn run deploy --dest dev/",
+      "PUBLIC_URL=$npm_package_homepage_dev yarn run deploy --dest dev/",
     "deploy-stage":
       "POLLBOT_URL=$npm_package_pollbot_stage PUBLIC_URL=$npm_package_homepage_stage yarn run deploy --dest stage/",
     "lint":
