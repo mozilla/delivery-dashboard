@@ -87,3 +87,11 @@ $ yarn lint-fix
 ```
 
 which will directly fix the files that didn't pass.
+
+## Using a different Pollbot server
+
+By default, data is fetched from https://pollbot.services.mozilla.com/v1. 
+If you want to temporary try against a different server you can override 
+it on the command line with an environment variable like this for example:
+
+    $ REACT_APP_POLLBOT_URL=http://locahost:8000/v1 yarn start

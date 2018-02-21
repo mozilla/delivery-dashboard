@@ -23,7 +23,6 @@
   "homepage_dev": "https://mozilla.github.io/delivery-dashboard/dev/",
   "pollbot": "https://pollbot.services.mozilla.com/v1",
   "pollbot_stage": "https://pollbot.stage.mozaws.net/v1",
-  "pollbot_dev": "https://pollbot.dev.mozaws.net/v1",
   "scripts": {
     "start": "react-app-rewired start",
     "prestart": "yarn run version-file",
@@ -36,7 +35,7 @@
     "eject": "react-app-rewired eject",
     "deploy": "yarn run build && gh-pages --add --dist build/",
     "deploy-dev":
-      "REACT_APP_POLLBOT_URL=$npm_package_pollbot_dev PUBLIC_URL=$npm_package_homepage_dev yarn run deploy --dest dev/",
+      "REACT_APP_POLLBOT_URL=$npm_package_pollbot PUBLIC_URL=$npm_package_homepage_dev yarn run deploy --dest dev/",
     "deploy-stage":
       "REACT_APP_POLLBOT_URL=$npm_package_pollbot_stage PUBLIC_URL=$npm_package_homepage_stage yarn run deploy --dest stage/",
     "lint":
