@@ -90,14 +90,10 @@ which will directly fix the files that didn't pass.
 
 ## Using a different Pollbot server
 
-By default, data is fetched from https://pollbot.services.mozilla.com/v1. 
-If you want to temporary try against a different server you can override 
-it on the command line with an environment variable.
+When accessing https://mozilla.github.io/delivery-dashboard/, data is fetched
+from https://pollbot.services.mozilla.com/v1, which is the production server.
+If you want to use a different server (for example the stage or dev versions),
+add a `server` query parameter like so:
 
-If you want to use Pollbot's dev environment:
-
-    $ POLLBOT_URL=https://pollbot.dev.mozaws.net/v1 yarn start
-
-Or to use the staging environment:
-
-    $ POLLBOT_URL=https://pollbot.stage.mozaws.net/v1 yarn start
+    - dev: https://mozilla.github.io/delivery-dashboard/?server=https://pollbot.dev.mozaws.net/v1
+    - stage: https://mozilla.github.io/delivery-dashboard/?server=https://pollbot.stage.mozaws.net/v1

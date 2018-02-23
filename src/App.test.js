@@ -15,7 +15,7 @@ import {
 } from "./App";
 import { Alert, Spin, Tooltip } from "antd";
 import createStore from "./create-store";
-import { SERVER } from "./PollbotAPI";
+import { pollbotUrl } from "./index";
 import Enzyme from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 
@@ -98,7 +98,7 @@ describe("<App />", () => {
         <ConnectedApp />
       </Provider>
     );
-    expect(global.fetch).toHaveBeenCalledWith(`${SERVER}/__version__`);
+    expect(global.fetch).toHaveBeenCalledWith(`${pollbotUrl}/__version__`);
   });
   it("calls requestStatus(version) with the version from the hash", () => {
     global.window.location.hash = "#pollbot/firefox/123.0";

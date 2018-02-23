@@ -21,8 +21,6 @@
   "homepage": "https://mozilla.github.io/delivery-dashboard/",
   "homepage_stage": "https://mozilla.github.io/delivery-dashboard/stage/",
   "homepage_dev": "https://mozilla.github.io/delivery-dashboard/dev/",
-  "pollbot": "https://pollbot.services.mozilla.com/v1",
-  "pollbot_stage": "https://pollbot.stage.mozaws.net/v1",
   "scripts": {
     "start": "react-app-rewired start",
     "prestart": "yarn run version-file",
@@ -36,8 +34,6 @@
     "deploy": "yarn run build && gh-pages --add --dist build/",
     "deploy-dev":
       "PUBLIC_URL=$npm_package_homepage_dev yarn run deploy --dest dev/",
-    "deploy-stage":
-      "POLLBOT_URL=$npm_package_pollbot_stage PUBLIC_URL=$npm_package_homepage_stage yarn run deploy --dest stage/",
     "lint":
       "prettier --list-different src/**/*.js src/**/*.css | scripts/lint_problems.sh",
     "lint-fix": "prettier --write src/**/*.js src/**/*.css",
