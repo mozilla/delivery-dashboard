@@ -87,3 +87,13 @@ $ yarn lint-fix
 ```
 
 which will directly fix the files that didn't pass.
+
+## Using a different Pollbot server
+
+When accessing https://mozilla.github.io/delivery-dashboard/, data is fetched
+from https://pollbot.services.mozilla.com/v1, which is the production server.
+If you want to use a different server (for example the stage or dev versions),
+add a `server` query parameter like so:
+
+    - dev: https://mozilla.github.io/delivery-dashboard/?server=https://pollbot.dev.mozaws.net/v1
+    - stage: https://mozilla.github.io/delivery-dashboard/?server=https://pollbot.stage.mozaws.net/v1

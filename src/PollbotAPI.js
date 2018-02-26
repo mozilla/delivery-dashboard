@@ -1,4 +1,5 @@
 // @flow
+import { pollbotUrl } from "./index";
 import type {
   APIVersionData,
   CheckResult,
@@ -7,12 +8,10 @@ import type {
   ReleaseInfo
 } from "./types";
 
-export const SERVER = "https://pollbot.services.mozilla.com/v1";
-
 export async function getOngoingVersions(
   product: Product
 ): Promise<ProductVersions> {
-  const response = await fetch(`${SERVER}/${product}/ongoing-versions`);
+  const response = await fetch(`${pollbotUrl}/${product}/ongoing-versions`);
   return response.json();
 }
 
@@ -20,7 +19,7 @@ export async function getReleaseInfo(
   product: Product,
   version: string
 ): Promise<ReleaseInfo> {
-  const response = await fetch(`${SERVER}/${product}/${version}`);
+  const response = await fetch(`${pollbotUrl}/${product}/${version}`);
   return response.json();
 }
 
@@ -30,6 +29,6 @@ export async function checkStatus(url: string): Promise<CheckResult> {
 }
 
 export async function getPollbotVersion(): Promise<APIVersionData> {
-  const response = await fetch(`${SERVER}/__version__`);
+  const response = await fetch(`${pollbotUrl}/__version__`);
   return response.json();
 }
