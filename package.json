@@ -19,7 +19,6 @@
     "node": ">=8"
   },
   "homepage": "https://mozilla.github.io/delivery-dashboard/",
-  "homepage_stage": "https://mozilla.github.io/delivery-dashboard/stage/",
   "homepage_dev": "https://mozilla.github.io/delivery-dashboard/dev/",
   "scripts": {
     "start": "react-app-rewired start",
