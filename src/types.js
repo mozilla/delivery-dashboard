@@ -47,7 +47,7 @@ export type CheckResults = {
 };
 
 export type APIVersionData = {
-  name: string,
+  build: string,
   version: string,
   source: string,
   commit: string

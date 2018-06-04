@@ -70,7 +70,7 @@ describe("getPollbotVersion", () => {
     const version = await getPollbotVersion();
     expect(version).toMatchObject({
       commit: expect.any(String),
-      name: "pollbot",
+      build: expect.any(String),
       source: expect.any(String),
       version: expect.any(String)
     });
