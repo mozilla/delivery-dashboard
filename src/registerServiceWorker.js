@@ -92,9 +92,11 @@ function checkValidServiceWorker(swUrl) {
   fetch(swUrl)
     .then(response => {
       // Ensure service worker exists, and that we really are getting a JS file.
+      const headers = response.headers || {};
+      const contentType = headers.get("content-type");
       if (
         response.status === 404 ||
-        response.headers.get("content-type").indexOf("javascript") === -1
+        (contentType && contentType.indexOf("javascript") === -1)
       ) {
         // No service worker found. Probably a different app. Reload the page.
         navigator.serviceWorker &&
