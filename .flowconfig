@@ -3,6 +3,7 @@
 .*node_modules/flow-coverage-report.*
 .*node_modules/draft-js.*
 .*node_modules/rc-editor-core.*
+.*node_modules/config-chain.*
 
 [include]
 
