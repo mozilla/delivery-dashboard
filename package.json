@@ -49,7 +49,7 @@
     "enzyme": "3.6.0",
     "enzyme-adapter-react-16": "1.5.0",
     "flow-bin": "0.80.0",
-    "flow-coverage-report": "0.6.0",
+    "flow-coverage-report": "0.8.0",
     "flow-typed": "2.5.1",
     "prettier": "1.14.2",
     "react-app-rewired": "1.6.2",
