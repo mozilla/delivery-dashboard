@@ -44,7 +44,7 @@
     "version-file": "./scripts/update_version.sh"
   },
   "devDependencies": {
-    "babel-plugin-import": "1.8.0",
+    "babel-plugin-import": "1.13.3",
     "codecov": "3.1.0",
     "enzyme": "3.6.0",
     "enzyme-adapter-react-16": "1.5.0",
