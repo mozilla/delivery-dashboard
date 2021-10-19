@@ -6,7 +6,7 @@ import {
   UPDATE_URL,
   REFRESH_STATUS,
   REQUEST_STATUS,
-  products
+  products,
 } from "./types";
 import type {
   APIVersionData,
@@ -15,14 +15,14 @@ import type {
   Product,
   ReleaseInfo,
   RequestStatus,
-  State
+  State,
 } from "./types";
 import { all, call, put, select, takeEvery } from "redux-saga/effects";
 import {
   checkStatus,
   getOngoingVersions,
   getPollbotVersion,
-  getReleaseInfo
+  getReleaseInfo,
 } from "./PollbotAPI";
 import {
   addCheckResult,
@@ -32,7 +32,7 @@ import {
   setVersion,
   updateProductVersions,
   updatePollbotVersion,
-  updateReleaseInfo
+  updateReleaseInfo,
 } from "./actions";
 
 type Saga = Generator<*, void, *>;
@@ -61,7 +61,7 @@ export function* fetchAndUpdateVersions(product: Product): Saga {
 
 // Fetching the ongoing versions.
 export function* fetchOngoingVersions(): Saga {
-  yield all(products.map(product => call(fetchAndUpdateVersions, product)));
+  yield all(products.map((product) => call(fetchAndUpdateVersions, product)));
 }
 
 // Update the url from the version stored in the state.
@@ -165,6 +165,6 @@ export function* rootSaga(): Saga {
     takeEvery(REQUEST_POLLBOT_VERSION, fetchPollbotVersion),
     takeEvery(UPDATE_URL, updateUrl),
     takeEvery(REFRESH_STATUS, refreshStatus),
-    takeEvery(REQUEST_STATUS, requestStatus)
+    takeEvery(REQUEST_STATUS, requestStatus),
   ]);
 }
