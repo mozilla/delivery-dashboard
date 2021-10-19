@@ -28,6 +28,7 @@ import {
   updateReleaseInfo,
   updateUrl
 } from "./actions";
+import { pollbotUrl } from "./index";
 
 describe("action creators", () => {
   it("returns a UPDATE_VERSION_INPUT action for setVersion", () => {
@@ -68,31 +69,27 @@ describe("action creators", () => {
       checks: [
         {
           title: "Archive Release",
-          url: "https://pollbot.dev.mozaws.net/v1/firefox/55.0.3/archive"
+          url: `${pollbotUrl}/firefox/55.0.3/archive`
         },
         {
           title: "Balrog update rules",
-          url: "https://pollbot.dev.mozaws.net/v1/firefox/55.0.3/balrog-rules"
+          url: `${pollbotUrl}/firefox/55.0.3/balrog-rules`
         },
         {
           title: "Download links",
-          url:
-            "https://pollbot.dev.mozaws.net/v1/firefox/55.0.3/bedrock/download-links"
+          url: `${pollbotUrl}/firefox/55.0.3/bedrock/download-links`
         },
         {
           title: "Product details",
-          url:
-            "https://pollbot.dev.mozaws.net/v1/firefox/55.0.3/product-details"
+          url: `${pollbotUrl}/firefox/55.0.3/product-details`
         },
         {
           title: "Release notes",
-          url:
-            "https://pollbot.dev.mozaws.net/v1/firefox/55.0.3/bedrock/release-notes"
+          url: `${pollbotUrl}/firefox/55.0.3/bedrock/release-notes`
         },
         {
           title: "Security advisories",
-          url:
-            "https://pollbot.dev.mozaws.net/v1/firefox/55.0.3/bedrock/security-advisories"
+          url: `${pollbotUrl}/firefox/55.0.3/bedrock/security-advisories`
         }
       ],
       version: "55.0.3",
