@@ -7,7 +7,7 @@ import {
   SET_VERSION,
   UPDATE_PRODUCT_VERSIONS,
   UPDATE_POLLBOT_VERSION,
-  UPDATE_RELEASE_INFO
+  UPDATE_RELEASE_INFO,
 } from "./types";
 import type { Action, State } from "./types";
 
@@ -18,7 +18,7 @@ export const initialState: State = {
   checkResults: {},
   pollbotVersion: null,
   shouldRefresh: false,
-  errors: []
+  errors: [],
 };
 
 export function deliveryDashboard(
@@ -31,44 +31,44 @@ export function deliveryDashboard(
     case ADD_CHECK_RESULT:
       return Object.assign({}, state, {
         checkResults: Object.assign({}, state.checkResults, {
-          [action.title]: action.result
+          [action.title]: action.result,
         }),
         shouldRefresh:
-          action.result.status !== "exists" ? true : state.shouldRefresh
+          action.result.status !== "exists" ? true : state.shouldRefresh,
       });
     case REFRESH_CHECK_RESULT:
       updatedCheckResults = Object.assign({}, state.checkResults);
       delete updatedCheckResults[action.title];
       return Object.assign({}, state, {
-        checkResults: updatedCheckResults
+        checkResults: updatedCheckResults,
       });
     case ADD_SERVER_ERROR:
       errors = state.errors.slice();
       errors.push([action.title, action.err]);
       return Object.assign({}, state, {
         errors: errors,
-        shouldRefresh: true
+        shouldRefresh: true,
       });
     case SET_VERSION:
       return Object.assign({}, state, {
         version: [action.product, action.version],
         checkResults: {},
         shouldRefresh: false,
-        errors: []
+        errors: [],
       });
     case UPDATE_PRODUCT_VERSIONS:
       return Object.assign({}, state, {
         productVersions: Object.assign({}, state.productVersions, {
-          [action.product]: action.versions
-        })
+          [action.product]: action.versions,
+        }),
       });
     case UPDATE_RELEASE_INFO:
       return Object.assign({}, state, {
-        releaseInfo: action.releaseInfo
+        releaseInfo: action.releaseInfo,
       });
     case UPDATE_POLLBOT_VERSION:
       return Object.assign({}, state, {
-        pollbotVersion: action.version
+        pollbotVersion: action.version,
       });
     default:
       return state;
