@@ -12,7 +12,7 @@ import {
   REQUEST_POLLBOT_VERSION,
   UPDATE_URL,
   REFRESH_STATUS,
-  REQUEST_STATUS
+  REQUEST_STATUS,
 } from "./types";
 import type {
   AddCheckResult,
@@ -31,7 +31,7 @@ import type {
   UpdateProductVersions,
   UpdatePollbotVersion,
   UpdateReleaseInfo,
-  UpdateUrl
+  UpdateUrl,
 } from "./types";
 
 // Small utility function.
@@ -93,7 +93,7 @@ export const capitalize = (item: string) =>
 
 export const capitalizeChannel = ([channel, version]: [string, string]) => [
   capitalize(channel),
-  version
+  version,
 ];
 
 export function updateProductVersions(

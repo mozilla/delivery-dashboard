@@ -11,7 +11,7 @@ import {
   Errors,
   OverallStatus,
   ReleasesMenu,
-  parseUrl
+  parseUrl,
 } from "./App";
 import { Alert, Spin, Tooltip } from "antd";
 import createStore from "./create-store";
@@ -23,23 +23,23 @@ Enzyme.configure({ adapter: new Adapter() });
 
 // Mock the Notification API.
 global.Notification = {
-  requestPermission: jest.fn()
+  requestPermission: jest.fn(),
 };
 
 // Mock the localStorage API.
-global.localStorage = (function() {
+global.localStorage = (function () {
   var store = {};
 
   return {
-    getItem: function(key) {
+    getItem: function (key) {
       return store[key] || null;
     },
-    setItem: function(key, value) {
+    setItem: function (key, value) {
       store[key] = value.toString();
     },
-    clear: function() {
+    clear: function () {
       store = {};
-    }
+    },
   };
 })();
 
@@ -56,7 +56,7 @@ global.fetch = fetchMocker({
   version: "pollbot-version-number",
   commit: "pollbot-commit-hash",
   source: "https://github.com/mozilla/PollBot.git",
-  name: "pollbot"
+  name: "pollbot",
 });
 
 // Mock the delivery-dashboard version
@@ -64,7 +64,7 @@ jest.mock("./version", () => ({
   version: "version-number",
   commit: "commit-hash",
   source: "https://github.com/mozilla/delivery-dashboard.git",
-  name: "delivery-dashboard"
+  name: "delivery-dashboard",
 }));
 
 beforeAll(() => {
@@ -197,7 +197,7 @@ describe("parseUrl", () => {
     expect(parseUrl("#pollbot/firefox/50.0")).toEqual({
       service: "pollbot",
       product: "firefox",
-      version: "50.0"
+      version: "50.0",
     });
   });
 });
@@ -220,11 +220,11 @@ describe("<ReleasesMenu />", () => {
             nightly: "60.0a1",
             beta: "59.0b4",
             release: "58.0",
-            esr: "52.6.0esr"
+            esr: "52.6.0esr",
           },
           devedition: {
-            devedition: "59.0b4"
-          }
+            devedition: "59.0b4",
+          },
         }}
       />
     );
@@ -257,20 +257,20 @@ describe("<Dashboard />", () => {
     version: "50.0",
     checks: [
       { url: "some-url", title: "some title", actionable: true },
-      { url: "some-url-2", title: "some title 2", actionable: false }
-    ]
+      { url: "some-url-2", title: "some title 2", actionable: false },
+    ],
   };
   const checkResults = {
     "some title": {
       status: "exists",
       message: "check is successful",
-      link: "some link"
+      link: "some link",
     },
     "some title 2": {
       status: "exists",
       message: "check is successful",
-      link: "some link"
-    }
+      link: "some link",
+    },
   };
   it("displays a help text when no version is selected", () => {
     const wrapper = shallow(<Dashboard productVersion={["firefox", ""]} />);
@@ -328,27 +328,27 @@ describe("<OverallStatus />", () => {
     version: "50.0",
     checks: [
       { url: "some-url", title: "some title", actionable: true },
-      { url: "some-url-2", title: "some title 2", actionable: false }
-    ]
+      { url: "some-url-2", title: "some title 2", actionable: false },
+    ],
   };
   const incompleteCheckResults = {
     "some title": {
       status: "exists",
       message: "check is successful",
-      link: "some link"
-    }
+      link: "some link",
+    },
   };
   const checkResults = {
     "some title": {
       status: "exists",
       message: "check is successful",
-      link: "some link"
+      link: "some link",
     },
     "some title 2": {
       status: "exists",
       message: "check is successful",
-      link: "some link"
-    }
+      link: "some link",
+    },
   };
   it('displays a "success" label when all the results are successful', () => {
     const wrapper = mount(
@@ -361,8 +361,8 @@ describe("<OverallStatus />", () => {
   it('displays an "success" label if some non actionable check results are unsuccessful', () => {
     const results = Object.assign({}, checkResults, {
       "some title 2": Object.assign({}, checkResults["some title 2"], {
-        status: "missing"
-      })
+        status: "missing",
+      }),
     });
     const wrapper = mount(
       <OverallStatus releaseInfo={releaseInfo} checkResults={results} />
@@ -374,8 +374,8 @@ describe("<OverallStatus />", () => {
   it('displays an "error" label if some actionable check results are unsuccessful', () => {
     const results = Object.assign({}, checkResults, {
       "some title": Object.assign({}, checkResults["some title"], {
-        status: "missing"
-      })
+        status: "missing",
+      }),
     });
     const wrapper = mount(
       <OverallStatus releaseInfo={releaseInfo} checkResults={results} />
@@ -387,8 +387,8 @@ describe("<OverallStatus />", () => {
   it('displays an "error" label if some actionable check results are errored', () => {
     const results = Object.assign({}, checkResults, {
       "some title": Object.assign({}, checkResults["some title"], {
-        status: "error"
-      })
+        status: "error",
+      }),
     });
     const wrapper = mount(
       <OverallStatus releaseInfo={releaseInfo} checkResults={results} />
