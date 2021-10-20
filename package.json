@@ -44,18 +44,18 @@
     "version-file": "./scripts/update_version.sh"
   },
   "devDependencies": {
-    "babel-plugin-import": "1.8.0",
-    "codecov": "3.7.1",
-    "enzyme": "3.6.0",
+    "babel-plugin-import": "1.13.3",
+    "codecov": "3.8.3",
+    "enzyme": "3.11.0",
     "enzyme-adapter-react-16": "1.15.6",
     "fetch-mock": "9.11.0",
     "flow-bin": "0.80.0",
-    "flow-coverage-report": "0.6.0",
-    "flow-typed": "2.5.1",
+    "flow-coverage-report": "0.8.0",
+    "flow-typed": "3.3.1",
     "prettier": "1.14.2",
     "react-app-rewired": "1.6.2",
     "react-test-renderer": "16.5.0",
-    "redux-mock-store": "1.5.3",
+    "redux-mock-store": "1.5.4",
     "toctoc": "0.4.0"
   }
 }
