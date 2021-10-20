@@ -4,7 +4,7 @@ import {
   checkStatus,
   getOngoingVersions,
   getPollbotVersion,
-  getReleaseInfo
+  getReleaseInfo,
 } from "./PollbotAPI";
 import {
   addCheckResult,
@@ -13,14 +13,14 @@ import {
   setVersion,
   updateProductVersions,
   updatePollbotVersion,
-  updateReleaseInfo
+  updateReleaseInfo,
 } from "./actions";
 import {
   REFRESH_STATUS,
   REQUEST_ONGOING_VERSIONS,
   REQUEST_POLLBOT_VERSION,
   REQUEST_STATUS,
-  UPDATE_URL
+  UPDATE_URL,
 } from "./types";
 import {
   checkResultAndUpdate,
@@ -31,7 +31,7 @@ import {
   refreshStatus,
   requestStatus,
   rootSaga,
-  updateUrl
+  updateUrl,
 } from "./sagas";
 
 describe("sagas", () => {
@@ -43,7 +43,7 @@ describe("sagas", () => {
       name: "pollbot",
       source: "https://github.com/mozilla/PollBot.git",
       version: "0.2.1-22-g8e09a0f",
-      commit: "8e09a0f8e995344ea24fbb940a6bddc17e0edaed"
+      commit: "8e09a0f8e995344ea24fbb940a6bddc17e0edaed",
     };
     expect(data.saga.next().value).toEqual(call(getPollbotVersion));
 
@@ -71,7 +71,7 @@ describe("sagas", () => {
     expect(data.saga.next().value).toEqual(
       all([
         call(fetchAndUpdateVersions, "firefox"),
-        call(fetchAndUpdateVersions, "devedition")
+        call(fetchAndUpdateVersions, "devedition"),
       ])
     );
     expect(data.saga.next().done).toBe(true);
@@ -85,7 +85,7 @@ describe("sagas", () => {
       nightly: "57.0a1",
       beta: "56.0b12",
       release: "55.0.3",
-      esr: "52.3.0esr"
+      esr: "52.3.0esr",
     };
     expect(data.saga.next().value).toEqual(call(getOngoingVersions, "firefox"));
 
@@ -123,12 +123,12 @@ describe("sagas", () => {
     const checkResult = {
       status: "exists",
       message: "check succesful",
-      link: "some link"
+      link: "some link",
     };
     const checkResultFailing = {
       status: "incomplete",
       message: "check incomplete",
-      link: "some link"
+      link: "some link",
     };
 
     const data = {};
@@ -153,7 +153,7 @@ describe("sagas", () => {
     // No notification if the result hasn't changed.
     expect(
       data.sagaResultUnchanged.next({
-        checkResults: { "some test": checkResultFailing }
+        checkResults: { "some test": checkResultFailing },
       }).done
     ).toBe(true);
     expect(global.Notification).toHaveBeenCalledTimes(0);
@@ -161,7 +161,7 @@ describe("sagas", () => {
     // Notify if the result has changed.
     expect(
       data.saga.next({
-        checkResults: { "some test": checkResult }
+        checkResults: { "some test": checkResult },
       }).done
     ).toBe(true);
     expect(global.Notification).toHaveBeenCalledTimes(1);
@@ -181,23 +181,23 @@ describe("sagas", () => {
       checks: [
         {
           title: "some test",
-          url: "some url"
+          url: "some url",
         },
         {
           title: "some other test",
-          url: "some other url"
-        }
-      ]
+          url: "some other url",
+        },
+      ],
     };
     const checkResult = {
       status: "exists",
       message: "check succesful",
-      link: "some link"
+      link: "some link",
     };
     const checkResultFailing = {
       status: "incomplete",
       message: "check incomplete",
-      link: "some link"
+      link: "some link",
     };
 
     expect(data.saga.next().value).toEqual(select());
@@ -208,8 +208,8 @@ describe("sagas", () => {
         releaseInfo: releaseInfo,
         checkResults: {
           "some test": checkResult,
-          "some other test": checkResultFailing
-        }
+          "some other test": checkResultFailing,
+        },
       }).value
     ).toEqual(
       all([
@@ -218,7 +218,7 @@ describe("sagas", () => {
           "some other test",
           "some other url",
           checkResultFailing
-        )
+        ),
       ])
     );
     expect(data.saga.next().done).toBe(true);
@@ -234,7 +234,7 @@ describe("sagas", () => {
     const checkResult = {
       status: "exists",
       message: "check succesful",
-      link: "some link"
+      link: "some link",
     };
 
     expect(data.saga.next().value).toEqual(call(checkStatus, "some url"));
@@ -263,7 +263,7 @@ describe("sagas", () => {
     const data = {};
     data.saga = cloneableGenerator(requestStatus)({
       product: "firefox",
-      version: "50.0"
+      version: "50.0",
     });
 
     const releaseInfo = {
@@ -273,13 +273,13 @@ describe("sagas", () => {
       checks: [
         {
           title: "some test",
-          url: "some url"
+          url: "some url",
         },
         {
           title: "some other test",
-          url: "some other url"
-        }
-      ]
+          url: "some other url",
+        },
+      ],
     };
 
     expect(data.saga.next().value).toEqual(select());
@@ -287,9 +287,9 @@ describe("sagas", () => {
       data.saga.next({
         productVersions: {
           firefox: {
-            release: "50.0"
-          }
-        }
+            release: "50.0",
+          },
+        },
       }).value
     ).toEqual(put(setVersion("firefox", "50.0")));
     expect(data.saga.next().value).toEqual(call(updateUrl));
@@ -316,7 +316,7 @@ describe("sagas", () => {
     expect(data.saga.next().value).toEqual(
       all([
         call(checkResultAndUpdate, "some test", "some url"),
-        call(checkResultAndUpdate, "some other test", "some other url")
+        call(checkResultAndUpdate, "some other test", "some other url"),
       ])
     );
     expect(data.saga.next().done).toBe(true);
@@ -327,7 +327,7 @@ describe("sagas", () => {
     // Request status for "release", it should in turn set version for "50.0".
     data.saga = cloneableGenerator(requestStatus)({
       product: "firefox",
-      version: "release"
+      version: "release",
     });
 
     const releaseInfo = {
@@ -337,13 +337,13 @@ describe("sagas", () => {
       checks: [
         {
           title: "some test",
-          url: "some url"
+          url: "some url",
         },
         {
           title: "some other test",
-          url: "some other url"
-        }
-      ]
+          url: "some other url",
+        },
+      ],
     };
 
     expect(data.saga.next().value).toEqual(select());
@@ -351,9 +351,9 @@ describe("sagas", () => {
       data.saga.next({
         productVersions: {
           firefox: {
-            release: "50.0"
-          }
-        }
+            release: "50.0",
+          },
+        },
       }).value
     ).toEqual(put(setVersion("firefox", "50.0")));
     expect(data.saga.next().value).toEqual(call(updateUrl));
@@ -380,7 +380,7 @@ describe("sagas", () => {
     expect(data.saga.next().value).toEqual(
       all([
         call(checkResultAndUpdate, "some test", "some url"),
-        call(checkResultAndUpdate, "some other test", "some other url")
+        call(checkResultAndUpdate, "some other test", "some other url"),
       ])
     );
     expect(data.saga.next().done).toBe(true);
@@ -391,7 +391,7 @@ describe("sagas", () => {
     // Request status for "release", it should in turn set version for "50.0".
     data.saga = cloneableGenerator(requestStatus)({
       product: "firefox",
-      version: "release"
+      version: "release",
     });
 
     const releaseInfo = {
@@ -401,13 +401,13 @@ describe("sagas", () => {
       checks: [
         {
           title: "some test",
-          url: "some url"
+          url: "some url",
         },
         {
           title: "some other test",
-          url: "some other url"
-        }
-      ]
+          url: "some other url",
+        },
+      ],
     };
 
     expect(data.saga.next().value).toEqual(select());
@@ -421,7 +421,7 @@ describe("sagas", () => {
     expect(data.saga.next().value).toEqual(select());
     expect(
       data.saga.next({
-        productVersions: { firefox: { release: "50.0" } }
+        productVersions: { firefox: { release: "50.0" } },
       }).value
     ).toEqual(put(setVersion("firefox", "50.0")));
     expect(data.saga.next().value).toEqual(call(updateUrl));
@@ -448,7 +448,7 @@ describe("sagas", () => {
     expect(data.saga.next().value).toEqual(
       all([
         call(checkResultAndUpdate, "some test", "some url"),
-        call(checkResultAndUpdate, "some other test", "some other url")
+        call(checkResultAndUpdate, "some other test", "some other url"),
       ])
     );
     expect(data.saga.next().done).toBe(true);
@@ -464,7 +464,7 @@ describe("rootSaga", () => {
         takeEvery(REQUEST_POLLBOT_VERSION, fetchPollbotVersion),
         takeEvery(UPDATE_URL, updateUrl),
         takeEvery(REFRESH_STATUS, refreshStatus),
-        takeEvery(REQUEST_STATUS, requestStatus)
+        takeEvery(REQUEST_STATUS, requestStatus),
       ])
     );
     expect(saga.next().done).toBe(true);

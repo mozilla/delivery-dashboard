@@ -11,7 +11,7 @@ import {
   requestOngoingVersions,
   requestPollbotVersion,
   refreshStatus,
-  requestStatus
+  requestStatus,
 } from "./actions";
 import type {
   APIVersionData,
@@ -23,7 +23,7 @@ import type {
   Product,
   ReleaseInfo,
   State,
-  Status
+  Status,
 } from "./types";
 import { products } from "./types";
 
@@ -50,7 +50,7 @@ export const parseUrl = (
     return null;
   }
   const [, service, product, version] = parsed;
-  const maybeProduct = products.find(p => p === product);
+  const maybeProduct = products.find((p) => p === product);
   if (!maybeProduct) {
     // unsupported/unrecognized product.
     return null;
@@ -58,7 +58,7 @@ export const parseUrl = (
   return {
     service: service,
     product: maybeProduct,
-    version: version
+    version: version,
   };
 };
 
@@ -67,7 +67,7 @@ type AppProps = {
   dispatch: Dispatch,
   pollbotVersion: APIVersionData,
   shouldRefresh: boolean,
-  errors: Error[]
+  errors: Error[],
 };
 export class App extends React.Component<AppProps, void> {
   refreshIntervalId: ?IntervalID;
@@ -158,7 +158,7 @@ const connectedAppMapStateToProps: MapStateToProps<*, *, *> = (
   checkResults: state.checkResults,
   pollbotVersion: state.pollbotVersion,
   shouldRefresh: state.shouldRefresh,
-  errors: state.errors
+  errors: state.errors,
 });
 export const ConnectedApp = connect(
   connectedAppMapStateToProps,
@@ -166,12 +166,12 @@ export const ConnectedApp = connect(
 )(App);
 
 const sideBarMapStateToProps: MapStateToProps<*, *, *> = (state: State) => ({
-  versions: state.productVersions
+  versions: state.productVersions,
 });
 const SideBar = connect(sideBarMapStateToProps)(ReleasesMenu);
 
 type ReleasesMenuPropType = {
-  versions: ProductVersions
+  versions: ProductVersions,
 };
 
 export function ReleasesMenu({ versions }: ReleasesMenuPropType) {
@@ -210,12 +210,12 @@ const currentReleaseMapStateToProps: MapStateToProps<*, *, *> = (
 ) => ({
   checkResults: state.checkResults,
   releaseInfo: state.releaseInfo,
-  productVersion: state.version
+  productVersion: state.version,
 });
 const CurrentRelease = connect(currentReleaseMapStateToProps)(Dashboard);
 
 type ErrorsPropType = {
-  errors: Error[]
+  errors: Error[],
 };
 
 export function Errors({ errors }: ErrorsPropType) {
@@ -224,7 +224,7 @@ export function Errors({ errors }: ErrorsPropType) {
   }
   return (
     <div className="errors">
-      {errors.map(error => {
+      {errors.map((error) => {
         const [title, err] = error;
         return (
           <Alert
@@ -243,13 +243,13 @@ export function Errors({ errors }: ErrorsPropType) {
 type DashboardPropType = {
   checkResults: CheckResults,
   releaseInfo: ?ReleaseInfo,
-  productVersion: [Product, string]
+  productVersion: [Product, string],
 };
 
 export function Dashboard({
   releaseInfo,
   checkResults,
-  productVersion
+  productVersion,
 }: DashboardPropType) {
   const [product, version] = productVersion;
   if (version === "") {
@@ -274,7 +274,7 @@ export function Dashboard({
           />
         </h2>
         <div className="dashboard">
-          {releaseInfo.checks.map(check => (
+          {releaseInfo.checks.map((check) => (
             <DisplayCheckResult
               key={check.title}
               title={check.title}
@@ -290,18 +290,18 @@ export function Dashboard({
 
 type OverallStatusPropType = {
   checkResults: CheckResults,
-  releaseInfo: ReleaseInfo
+  releaseInfo: ReleaseInfo,
 };
 
 export function OverallStatus({
   releaseInfo,
-  checkResults
+  checkResults,
 }: OverallStatusPropType) {
   const checksStatus = releaseInfo.checks.map(
-    check => checkResults[check.title]
+    (check) => checkResults[check.title]
   );
   const allChecksCompleted = !checksStatus.some(
-    result => typeof result === "undefined"
+    (result) => typeof result === "undefined"
   );
   if (!allChecksCompleted) {
     return <Spin />;
@@ -309,7 +309,7 @@ export function OverallStatus({
 
   let actionableChecks = [];
   let nonActionableChecks = [];
-  releaseInfo.checks.map(check => {
+  releaseInfo.checks.map((check) => {
     if (check.actionable) {
       actionableChecks.push(checkResults[check.title].status);
     } else {
@@ -319,7 +319,7 @@ export function OverallStatus({
   });
   let type;
   let message;
-  if (actionableChecks.some(status => status !== "exists")) {
+  if (actionableChecks.some((status) => status !== "exists")) {
     type = "error";
     message = "Some checks failed";
   } else {
@@ -339,7 +339,7 @@ export function OverallStatus({
 type DisplayCheckResultProps = {
   title: string,
   actionable: boolean,
-  checkResult: CheckResult
+  checkResult: CheckResult,
 };
 export class DisplayCheckResult extends React.PureComponent<
   DisplayCheckResultProps,
@@ -378,12 +378,12 @@ export function DisplayStatus({
   status,
   message,
   url,
-  actionable
+  actionable,
 }: {
   status: Status,
   message: string,
   url: string,
-  actionable: boolean
+  actionable: boolean,
 }) {
   const getLabelClass = (status, actionable) => {
     if (status === "error") {

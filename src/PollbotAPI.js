@@ -5,7 +5,7 @@ import type {
   CheckResult,
   ProductVersions,
   Product,
-  ReleaseInfo
+  ReleaseInfo,
 } from "./types";
 
 export async function getOngoingVersions(
