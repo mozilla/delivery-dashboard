@@ -1,5 +1,5 @@
 import { all, call, put, select, takeEvery } from "redux-saga/effects";
-import { cloneableGenerator } from "redux-saga/utils";
+import { cloneableGenerator } from "@redux-saga/testing-utils";
 import {
   checkStatus,
   getOngoingVersions,
