@@ -52,7 +52,7 @@
     "fetch-mock": "9.11.0",
     "flow-bin": "0.80.0",
     "flow-coverage-report": "0.8.0",
-    "flow-typed": "3.4.0",
+    "flow-typed": "3.5.0",
     "prettier": "2.5.0",
     "react-app-rewired": "1.6.2",
     "react-test-renderer": "16.14.0",
