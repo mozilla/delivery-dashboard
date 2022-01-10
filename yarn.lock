@@ -2544,14 +2544,14 @@ colors@0.5.x:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/colors/-/colors-0.5.1.tgz#7d0023eaeb154e8ee9fce75dcb923d0ed1667774"
 
-colors@^1.0.3, colors@^1.1.2, colors@~1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/colors/-/colors-1.1.2.tgz#168a4701756b6a7f51a12ce0c97bfa28c084ed63"
-
-colors@^1.4.0:
+colors@1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.4.0.tgz#c50491479d4c1bdaed2c9ced32cf7c7dc2360f78"
   integrity sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==
+
+colors@^1.0.3, colors@^1.1.2, colors@~1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/colors/-/colors-1.1.2.tgz#168a4701756b6a7f51a12ce0c97bfa28c084ed63"
 
 columnify@~1.5.4:
   version "1.5.4"
@@ -4569,13 +4569,13 @@ flow-coverage-report@0.8.0:
     terminal-table "^0.0.12"
     yargs "^16.0.3"
 
-flow-typed@3.6.0:
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/flow-typed/-/flow-typed-3.6.0.tgz#6addad0e85d8a4e4f9ff995c36ff6ebdf0932b03"
-  integrity sha512-PHRMV+cKA4wdcKew39BoNySAULrgjtHR5zPQNfA3g9RX4L66R2jvwoA1NFl+uy1VkCkJRuSq2aUqQYu0MRhu/A==
+flow-typed@3.6.1:
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/flow-typed/-/flow-typed-3.6.1.tgz#b2fe4e896661f0b786d125977ebed8f0cfc8c0a4"
+  integrity sha512-sqBiG52+qK1mJs+CwVenGZOVgSCY1YVozDnIJ41kukqcx3fWuSxwY5FZoB9pLf/NdmMYtwCMunT9SKjOR56mOg==
   dependencies:
     "@octokit/rest" "^18.12.0"
-    colors "^1.4.0"
+    colors "1.4.0"
     flowgen "^1.10.0"
     fs-extra "^8.1.0"
     glob "^7.1.6"
