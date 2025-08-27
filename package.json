@@ -46,7 +46,7 @@
     "enzyme": "3.11.0",
     "enzyme-adapter-react-16": "1.15.6",
     "fetch-mock": "9.11.0",
-    "flow-bin": "0.179.0",
+    "flow-bin": "0.280.0",
     "flow-coverage-report": "0.8.0",
     "flow-typed": "3.7.0",
     "prettier": "2.7.0",
