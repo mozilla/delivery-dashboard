@@ -30,7 +30,7 @@
     "test": "NODE_ENV=test react-app-rewired test --env=jsdom --silent",
     "test-coverage": "yarn run test --coverage --collectCoverageFrom=src/**/*js --collectCoverageFrom=!src/index.js --collectCoverageFrom=!src/registerServiceWorker.js",
     "eject": "react-app-rewired eject",
-    "deploy": "yarn run build && gh-pages --add --dist build/",
+    "deploy": "yarn run build && gh-pages --add --dist build/ --remote upstream",
     "deploy-dev": "PUBLIC_URL=$npm_package_homepage_dev yarn run deploy --dest dev/",
     "lint": "prettier --list-different src/**/*.js src/**/*.css | scripts/lint_problems.sh",
     "lint-fix": "prettier --write src/**/*.js src/**/*.css",
